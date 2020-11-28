@@ -1,2 +1,2 @@
 # gpc-analysis
-Scripts for the GPC paper
+Code for the Global Privacy Control (GPC) paper
