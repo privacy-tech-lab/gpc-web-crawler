@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Коли Chrome отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.";
+NSCameraUsageDescription = "Коли Chrome отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.";
+NSBluetoothAlwaysUsageDescription = "Коли Chrome отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Авторське право 2020 Google LLC. Усі права захищено.";
+NSHumanReadableCopyright = "Авторське право 2020 Google LLC. Усі права захищено.";
+NSBluetoothPeripheralUsageDescription = "Коли Chrome отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.";
+NSMicrophoneUsageDescription = "Коли Chrome отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.";

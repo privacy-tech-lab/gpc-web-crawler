@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Sau khi Chrome có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.";
+NSCameraUsageDescription = "Sau khi Chrome có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.";
+NSBluetoothAlwaysUsageDescription = "Sau khi Chrome có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Bản quyền 2020 Google LLC. Mọi quyền được bảo lưu.";
+NSHumanReadableCopyright = "Bản quyền 2020 Google LLC. Mọi quyền được bảo lưu.";
+NSBluetoothPeripheralUsageDescription = "Sau khi Chrome có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.";
+NSMicrophoneUsageDescription = "Sau khi Chrome có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.";

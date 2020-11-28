@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Όταν το Chrome αποκτήσει πρόσβαση, οι ιστότοποι θα μπορούν να σας ζητήσουν πρόσβαση.";
+NSCameraUsageDescription = "Όταν το Chrome αποκτήσει πρόσβαση, οι ιστότοποι θα μπορούν να σας ζητήσουν πρόσβαση.";
+NSBluetoothAlwaysUsageDescription = "Όταν το Chrome αποκτήσει πρόσβαση, οι ιστότοποι θα μπορούν να σας ζητήσουν πρόσβαση.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Πνευματικά δικαιώματα 2020 Google LLC. Με την επιφύλαξη παντός δικαιώματος.";
+NSHumanReadableCopyright = "Πνευματικά δικαιώματα 2020 Google LLC. Με την επιφύλαξη παντός δικαιώματος.";
+NSBluetoothPeripheralUsageDescription = "Όταν το Chrome αποκτήσει πρόσβαση, οι ιστότοποι θα μπορούν να σας ζητήσουν πρόσβαση.";
+NSMicrophoneUsageDescription = "Όταν το Chrome αποκτήσει πρόσβαση, οι ιστότοποι θα μπορούν να σας ζητήσουν πρόσβαση.";

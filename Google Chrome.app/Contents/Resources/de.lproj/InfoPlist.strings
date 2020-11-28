@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Sobald Chrome Zugriff hat, können Websites Sie um Zugriff bitten.";
+NSCameraUsageDescription = "Sobald Chrome Zugriff hat, können Websites Sie um Zugriff bitten.";
+NSBluetoothAlwaysUsageDescription = "Sobald Chrome Zugriff hat, können Websites Sie um Zugriff bitten.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. Alle Rechte vorbehalten.";
+NSHumanReadableCopyright = "Copyright 2020 Google LLC. Alle Rechte vorbehalten.";
+NSBluetoothPeripheralUsageDescription = "Sobald Chrome Zugriff hat, können Websites Sie um Zugriff bitten.";
+NSMicrophoneUsageDescription = "Sobald Chrome Zugriff hat, können Websites Sie um Zugriff bitten.";

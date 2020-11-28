@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Chrome erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.";
+NSCameraUsageDescription = "Chrome erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.";
+NSBluetoothAlwaysUsageDescription = "Chrome erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Telif hakkı 2020 Google LLC. Tüm hakları saklıdır.";
+NSHumanReadableCopyright = "Telif hakkı 2020 Google LLC. Tüm hakları saklıdır.";
+NSBluetoothPeripheralUsageDescription = "Chrome erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.";
+NSMicrophoneUsageDescription = "Chrome erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.";

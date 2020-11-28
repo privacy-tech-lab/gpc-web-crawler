@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "‏אחרי מתן גישה ל-Chrome, אתרים יוכלו לבקש ממך גישה.";
+NSCameraUsageDescription = "‏אחרי מתן גישה ל-Chrome, אתרים יוכלו לבקש ממך גישה.";
+NSBluetoothAlwaysUsageDescription = "‏אחרי מתן גישה ל-Chrome, אתרים יוכלו לבקש ממך גישה.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, ‏Copyright 2020 Google LLC.‎ כל הזכויות שמורות.";
+NSHumanReadableCopyright = "‏Copyright 2020 Google LLC.‎ כל הזכויות שמורות.";
+NSBluetoothPeripheralUsageDescription = "‏אחרי מתן גישה ל-Chrome, אתרים יוכלו לבקש ממך גישה.";
+NSMicrophoneUsageDescription = "‏אחרי מתן גישה ל-Chrome, אתרים יוכלו לבקש ממך גישה.";

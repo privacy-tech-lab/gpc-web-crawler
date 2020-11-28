@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.";
+NSCameraUsageDescription = "એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.";
+NSBluetoothAlwaysUsageDescription = "એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, કૉપિરાઇટ 2020 Google LLC. સર્વાધિકાર સુરક્ષિત.";
+NSHumanReadableCopyright = "કૉપિરાઇટ 2020 Google LLC. સર્વાધિકાર સુરક્ષિત.";
+NSBluetoothPeripheralUsageDescription = "એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.";
+NSMicrophoneUsageDescription = "એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.";

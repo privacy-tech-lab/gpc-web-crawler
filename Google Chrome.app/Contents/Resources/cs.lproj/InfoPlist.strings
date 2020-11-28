@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Až bude mít Chrome přístup, budou vás weby moci požádat o přístup.";
+NSCameraUsageDescription = "Až bude mít Chrome přístup, budou vás weby moci požádat o přístup.";
+NSBluetoothAlwaysUsageDescription = "Až bude mít Chrome přístup, budou vás weby moci požádat o přístup.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. Všechna práva vyhrazena.";
+NSHumanReadableCopyright = "Copyright 2020 Google LLC. Všechna práva vyhrazena.";
+NSBluetoothPeripheralUsageDescription = "Až bude mít Chrome přístup, budou vás weby moci požádat o přístup.";
+NSMicrophoneUsageDescription = "Až bude mít Chrome přístup, budou vás weby moci požádat o přístup.";

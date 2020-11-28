@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Chrome 取得存取權後，網站將可要求你授予存取權。";
+NSCameraUsageDescription = "Chrome 取得存取權後，網站將可要求你授予存取權。";
+NSBluetoothAlwaysUsageDescription = "Chrome 取得存取權後，網站將可要求你授予存取權。";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. 保留所有權利。";
+NSHumanReadableCopyright = "Copyright 2020 Google LLC. 保留所有權利。";
+NSBluetoothPeripheralUsageDescription = "Chrome 取得存取權後，網站將可要求你授予存取權。";
+NSMicrophoneUsageDescription = "Chrome 取得存取權後，網站將可要求你授予存取權。";

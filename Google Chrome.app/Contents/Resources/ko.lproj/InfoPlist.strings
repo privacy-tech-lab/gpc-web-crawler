@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.";
+NSCameraUsageDescription = "Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.";
+NSBluetoothAlwaysUsageDescription = "Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.";
+CFBundleGetInfoString = "Chrome 87.0.4280.67, Copyright 2020 Google LLC. All rights reserved.";
+NSHumanReadableCopyright = "Copyright 2020 Google LLC. All rights reserved.";
+NSBluetoothPeripheralUsageDescription = "Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.";
+NSMicrophoneUsageDescription = "Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.";

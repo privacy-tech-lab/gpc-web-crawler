@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Une fois l'accès à une ressource accordé à Chrome, les sites Web sont également en mesure de vous demander l'accès.";
+NSCameraUsageDescription = "Une fois l'accès à une ressource accordé à Chrome, les sites Web sont également en mesure de vous demander l'accès.";
+NSBluetoothAlwaysUsageDescription = "Une fois l'accès à une ressource accordé à Chrome, les sites Web sont également en mesure de vous demander l'accès.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, © 2020 Google LLC. Tous droits réservés.";
+NSHumanReadableCopyright = "© 2020 Google LLC. Tous droits réservés.";
+NSBluetoothPeripheralUsageDescription = "Une fois l'accès à une ressource accordé à Chrome, les sites Web sont également en mesure de vous demander l'accès.";
+NSMicrophoneUsageDescription = "Une fois l'accès à une ressource accordé à Chrome, les sites Web sont également en mesure de vous demander l'accès.";

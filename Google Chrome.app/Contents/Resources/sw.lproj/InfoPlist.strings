@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Chrome itakapopata idhini, tovuti zitaweza kukuomba idhini ya kufikia.";
+NSCameraUsageDescription = "Chrome itakapopata idhini, tovuti zitaweza kukuomba idhini ya kufikia.";
+NSBluetoothAlwaysUsageDescription = "Chrome itakapopata idhini, tovuti zitaweza kukuomba idhini ya kufikia.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Hakimiliki 2020 Google LLC. Haki zote zimehifadhiwa.";
+NSHumanReadableCopyright = "Hakimiliki 2020 Google LLC. Haki zote zimehifadhiwa.";
+NSBluetoothPeripheralUsageDescription = "Chrome itakapopata idhini, tovuti zitaweza kukuomba idhini ya kufikia.";
+NSMicrophoneUsageDescription = "Chrome itakapopata idhini, tovuti zitaweza kukuomba idhini ya kufikia.";

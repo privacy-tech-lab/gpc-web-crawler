@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Once Chrome has access, websites will be able to ask you for access.";
+NSCameraUsageDescription = "Once Chrome has access, websites will be able to ask you for access.";
+NSBluetoothAlwaysUsageDescription = "Once Chrome has access, websites will be able to ask you for access.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. All rights reserved.";
+NSHumanReadableCopyright = "Copyright 2020 Google LLC. All rights reserved.";
+NSBluetoothPeripheralUsageDescription = "Once Chrome has access, websites will be able to ask you for access.";
+NSMicrophoneUsageDescription = "Once Chrome has access, websites will be able to ask you for access.";

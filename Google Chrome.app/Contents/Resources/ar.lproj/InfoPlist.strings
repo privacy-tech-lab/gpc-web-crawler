@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "‏بعد حصول Chrome على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.";
+NSCameraUsageDescription = "‏بعد حصول Chrome على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.";
+NSBluetoothAlwaysUsageDescription = "‏بعد حصول Chrome على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, ‏حقوق الطبع والنشر لعام 2020 لشركة Google LLC. جميع الحقوق محفوظة.";
+NSHumanReadableCopyright = "‏حقوق الطبع والنشر لعام 2020 لشركة Google LLC. جميع الحقوق محفوظة.";
+NSBluetoothPeripheralUsageDescription = "‏بعد حصول Chrome على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.";
+NSMicrophoneUsageDescription = "‏بعد حصول Chrome على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.";

@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Tiklīdz pārlūkam Chrome tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.";
+NSCameraUsageDescription = "Tiklīdz pārlūkam Chrome tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.";
+NSBluetoothAlwaysUsageDescription = "Tiklīdz pārlūkam Chrome tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Autortiesības: 2020 Google LLC. Visas tiesības paturētas.";
+NSHumanReadableCopyright = "Autortiesības: 2020 Google LLC. Visas tiesības paturētas.";
+NSBluetoothPeripheralUsageDescription = "Tiklīdz pārlūkam Chrome tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.";
+NSMicrophoneUsageDescription = "Tiklīdz pārlūkam Chrome tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.";

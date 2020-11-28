@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.";
+NSCameraUsageDescription = "Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.";
+NSBluetoothAlwaysUsageDescription = "Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. Med enerett.";
+NSHumanReadableCopyright = "Copyright 2020 Google LLC. Med enerett.";
+NSBluetoothPeripheralUsageDescription = "Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.";
+NSMicrophoneUsageDescription = "Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.";

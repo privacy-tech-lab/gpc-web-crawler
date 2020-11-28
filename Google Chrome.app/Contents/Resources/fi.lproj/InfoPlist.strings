@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Kun Chromella on käyttöoikeus, sivustot voivat pyytää sitä sinulta.";
+NSCameraUsageDescription = "Kun Chromella on käyttöoikeus, sivustot voivat pyytää sitä sinulta.";
+NSBluetoothAlwaysUsageDescription = "Kun Chromella on käyttöoikeus, sivustot voivat pyytää sitä sinulta.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. Kaikki oikeudet pidätetään.";
+NSHumanReadableCopyright = "Copyright 2020 Google LLC. Kaikki oikeudet pidätetään.";
+NSBluetoothPeripheralUsageDescription = "Kun Chromella on käyttöoikeus, sivustot voivat pyytää sitä sinulta.";
+NSMicrophoneUsageDescription = "Kun Chromella on käyttöoikeus, sivustot voivat pyytää sitä sinulta.";

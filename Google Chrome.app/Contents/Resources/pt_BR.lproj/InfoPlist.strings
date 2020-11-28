@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Assim que o Chrome tiver acesso, os sites poderão solicitar acesso.";
+NSCameraUsageDescription = "Assim que o Chrome tiver acesso, os sites poderão solicitar acesso.";
+NSBluetoothAlwaysUsageDescription = "Assim que o Chrome tiver acesso, os sites poderão solicitar acesso.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. Todos os direitos reservados.";
+NSHumanReadableCopyright = "Copyright 2020 Google LLC. Todos os direitos reservados.";
+NSBluetoothPeripheralUsageDescription = "Assim que o Chrome tiver acesso, os sites poderão solicitar acesso.";
+NSMicrophoneUsageDescription = "Assim que o Chrome tiver acesso, os sites poderão solicitar acesso.";

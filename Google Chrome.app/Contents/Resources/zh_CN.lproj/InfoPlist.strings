@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "一旦 Chrome 获得了使用权限，网站便能请求您向其授予使用权限。";
+NSCameraUsageDescription = "一旦 Chrome 获得了使用权限，网站便能请求您向其授予使用权限。";
+NSBluetoothAlwaysUsageDescription = "一旦 Chrome 获得了使用权限，网站便能请求您向其授予使用权限。";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, 版权所有 2020 Google LLC. 保留所有权利。";
+NSHumanReadableCopyright = "版权所有 2020 Google LLC. 保留所有权利。";
+NSBluetoothPeripheralUsageDescription = "一旦 Chrome 获得了使用权限，网站便能请求您向其授予使用权限。";
+NSMicrophoneUsageDescription = "一旦 Chrome 获得了使用权限，网站便能请求您向其授予使用权限。";

@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Un cop Chrome tingui accés, els llocs web et podran demanar accés.";
+NSCameraUsageDescription = "Un cop Chrome tingui accés, els llocs web et podran demanar accés.";
+NSBluetoothAlwaysUsageDescription = "Un cop Chrome tingui accés, els llocs web et podran demanar accés.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. Tots els drets reservats.";
+NSHumanReadableCopyright = "Copyright 2020 Google LLC. Tots els drets reservats.";
+NSBluetoothPeripheralUsageDescription = "Un cop Chrome tingui accés, els llocs web et podran demanar accés.";
+NSMicrophoneUsageDescription = "Un cop Chrome tingui accés, els llocs web et podran demanar accés.";

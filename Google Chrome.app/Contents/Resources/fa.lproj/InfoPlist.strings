@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "‏وقتی Chrome دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.";
+NSCameraUsageDescription = "‏وقتی Chrome دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.";
+NSBluetoothAlwaysUsageDescription = "‏وقتی Chrome دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, ‏حق نسخه‌برداری 2020 Google LLC.‎ کلیه حقوق محفوظ است.";
+NSHumanReadableCopyright = "‏حق نسخه‌برداری 2020 Google LLC.‎ کلیه حقوق محفوظ است.";
+NSBluetoothPeripheralUsageDescription = "‏وقتی Chrome دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.";
+NSMicrophoneUsageDescription = "‏وقتی Chrome دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.";

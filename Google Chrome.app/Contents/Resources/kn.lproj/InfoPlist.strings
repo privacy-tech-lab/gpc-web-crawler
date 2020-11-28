@@ -1,0 +1,7 @@
+NSLocationUsageDescription = "Chrome ಒಮ್ಮೆ ಪ್ರವೇಶವನ್ನು ಪಡೆದ ಬಳಿಕ, ಪ್ರವೇಶಕ್ಕಾಗಿ ನಿಮ್ಮನ್ನು ಕೇಳಲು ವೆಬ್‍ಸೈಟ್‍ಗಳಿಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ.";
+NSCameraUsageDescription = "Chrome ಒಮ್ಮೆ ಪ್ರವೇಶವನ್ನು ಪಡೆದ ಬಳಿಕ, ಪ್ರವೇಶಕ್ಕಾಗಿ ನಿಮ್ಮನ್ನು ಕೇಳಲು ವೆಬ್‍ಸೈಟ್‍ಗಳಿಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ.";
+NSBluetoothAlwaysUsageDescription = "Chrome ಒಮ್ಮೆ ಪ್ರವೇಶವನ್ನು ಪಡೆದ ಬಳಿಕ, ಪ್ರವೇಶಕ್ಕಾಗಿ ನಿಮ್ಮನ್ನು ಕೇಳಲು ವೆಬ್‍ಸೈಟ್‍ಗಳಿಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ.";
+CFBundleGetInfoString = "Google Chrome 87.0.4280.67, ಕೃತಿಸ್ವಾಮ್ಯ 2020 Google LLC. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.";
+NSHumanReadableCopyright = "ಕೃತಿಸ್ವಾಮ್ಯ 2020 Google LLC. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.";
+NSBluetoothPeripheralUsageDescription = "Chrome ಒಮ್ಮೆ ಪ್ರವೇಶವನ್ನು ಪಡೆದ ಬಳಿಕ, ಪ್ರವೇಶಕ್ಕಾಗಿ ನಿಮ್ಮನ್ನು ಕೇಳಲು ವೆಬ್‍ಸೈಟ್‍ಗಳಿಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ.";
+NSMicrophoneUsageDescription = "Chrome ಒಮ್ಮೆ ಪ್ರವೇಶವನ್ನು ಪಡೆದ ಬಳಿಕ, ಪ್ರವೇಶಕ್ಕಾಗಿ ನಿಮ್ಮನ್ನು ಕೇಳಲು ವೆಬ್‍ಸೈಟ್‍ಗಳಿಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ.";
