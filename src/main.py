@@ -11,6 +11,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 import atexit
 from pathlib import Path
 import os
+import csv
+import re
 
 
 
@@ -49,14 +51,65 @@ def quit_webdrivers():
     
 atexit.register(quit_webdrivers)
 
+"""
+Create a webdriver
+"""
 
 test_driver = webdriver.Chrome(executable_path=path, options=options)
-
-test_driver.get("http://www.google.com/")
-info_block = test_driver.find_element(By.TAG_NAME, 'title')
 webdriver_list.append(test_driver)
-print(info_block.get_attribute('innerHTML'))
+test_driver.set_page_load_timeout(30)
+
+
+dict_data = []
+
+def AnalyzePage(url, driver):
+    global dict_data
+    driver.get(url)
+    dict_data.append({'url': url, 'text': CheckForDNS(driver)})
+
+
+def CheckForDNS(driver):  
+    src = driver.page_source
+    text_found = re.search(r'Do Not Sell', src)
+    if text_found is not None:
+        text_found = True
+    else:
+        text_found = False
+    print(text_found)
+    return str(text_found)
+
+def CreateCSV(dict_data):
+    csv_columns = ['url','text']
+    with open("domain_analysis_output.csv", 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+        writer.writeheader()
+        for data in dict_data:
+            writer.writerow(data)
+
+"""
+Import csv of top 500 websites
+"""
+
+with open("top500Domains.csv", newline="") as f:
+    reader = csv.reader(f)
+    for i, row in enumerate(reader):
+        if i == 200:
+            break
+        if row[1] == 'Root Domain':
+            pass
+        else:
+            try:
+
+                print(row[1])
+                AnalyzePage("https://" + row[1], test_driver)
+                # info_block = test_driver.find_element(By.TAG_NAME, 'title')
+                # print(info_block.get_attribute('innerHTML'))
+            except Exception as inst:
+                print(inst)
+    CreateCSV(dict_data)
 
 
 test_driver.quit()
+
+
 
