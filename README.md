@@ -1,2 +1,2 @@
 # gpc-analysis
-Code for the Global Privacy Control (GPC) paper
+Code for finding Do Not Sell links on websites
