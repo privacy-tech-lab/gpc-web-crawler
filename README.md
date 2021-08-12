@@ -1,2 +1,2 @@
-# gpc-analysis
-Code for finding Do Not Sell links on websites
+# gpc-web-data-and-scripts
+Data and scripts for researching GPC on the web
