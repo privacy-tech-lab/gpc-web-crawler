@@ -28,7 +28,7 @@ fs.createReadStream("sites.csv")
         const page = await browser.newPage();
 
         try {
-            await page.goto(sites[site]);
+            await page.goto(sites[site], { waitUntil: "domcontentloaded" });
             console.log("Navigated!");
             await new Promise(resolve => setTimeout(resolve, 30000));
                 await page.keyboard.down('Alt');
