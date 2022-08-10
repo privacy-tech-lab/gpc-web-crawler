@@ -8,7 +8,7 @@ const firefoxOptions = {
 };
 
 const sites = [];
-fs.createReadStream("sites.csv")
+fs.createReadStream("sites1.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
     sites.push(row[0])
@@ -30,20 +30,24 @@ fs.createReadStream("sites.csv")
         try {
             await page.goto(sites[site], { waitUntil: "domcontentloaded" });
             console.log("Navigated!");
-            await new Promise(resolve => setTimeout(resolve, 30000));
-                await page.keyboard.down('Alt');
-                await page.keyboard.down('Shift');
-                await page.keyboard.down('KeyA');
-        
-            await new Promise(resolve => setTimeout(resolve, 30000));
-                await page.keyboard.down('Alt');
-                await page.keyboard.down('Shift');
-                await page.keyboard.down('KeyS');
-            console.log("Analyzed!");
         } catch {
             console.log("Site loading went wrong")
-        }
+        } 
+        
+        await new Promise(resolve => setTimeout(resolve, 10000));
 
+        await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 5000))]);
+        await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 5000))]);
+        await Promise.race([page.keyboard.down('KeyA'), new Promise(resolve => setTimeout(resolve, 5000))]);
+
+        await new Promise(resolve => setTimeout(resolve, 20000));
+        
+        await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 5000))]);
+        await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 5000))]);
+        await Promise.race([page.keyboard.down('KeyS'), new Promise(resolve => setTimeout(resolve, 5000))]);
+        
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        
         await page.close();
         console.log("testing done");
     }
