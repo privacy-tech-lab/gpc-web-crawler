@@ -8,7 +8,7 @@ const firefoxOptions = {
 };
 
 const sites = [];
-fs.createReadStream("sites1.csv")
+fs.createReadStream("sites.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
     sites.push(row[0])
@@ -21,6 +21,7 @@ fs.createReadStream("sites1.csv")
 (async () => {
     const browser = await puppeteer.launch(firefoxOptions);
 
+    // Allow time to load the extension
     await new Promise(resolve => setTimeout(resolve, 60000));
 
     for (let site in sites) {
@@ -36,11 +37,14 @@ fs.createReadStream("sites1.csv")
         
         await new Promise(resolve => setTimeout(resolve, 10000));
 
+        /* Promise.race sets time limit for page.keyboard.down to resolve the issue
+           that page.keyboard.down is never rejected or resolved on some sites */
         await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 5000))]);
         await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 5000))]);
         await Promise.race([page.keyboard.down('KeyA'), new Promise(resolve => setTimeout(resolve, 5000))]);
-
-        await new Promise(resolve => setTimeout(resolve, 20000));
+  
+        // Allow the site to reload after analysis is triggered
+        await new Promise(resolve => setTimeout(resolve, 30000));
         
         await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 5000))]);
         await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 5000))]);
