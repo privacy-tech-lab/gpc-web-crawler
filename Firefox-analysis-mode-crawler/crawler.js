@@ -39,35 +39,45 @@ fs.createReadStream("sites.csv")
 
         // To solve text box issue
         try {
-          await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 5000))]);
-          await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 5000))]);
-          console.log('Clicked')
+          await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+          await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
+          await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+          await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
+          console.log('Tabbed')
         } catch {
-          console.log("Not clicked")
+          console.log("Not tabbed")
         }
 
         await new Promise(resolve => setTimeout(resolve, 10000));
 
         // Promise.race sets time limit for page.keyboard.down to resolve the issue that page.keyboard.down is never rejected or resolved on some sites
-        await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 5000))]);
-        await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 5000))]);
-        await Promise.race([page.keyboard.down('KeyA'), new Promise(resolve => setTimeout(resolve, 5000))]);
+        await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.down('KeyA'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.up('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.up('Alt'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.up('KeyA'), new Promise(resolve => setTimeout(resolve, 1000))]);
   
         // Allow the site to load after analysis is triggered
         await new Promise(resolve => setTimeout(resolve, 10000));
 
         try {
-          await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 5000))]);
-          await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 5000))]);
-          console.log('Clicked')
+          await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+          await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
+          await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+          await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
+          console.log('Tabbed')
         } catch {
-          console.log("Not clicked")
+          console.log("Not tabbed")
         }
 
         await new Promise(resolve => setTimeout(resolve, 10000));
-        await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 5000))]);
-        await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 5000))]);
-        await Promise.race([page.keyboard.down('KeyS'), new Promise(resolve => setTimeout(resolve, 5000))]);
+        await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.down('KeyS'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.up('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.up('Alt'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.up('KeyS'), new Promise(resolve => setTimeout(resolve, 1000))]);
         
         await new Promise(resolve => setTimeout(resolve, 10000));
       
