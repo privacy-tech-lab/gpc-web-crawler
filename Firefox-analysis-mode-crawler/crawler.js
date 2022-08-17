@@ -20,13 +20,15 @@ fs.createReadStream("sites.csv")
 
 (async () => {
     const browser = await puppeteer.launch(firefoxOptions);
-    const page = await browser.newPage();
 
     // Allow time to load the extension
     await new Promise(resolve => setTimeout(resolve, 60000));
+    const a = new Date();
+    console.log("Time: ", a.getTime());
 
     for (let site in sites) {
         console.log(sites[site]);
+        const page = await browser.newPage();
 
         try {
           await page.goto(sites[site], { waitUntil: "domcontentloaded" });
@@ -38,50 +40,50 @@ fs.createReadStream("sites.csv")
         await new Promise(resolve => setTimeout(resolve, 10000));
 
         // To solve text box issue
-        try {
-          await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
-          await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
-          await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
-          await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
-          console.log('Tabbed')
-        } catch {
-          console.log("Not tabbed")
-        }
+        await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
 
-        await new Promise(resolve => setTimeout(resolve, 10000));
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await Promise.race([page.keyboard.up('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.up('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
+
 
         // Promise.race sets time limit for page.keyboard.down to resolve the issue that page.keyboard.down is never rejected or resolved on some sites
         await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
         await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 1000))]);
         await Promise.race([page.keyboard.down('KeyA'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         await Promise.race([page.keyboard.up('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
         await Promise.race([page.keyboard.up('Alt'), new Promise(resolve => setTimeout(resolve, 1000))]);
         await Promise.race([page.keyboard.up('KeyA'), new Promise(resolve => setTimeout(resolve, 1000))]);
   
         // Allow the site to load after analysis is triggered
         await new Promise(resolve => setTimeout(resolve, 10000));
+        await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
 
-        try {
-          await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
-          await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
-          await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
-          await Promise.race([page.keyboard.down('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
-          console.log('Tabbed')
-        } catch {
-          console.log("Not tabbed")
-        }
 
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await Promise.race([page.keyboard.up('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await Promise.race([page.keyboard.up('Tab'), new Promise(resolve => setTimeout(resolve, 1000))]);
+
         await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
         await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 1000))]);
         await Promise.race([page.keyboard.down('KeyS'), new Promise(resolve => setTimeout(resolve, 1000))]);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         await Promise.race([page.keyboard.up('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
         await Promise.race([page.keyboard.up('Alt'), new Promise(resolve => setTimeout(resolve, 1000))]);
         await Promise.race([page.keyboard.up('KeyS'), new Promise(resolve => setTimeout(resolve, 1000))]);
         
         await new Promise(resolve => setTimeout(resolve, 10000));
       
+        await page.close();
         console.log("testing done");
     }
-    console.log("---------------- ALL TESTING DONE ----------------")
+    const d = new Date();
+    console.log("Time: ", d.getTime());
+    console.log("---------------- ALL TESTING DONE ----------------");
 })();
