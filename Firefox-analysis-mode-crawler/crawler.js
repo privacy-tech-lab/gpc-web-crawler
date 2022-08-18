@@ -37,14 +37,16 @@ fs.createReadStream("sites.csv")
           console.log("Site loading went wrong");
         } 
         
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        await new Promise(resolve => setTimeout(resolve, 15000));
 
         // To solve text box issue
-        await page.evaluate(() => {
-          document.activeElement.blur()  
-       })
+        try {
+          await Promise.race([page.evaluate(async () => {
+            await document.activeElement.blur()  
+         }), new Promise(resolve => setTimeout(resolve, 5000))]);
+        } catch {}
 
-       await new Promise(resolve => setTimeout(resolve, 1000));
+       await new Promise(resolve => setTimeout(resolve, 5000));
 
 
         // Promise.race sets time limit for page.keyboard.down to resolve the issue that page.keyboard.down is never rejected or resolved on some sites
@@ -58,13 +60,15 @@ fs.createReadStream("sites.csv")
         await Promise.race([page.keyboard.up('KeyA'), new Promise(resolve => setTimeout(resolve, 1000))]);
   
         // Allow the site to load after analysis is triggered
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        await new Promise(resolve => setTimeout(resolve, 15000));
 
-        await page.evaluate(() => {
-          document.activeElement.blur()  
-       })
+        try {
+        await Promise.race([page.evaluate(async () => {
+          await document.activeElement.blur()  
+       }), new Promise(resolve => setTimeout(resolve, 5000))]);
+      } catch {}
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 5000));
 
         await Promise.race([page.keyboard.down('Shift'), new Promise(resolve => setTimeout(resolve, 1000))]);
         await Promise.race([page.keyboard.down('Alt'), new Promise(resolve => setTimeout(resolve, 1000))]);
