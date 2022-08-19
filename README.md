@@ -27,3 +27,5 @@ node crawler.js
 6. After the terminal prints "ALL TESTING DONE", navigate to the Settings page and click 'Export Analysis Data'.
 
 NOTE: 1. The Firefox Nightly browser should always be on the testing site once page navigation starts. Do not open or navigate to other pages. Otherwise, the crawler will not work. 2. Killing the crawler before all testing done will lead to loss of all analysis data. 
+
+- All data is saved in this [Google sheet](https://docs.google.com/spreadsheets/d/1nb6-bI8d6-hDTvoj6Y3YT2HME_qVyHyVOQtY9do_Foo/edit?usp=sharing).
