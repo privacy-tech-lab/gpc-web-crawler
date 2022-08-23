@@ -20,6 +20,10 @@ fs.createReadStream("sites.csv")
 
 // Crawling
 (async () => {
+    // Initiates a csv file that records each analysis time
+    let writeStream = fs.createWriteStream('time.csv')
+    writeStream.write(['Domain','START_TIME','END_TIME'].join(',')+ '\n', () => {})
+
     const browser = await puppeteer.launch(firefoxOptions);
 
     // Allow time to load the extension
@@ -30,7 +34,15 @@ fs.createReadStream("sites.csv")
     console.log("Time: ", a.getTime());
 
     for (let site in sites) {
+        let newLine = []
+        newLine.push(sites[site])
+
         console.log(sites[site]);
+
+        const start_time = new Date();
+        newLine.push(start_time.getTime())
+        console.log("Start time: ", start_time.getTime());
+
         const page = await browser.newPage();
 
         try {
@@ -84,8 +96,21 @@ fs.createReadStream("sites.csv")
         // Close the page to resolve the issue that some sites do not allow redirecting
         await page.close();
         console.log("testing done");
+        const end_time = new Date();
+        newLine.push(end_time.getTime())
+        console.log("End time: ", end_time.getTime());
+
+        // Write the analysis start and end time in the csv file
+        writeStream.write(newLine.join(',')+ '\n', () => {})
     }
     const d = new Date();
-    console.log("Time: ", d.getTime());
+    console.log("All time: ", d.getTime());
     console.log("---------------- ALL TESTING DONE ----------------");
+    writeStream.end()
+
+    writeStream.on('finish', () => {
+        console.log('times.csv wrote')
+    }).on('error', (err) => {
+        console.log(err)
+    })
 })();
