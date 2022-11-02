@@ -1,6 +1,6 @@
-# GPC Web Data and Scripts
+# GPC Web Crawler
 
-Data and scripts for researching GPC on the web
+GPC web crawler code.
 
 ## Do Not Sell link crawler
 
