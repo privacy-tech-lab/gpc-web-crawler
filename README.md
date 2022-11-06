@@ -13,7 +13,7 @@
 <br>
 
 <p align="center">
-  <a href="https://privacytechlab.org/"><img src="./gpc-logo-small-black.svg" width="250px" height="250px" alt="OptMeowt logo"></a>
+  <a href="https://privacytechlab.org/"><img src="./gpc-logo-small-black.svg" width="200px" height="200px" alt="OptMeowt logo"></a>
 </p>
 
 # GPC Web Crawler
