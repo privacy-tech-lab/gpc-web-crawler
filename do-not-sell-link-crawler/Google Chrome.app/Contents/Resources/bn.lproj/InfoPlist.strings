@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Chrome অ্যাক্সেস পেলেই, ওয়েবসাইটগুলি আপনাকে অ্যাক্সেসের অনুরোধ করতে পারবে।";
-NSCameraUsageDescription = "Chrome অ্যাক্সেস পেলেই, ওয়েবসাইটগুলি আপনাকে অ্যাক্সেসের অনুরোধ করতে পারবে।";
-NSBluetoothAlwaysUsageDescription = "Chrome অ্যাক্সেস পেলেই, ওয়েবসাইটগুলি আপনাকে অ্যাক্সেসের অনুরোধ করতে পারবে।";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, কপিরাইট 2020 Google LLC সব স্বত্ব সংরক্ষিত আছে।";
-NSHumanReadableCopyright = "কপিরাইট 2020 Google LLC সব স্বত্ব সংরক্ষিত আছে।";
-NSBluetoothPeripheralUsageDescription = "Chrome অ্যাক্সেস পেলেই, ওয়েবসাইটগুলি আপনাকে অ্যাক্সেসের অনুরোধ করতে পারবে।";
-NSMicrophoneUsageDescription = "Chrome অ্যাক্সেস পেলেই, ওয়েবসাইটগুলি আপনাকে অ্যাক্সেসের অনুরোধ করতে পারবে।";

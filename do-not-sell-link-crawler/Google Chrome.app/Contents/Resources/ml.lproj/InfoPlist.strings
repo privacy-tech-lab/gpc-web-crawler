@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Chrome-ന് ആക്‌സസ് ലഭിച്ചുകഴിഞ്ഞാൽ, വെബ്‌സൈറ്റുകൾക്ക് നിങ്ങളോട് ആക്‌സസ് ചോദിക്കാനാകും.";
-NSCameraUsageDescription = "Chrome-ന് ആക്‌സസ് ലഭിച്ചുകഴിഞ്ഞാൽ, വെബ്‌സൈറ്റുകൾക്ക് നിങ്ങളോട് ആക്‌സസ് ചോദിക്കാനാകും.";
-NSBluetoothAlwaysUsageDescription = "Chrome-ന് ആക്‌സസ് ലഭിച്ചുകഴിഞ്ഞാൽ, വെബ്‌സൈറ്റുകൾക്ക് നിങ്ങളോട് ആക്‌സസ് ചോദിക്കാനാകും.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, പകർപ്പവകാശം 2020 Google LLC. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‍തം.";
-NSHumanReadableCopyright = "പകർപ്പവകാശം 2020 Google LLC. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‍തം.";
-NSBluetoothPeripheralUsageDescription = "Chrome-ന് ആക്‌സസ് ലഭിച്ചുകഴിഞ്ഞാൽ, വെബ്‌സൈറ്റുകൾക്ക് നിങ്ങളോട് ആക്‌സസ് ചോദിക്കാനാകും.";
-NSMicrophoneUsageDescription = "Chrome-ന് ആക്‌സസ് ലഭിച്ചുകഴിഞ്ഞാൽ, വെബ്‌സൈറ്റുകൾക്ക് നിങ്ങളോട് ആക്‌സസ് ചോദിക്കാനാകും.";

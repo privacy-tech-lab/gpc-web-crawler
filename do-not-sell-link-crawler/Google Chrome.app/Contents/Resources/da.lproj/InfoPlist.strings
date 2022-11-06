@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Når Chrome har adgang, kan websites bede dig om adgang.";
-NSCameraUsageDescription = "Når Chrome har adgang, kan websites bede dig om adgang.";
-NSBluetoothAlwaysUsageDescription = "Når Chrome har adgang, kan websites bede dig om adgang.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. Alle rettigheder forbeholdes.";
-NSHumanReadableCopyright = "Copyright 2020 Google LLC. Alle rettigheder forbeholdes.";
-NSBluetoothPeripheralUsageDescription = "Når Chrome har adgang, kan websites bede dig om adgang.";
-NSMicrophoneUsageDescription = "Når Chrome har adgang, kan websites bede dig om adgang.";

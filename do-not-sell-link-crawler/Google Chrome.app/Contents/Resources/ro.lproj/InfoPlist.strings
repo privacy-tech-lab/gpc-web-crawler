@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.";
-NSCameraUsageDescription = "Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.";
-NSBluetoothAlwaysUsageDescription = "Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Drept de autor 2020 Google LLC. Toate drepturile rezervate.";
-NSHumanReadableCopyright = "Drept de autor 2020 Google LLC. Toate drepturile rezervate.";
-NSBluetoothPeripheralUsageDescription = "Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.";
-NSMicrophoneUsageDescription = "Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.";

@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。";
-NSCameraUsageDescription = "Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。";
-NSBluetoothAlwaysUsageDescription = "Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. All rights reserved.";
-NSHumanReadableCopyright = "Copyright 2020 Google LLC. All rights reserved.";
-NSBluetoothPeripheralUsageDescription = "Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。";
-NSMicrophoneUsageDescription = "Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。";

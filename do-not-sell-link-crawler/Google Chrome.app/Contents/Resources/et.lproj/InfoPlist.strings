@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Kui annate Chrome'ile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.";
-NSCameraUsageDescription = "Kui annate Chrome'ile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.";
-NSBluetoothAlwaysUsageDescription = "Kui annate Chrome'ile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Autoriõigus 2020 Google LLC. Kõik õigused on kaitstud.";
-NSHumanReadableCopyright = "Autoriõigus 2020 Google LLC. Kõik õigused on kaitstud.";
-NSBluetoothPeripheralUsageDescription = "Kui annate Chrome'ile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.";
-NSMicrophoneUsageDescription = "Kui annate Chrome'ile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.";

@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "När du har gett Chrome åtkomst kan webbplatser begära att få åtkomst.";
-NSCameraUsageDescription = "När du har gett Chrome åtkomst kan webbplatser begära att få åtkomst.";
-NSBluetoothAlwaysUsageDescription = "När du har gett Chrome åtkomst kan webbplatser begära att få åtkomst.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. Med ensamrätt.";
-NSHumanReadableCopyright = "Copyright 2020 Google LLC. Med ensamrätt.";
-NSBluetoothPeripheralUsageDescription = "När du har gett Chrome åtkomst kan webbplatser begära att få åtkomst.";
-NSMicrophoneUsageDescription = "När du har gett Chrome åtkomst kan webbplatser begära att få åtkomst.";

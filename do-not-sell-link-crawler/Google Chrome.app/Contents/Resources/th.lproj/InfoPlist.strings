@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "เมื่อ Chrome มีสิทธิ์การเข้าถึงแล้ว เว็บไซต์จะขอสิทธิ์การเข้าถึงจากคุณได้";
-NSCameraUsageDescription = "เมื่อ Chrome มีสิทธิ์การเข้าถึงแล้ว เว็บไซต์จะขอสิทธิ์การเข้าถึงจากคุณได้";
-NSBluetoothAlwaysUsageDescription = "เมื่อ Chrome มีสิทธิ์การเข้าถึงแล้ว เว็บไซต์จะขอสิทธิ์การเข้าถึงจากคุณได้";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, ลิขสิทธิ์ 2020 Google LLC สงวนลิขสิทธิ์";
-NSHumanReadableCopyright = "ลิขสิทธิ์ 2020 Google LLC สงวนลิขสิทธิ์";
-NSBluetoothPeripheralUsageDescription = "เมื่อ Chrome มีสิทธิ์การเข้าถึงแล้ว เว็บไซต์จะขอสิทธิ์การเข้าถึงจากคุณได้";
-NSMicrophoneUsageDescription = "เมื่อ Chrome มีสิทธิ์การเข้าถึงแล้ว เว็บไซต์จะขอสิทธิ์การเข้าถึงจากคุณได้";

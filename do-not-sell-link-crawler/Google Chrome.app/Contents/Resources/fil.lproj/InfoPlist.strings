@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Kapag mayroon nang access ang Chrome, makakahingi na ang mga website ng access sa iyo.";
-NSCameraUsageDescription = "Kapag mayroon nang access ang Chrome, makakahingi na ang mga website ng access sa iyo.";
-NSBluetoothAlwaysUsageDescription = "Kapag mayroon nang access ang Chrome, makakahingi na ang mga website ng access sa iyo.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. Nakalaan ang lahat ng karapatan.";
-NSHumanReadableCopyright = "Copyright 2020 Google LLC. Nakalaan ang lahat ng karapatan.";
-NSBluetoothPeripheralUsageDescription = "Kapag mayroon nang access ang Chrome, makakahingi na ang mga website ng access sa iyo.";
-NSMicrophoneUsageDescription = "Kapag mayroon nang access ang Chrome, makakahingi na ang mga website ng access sa iyo.";

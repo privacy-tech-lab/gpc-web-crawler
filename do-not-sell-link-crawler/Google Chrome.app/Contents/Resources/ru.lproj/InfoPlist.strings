@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Когда вы предоставите доступ Chrome, веб-сайты также смогут запрашивать у вас доступ.";
-NSCameraUsageDescription = "Когда вы предоставите доступ Chrome, веб-сайты также смогут запрашивать у вас доступ.";
-NSBluetoothAlwaysUsageDescription = "Когда вы предоставите доступ Chrome, веб-сайты также смогут запрашивать у вас доступ.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, © Google LLC, 2020. Все права защищены.";
-NSHumanReadableCopyright = "© Google LLC, 2020. Все права защищены.";
-NSBluetoothPeripheralUsageDescription = "Когда вы предоставите доступ Chrome, веб-сайты также смогут запрашивать у вас доступ.";
-NSMicrophoneUsageDescription = "Когда вы предоставите доступ Chrome, веб-сайты также смогут запрашивать у вас доступ.";

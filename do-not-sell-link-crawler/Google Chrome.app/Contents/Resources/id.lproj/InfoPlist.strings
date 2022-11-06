@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Setelah Chrome memiliki akses, situs dapat meminta akses dari Anda.";
-NSCameraUsageDescription = "Setelah Chrome memiliki akses, situs dapat meminta akses dari Anda.";
-NSBluetoothAlwaysUsageDescription = "Setelah Chrome memiliki akses, situs dapat meminta akses dari Anda.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Hak cipta 2020 Google LLC. Semua hak dilindungi undang-undang.";
-NSHumanReadableCopyright = "Hak cipta 2020 Google LLC. Semua hak dilindungi undang-undang.";
-NSBluetoothPeripheralUsageDescription = "Setelah Chrome memiliki akses, situs dapat meminta akses dari Anda.";
-NSMicrophoneUsageDescription = "Setelah Chrome memiliki akses, situs dapat meminta akses dari Anda.";

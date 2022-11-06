@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Када Chrome добије приступ, веб-сајтови ће моћи да затраже приступ.";
-NSCameraUsageDescription = "Када Chrome добије приступ, веб-сајтови ће моћи да затраже приступ.";
-NSBluetoothAlwaysUsageDescription = "Када Chrome добије приступ, веб-сајтови ће моћи да затраже приступ.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Ауторска права 2020. Google LLC. Сва права задржана.";
-NSHumanReadableCopyright = "Ауторска права 2020. Google LLC. Сва права задржана.";
-NSBluetoothPeripheralUsageDescription = "Када Chrome добије приступ, веб-сајтови ће моћи да затраже приступ.";
-NSMicrophoneUsageDescription = "Када Chrome добије приступ, веб-сајтови ће моћи да затраже приступ.";

@@ -1,7 +1,0 @@
-https://www.dailymotion.com/us #They sell but no DNS on homepage and can only opt out via california IP https://www.dailymotion.com/legal/privacy?localization=us
-https://medium.com/ #They don't sell now but have a DNS link in privacy page for future reference
-https://www.ign.com/ #They have a DNS link but it is hidden in a dropdown menu so not available to body.text
-theatlantic.com #They have a DNS link not picked up by body.text
-https://www.independent.co.uk/us #They may have a DNS link that is only available to cali users
-https://www.newsweek.com/ #DNS available to cali users only
-https://www.buzzfeed.com/ #DNS in menu

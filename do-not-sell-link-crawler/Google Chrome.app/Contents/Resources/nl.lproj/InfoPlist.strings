@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Zodra Chrome toegang heeft, kunnen websites je om toegang vragen.";
-NSCameraUsageDescription = "Zodra Chrome toegang heeft, kunnen websites je om toegang vragen.";
-NSBluetoothAlwaysUsageDescription = "Zodra Chrome toegang heeft, kunnen websites je om toegang vragen.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Copyright 2020 Google LLC. Alle rechten voorbehouden.";
-NSHumanReadableCopyright = "Copyright 2020 Google LLC. Alle rechten voorbehouden.";
-NSBluetoothPeripheralUsageDescription = "Zodra Chrome toegang heeft, kunnen websites je om toegang vragen.";
-NSMicrophoneUsageDescription = "Zodra Chrome toegang heeft, kunnen websites je om toegang vragen.";

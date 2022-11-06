@@ -1,7 +1,0 @@
-NSLocationUsageDescription = "Kai „Chrome“ galės pasiekti duomenis, svetainės taip pat galės prašyti suteikti leidimą juos pasiekti.";
-NSCameraUsageDescription = "Kai „Chrome“ galės pasiekti duomenis, svetainės taip pat galės prašyti suteikti leidimą juos pasiekti.";
-NSBluetoothAlwaysUsageDescription = "Kai „Chrome“ galės pasiekti duomenis, svetainės taip pat galės prašyti suteikti leidimą juos pasiekti.";
-CFBundleGetInfoString = "Google Chrome 87.0.4280.67, Autorių teisės „Google LLC.“, 2020 m. Visos teisės saugomos.";
-NSHumanReadableCopyright = "Autorių teisės „Google LLC.“, 2020 m. Visos teisės saugomos.";
-NSBluetoothPeripheralUsageDescription = "Kai „Chrome“ galės pasiekti duomenis, svetainės taip pat galės prašyti suteikti leidimą juos pasiekti.";
-NSMicrophoneUsageDescription = "Kai „Chrome“ galės pasiekti duomenis, svetainės taip pat galės prašyti suteikti leidimą juos pasiekti.";
