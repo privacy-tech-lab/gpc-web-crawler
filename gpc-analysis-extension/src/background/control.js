@@ -18,9 +18,6 @@ import { modes } from "../data/modes.js";
 import { stores, storage} from "./storage.js";
 import { reloadDynamicRules } from '../common/editRules';
 
-// TODO: Remove
-import { debug_domainlist_and_dynamicrules, updateRemovalScript} from '../common/editDomainlist';
-
 async function enable() {
   initAnalysis();
 }
@@ -36,23 +33,6 @@ function disable() {
 // This is the very first thing the extension runs
 (async () => {
 
-  // TODO: Temporarily register content script
-  if ("$BROWSER" == "chrome"){
-    chrome.scripting.registerContentScripts([
-      {
-        "id": "1",
-        "matches": ["<all_urls>"],
-        "js": ["content-scripts/registration/gpc-dom.js"],
-        "runAt": "document_start"
-      },
-      {
-        "id": "2",
-        "matches": ["https://example.org/foo/bar.html"],
-        "js": ["content-scripts/registration/gpc-remove.js"],
-        "runAt": "document_start"
-        }
-    ])
-  } 
   // Initializes the default settings
   let settingsDB = await storage.getStore(stores.settings);
   for (let setting in defaultSettings) {
@@ -66,11 +46,7 @@ function disable() {
   if (isEnabled) {  // Turns on the extension
     enable();
   }
-  
-  if ("$BROWSER" == 'chrome'){
-    updateRemovalScript();
-    reloadDynamicRules();
-    } 
+
 })();
 
 
@@ -122,14 +98,6 @@ function disable() {
  * IF YOU EVER NEED TO DEBUG THIS: 
  * This is outmoded in manifest V3. We cannot maintain global variables anymore. 
  */
-chrome.runtime.onConnect.addListener(function(port) {
-  port.onMessage.addListener(async function (message) {
-    let mode = await storage.get(stores.settings, "MODE")
-    if (message.msg === "REQUEST_MODE") {
-      port.postMessage({ msg: "RESPONSE_MODE", data: mode })
-    }
-  })
-})
 
 
 // Create keyboard shortcuts for switching to analysis mode

@@ -15,7 +15,7 @@ const path = require("path")
 // ! Implement file loader for assets
 
 module.exports = (env, argv) => {
-	const browser = env.chrome ? "chrome" : "firefox"	// default to firefox build
+	const browser = "firefox"	// default to firefox build
 	const isProduction = argv.mode == "production"	// sets bool depending on build
 
 	return {
@@ -86,7 +86,7 @@ module.exports = (env, argv) => {
 					to: "content-scripts" }],
 			}),
 			new CopyPlugin({
-				patterns: [{ context: path.resolve(__dirname, env.chrome ? "src/manifests/chrome" : "src/manifests/firefox"), 
+				patterns: [{ context: path.resolve(__dirname, "src/manifests/firefox"), 
 				from: (isProduction ? "manifest-dist.json" : "manifest-dev.json"), 
 				to: "manifest.json"}],
 			}),
