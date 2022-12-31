@@ -53,7 +53,26 @@ node crawler.js
 - Data of US Privacy String List is stored in this [Google sheet](https://docs.google.com/spreadsheets/d/1nb6-bI8d6-hDTvoj6Y3YT2HME_qVyHyVOQtY9do_Foo/edit?usp=sharing).
 - Data of US API Live List is stored in this [Google sheet](https://docs.google.com/spreadsheets/d/1sdmD8Y3jb82PZ_YOREYmRez3_Wi1FUApsP1we1GV29Y/edit#gid=984860887).
 
-## 3. Thank You!
+## 3. How to run Firefox-Analysis-Extension with Google Cloud MySQL
+
+1. Download the extension. Open the source code folder. Navigate to the `database` folder and create a .env file. Enter hostname, table name, username, password and instance name following the template.
+
+2. To test if connection with Google Cloud MySQL is established, under the `database` folder, run
+```
+node index.js
+```
+(This step will be deleted after the development of extension is complete)
+
+3. If `ETIMEDOUT` error appears, check you ipv4 address [here](whatsmyip.org) and contact @Jocelyn0830 to whitelist your ip address. 
+
+4. If no error displayed, open a browser and navigate to `http://localhost:8080/analysis` and check if you can see analysis data.
+
+5. An alternative way to check your connection and obtain a GUI for MySQL:
+
+Download MySQL workbench [here](https://www.mysql.com/products/workbench/). Follow the instructions to add your MySQL connection and see if it is successful.
+
+
+## 4. Thank You!
 
 <p align="center"><strong>We would like to thank our financial supporters!</strong></p><br>
 
