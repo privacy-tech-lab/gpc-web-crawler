@@ -47,6 +47,10 @@ import {
 } from "../../data/regex"
 import psl from "psl";
 import { headers } from "../../data/headers"
+import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
+import { connection } from './rest/databse.js';
 
 
 
@@ -432,6 +436,8 @@ var analysisDataSkeletonFirstParties = () => {
   }
 }
 
+
+// TODO: convert the data types in logData to some data type that MySQL takes
 /**
  * 
  * @param {Object} data 
@@ -559,6 +565,15 @@ function logData(domain, command, data) {
   }
   storage.set(stores.analysis, analysis_userend[domain], domain);
 }
+
+// Insert into MySQL database
+connection.query(
+  "INSERT INTO `entries` (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, uspapi_opted_out, usp_cookies_before_gpc, usp_cookies_after_gpc, usp_cookies_opted_out) VALUES (?,?,?,?,?,?,?,?,?)", 
+  [domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, uspapi_opted_out, usp_cookies_before_gpc, usp_cookies_after_gpc, usp_cookies_opted_out],
+  function (error, results, fields) {
+    if (error) throw error;
+  }
+);
 
 
 
