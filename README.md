@@ -61,7 +61,7 @@ node crawler.js
 npm install
 ```
 
-2. Navigate to the `src/database` folder and create a .env file. Enter hostname, database name, username, password, and database instance name according to the following template:
+2. Navigate to the `src/database` folder and create a `.env` file. Enter hostname, database name, username, password, and database instance name according to the following template:
 
 ```console
 DB_HOST=12.345.678.910
