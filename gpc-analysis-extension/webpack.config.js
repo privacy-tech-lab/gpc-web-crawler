@@ -9,6 +9,7 @@ const TerserPlugin = require("terser-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const path = require("path")
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 
 // ! Implement a "frontend" export in order to use a dev serve
 // ! Implement terser for production
@@ -36,6 +37,15 @@ module.exports = (env, argv) => {
 		optimization: {
 			minimize: true,
 			minimizer: [new TerserPlugin()],
+		},
+		resolve: {
+  
+			fallback: {
+			  async_hooks: false,
+			  fs: false,
+			  tls: false,
+			  net: false,
+			},
 		},
 		module: {
 			rules: [
@@ -93,6 +103,7 @@ module.exports = (env, argv) => {
 			new CopyPlugin({
 				patterns: [{ context: path.resolve(__dirname, "src"), from: "rules", to: "rules" }],
 			}),
+			new NodePolyfillPlugin(),
 		]
 	}
 }

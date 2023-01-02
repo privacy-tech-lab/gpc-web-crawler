@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+import mysql from 'mysql';
 
 var config = {
     user: process.env.DB_USER,
@@ -28,4 +28,4 @@ connection.connect(function(err) {
   console.log('Connected as thread id: ' + connection.threadId);
 });
 
-module.exports = connection;
+export const conn = connection;
