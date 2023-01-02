@@ -81,7 +81,7 @@ node index.js
 
 4. If the `ETIMEDOUT` error appears, check your IPv4 address (e.g., [here](https://www.whatsmyip.org/)) and contact @Jocelyn0830 to allowlist your IP address.
 
-5. If no error is displayed, open a browser and navigate to `http://localhost:8080/analysis` and check if you can see the analysis data.
+5. If no error is displayed, open a browser and navigate to `http://localhost:8080/analysis` and check if you can see the analysis data (assuming your database name is `analysis`).
 
 6. An alternative way to check your connection and obtain a GUI for MySQL:
 
