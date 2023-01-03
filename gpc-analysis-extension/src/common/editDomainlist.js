@@ -12,7 +12,7 @@ domainlist simultaneously with the dynamic ruleset
 */
 
 
-import { storage, stores } from '../background/storage';
+import { storage, stores } from '../background/storage.js';
 import { deleteAllDynamicRules, deleteDynamicRule, addDynamicRule, getFreshId } from './editRules';
 
 // TODO: Migrate editRules & editDomainlist to one file

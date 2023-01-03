@@ -16,7 +16,7 @@ import { init as initAnalysis, halt as haltAnalysis } from "./analysis/analysis.
 import { defaultSettings } from "../data/defaultSettings.js";
 import { modes } from "../data/modes.js";
 import { stores, storage} from "./storage.js";
-import { reloadDynamicRules } from '../common/editRules';
+import { reloadDynamicRules } from '../common/editRules.js';
 
 async function enable() {
   initAnalysis();

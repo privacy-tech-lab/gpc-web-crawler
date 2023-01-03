@@ -4,18 +4,21 @@ privacy-tech-lab, https://www.privacytechlab.org/
 */
 
 
-const CopyPlugin = require("copy-webpack-plugin")
-const TerserPlugin = require("terser-webpack-plugin")
-const HtmlWebpackPlugin = require("html-webpack-plugin")
-const { CleanWebpackPlugin } = require("clean-webpack-plugin")
-const path = require("path")
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
+import CopyPlugin from "copy-webpack-plugin";
+import TerserPlugin from "terser-webpack-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 
 // ! Implement a "frontend" export in order to use a dev serve
 // ! Implement terser for production
 // ! Implement file loader for assets
 
-module.exports = (env, argv) => {
+export default (env, argv) => {
 	const browser = "firefox"	// default to firefox build
 	const isProduction = argv.mode == "production"	// sets bool depending on build
 

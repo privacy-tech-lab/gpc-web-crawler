@@ -35,22 +35,13 @@ WARNING:  Content Security Policies are DISABLED while Analysis Mode is ON.
 - See disableCSPPerRequest function for more details
 */
 
-import { csvGenerator } from "../../common/csvGenerator";
-import { modes } from "../../data/modes.js";
-import { defaultSettings } from "../../data/defaultSettings.js";
-import { stores, storage } from "./../storage.js";
-import { 
-  cookiesPhrasing, 
-  uspPhrasing, 
-  uspCookiePhrasingList,
-  doNotSellPhrasing 
-} from "../../data/regex"
+
 import psl from "psl";
-import { headers } from "../../data/headers"
+import { headers } from "../../data/headers.js"
 import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
-import { conn } from '../../database/database';
+import { conn } from '../../database/database.js';
 
 
 
