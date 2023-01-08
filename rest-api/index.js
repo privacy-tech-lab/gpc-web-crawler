@@ -1,9 +1,13 @@
 require("dotenv").config();
 
 const express = require("express");
-const app = express();
+
 const bodyParser = require("body-parser");
 const connection = require("./databse.js");
+const app = express();
+
+// create application/json parser
+var jsonParser = bodyParser.json();
 
 app.get("/", (req, res) => res.send("Try: /analysis"));
 
@@ -19,35 +23,16 @@ app.get("/analysis", (req, res) => {
   );
 });
 
-// Preliminary implementation of post. This is for the
-// database described in the tutorial here:
-// https://billmartin.io/blog/how-to-build-and-deploy-a-nodejs-api-on-google-cloud
-// TODO: change variable/database names so that
-// they match Jocelyn's database setup
-
-// app.post("/warehouses/save", (req, res) => {
-//   var identification = req.query.id;
-//   var name = req.query.name;
-//   var zip = req.query.zip;
-//   connection.query(
-//     "INSERT INTO `acme`.`warehouses`() VALUES (?,?,?)",
-//     [identification, name, zip],
-//     (error, results, fields) => {
-//       if (error) throw error;
-//       res.json(results);
-//     }
-//   );
-// });
-app.post("/analysis", (req, res) => {
-  var domain = req.query.domain;
-  var dns_link = req.query.dns_link;
-  var sent_gpc = req.query.sent_gpc;
-  var uspapi_before_gpc = req.query.uspapi_before_gpc;
-  var uspapi_after_gpc = req.query.uspapi_after_gpc;
-  var uspapi_opted_out = req.query.uspapi_opted_out;
-  var usp_cookies_before_gpc = req.query.usp_cookies_before_gpc;
-  var usp_cookies_after_gpc = req.query.usp_cookies_after_gpc;
-  var usp_cookies_opted_out = req.query.usp_cookies_opted_out;
+app.post("/analysis", jsonParser, (req, res) => {
+  var domain = req.body.domain;
+  var dns_link = req.body.dns_link;
+  var sent_gpc = req.body.sent_gpc;
+  var uspapi_before_gpc = req.body.uspapi_before_gpc;
+  var uspapi_after_gpc = req.body.uspapi_after_gpc;
+  var uspapi_opted_out = req.body.uspapi_opted_out;
+  var usp_cookies_before_gpc = req.body.usp_cookies_before_gpc;
+  var usp_cookies_after_gpc = req.body.usp_cookies_after_gpc;
+  var usp_cookies_opted_out = req.body.usp_cookies_opted_out;
 
   connection.query(
     "INSERT INTO `entries` (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, uspapi_opted_out, usp_cookies_before_gpc, usp_cookies_after_gpc, usp_cookies_opted_out) VALUES (?,?,?,?,?,?,?,?,?)",
