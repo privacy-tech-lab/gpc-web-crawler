@@ -60,7 +60,17 @@ var domains_collected_during_analysis = [];
 var urlsWithUSPString = [];
 var firstPartyDomain = "";
 var changingSitesOnAnalysis = false;
-
+var sql_data = {
+  domain: "",
+  dns_link: null,
+  sent_gpc: false,
+  uspapi_before_gpc: null,
+  uspapi_after_gpc: null,
+  uspapi_opted_out: null,
+  usp_cookies_before_gpc: null,
+  usp_cookies_after_gpc: null,
+  usp_cookies_opted_out: null,
+};
 /******************************************************************************/
 /******************************************************************************/
 /**********                       # Functions                        **********/
@@ -228,6 +238,66 @@ async function fetchUSPStringData() {
   };
 }
 
+//sends sql post request to db and then resets the global sql_data
+function send_sql_and_reset() {
+  axios
+    .post("http://localhost:8080/analysis", sql_data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((res) => console.log(res.data))
+    .catch((err) => console.log(err));
+  //reset
+  sql_data = {
+    domain: "",
+    dns_link: null,
+    sent_gpc: false,
+    uspapi_before_gpc: null,
+    uspapi_after_gpc: null,
+    uspapi_opted_out: null,
+    usp_cookies_before_gpc: null,
+    usp_cookies_after_gpc: null,
+    usp_cookies_opted_out: null,
+  };
+}
+
+function create_sql_data(domain) {
+  // add analysis_userend data to global var
+  sql_data["domain"] = domain;
+  sql_data["dns_link"] = analysis_userend[domain]["DO_NOT_SELL_LINK_EXISTS"];
+  sql_data["sent_gpc"] = analysis_userend[domain]["SENT_GPC"];
+
+  for (let i in analysis_userend[domain]["USPAPI_BEFORE_GPC"]) {
+    if (analysis_userend[domain]["USPAPI_BEFORE_GPC"][i]["uspString"]) {
+      sql_data["uspapi_before_gpc"] =
+        analysis_userend[domain]["USPAPI_BEFORE_GPC"][i]["uspString"];
+    }
+  }
+  for (let i in analysis_userend[domain]["USPAPI_AFTER_GPC"]) {
+    if (analysis_userend[domain]["USPAPI_AFTER_GPC"][i]["uspString"]) {
+      sql_data["uspapi_after_gpc"] =
+        analysis_userend[domain]["USPAPI_AFTER_GPC"][i]["uspString"];
+    }
+  }
+  sql_data["uspapi_opted_out"] = analysis_userend[domain]["USPAPI_OPTED_OUT"];
+
+  for (let i in analysis_userend[domain]["USP_COOKIES_AFTER_GPC"]) {
+    if (analysis_userend[domain]["USP_COOKIES_AFTER_GPC"][i]["value"]) {
+      sql_data["usp_cookies_after_gpc"] =
+        analysis_userend[domain]["USP_COOKIES_AFTER_GPC"][i]["value"];
+    }
+  }
+  for (let i in analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"]) {
+    if (analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"][i]["value"]) {
+      sql_data["usp_cookies_before_gpc"] =
+        analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"][i]["value"];
+    }
+  }
+  sql_data["usp_cookies_opted_out"] =
+    analysis_userend[domain]["USP_COOKIE_OPTED_OUT"];
+}
+
 /**
  * Initializes the analysis with a refresh after being triggered
  *
@@ -265,6 +335,7 @@ async function runAnalysis() {
   await new Promise((resolve) => setTimeout(resolve, 5000));
 
   await haltAnalysis();
+  send_sql_and_reset(); //send global var sql_data to db via post request
 }
 
 /**
@@ -300,6 +371,7 @@ async function haltAnalysis() {
   if (uspapiData.cookies) {
     logData(domain, "COOKIES", uspapiData.cookies);
   }
+  create_sql_data(domain); //adding data to global var to send to sql db
   afterUSPStringFetched();
 }
 
@@ -445,14 +517,6 @@ var analysisDataSkeletonFirstParties = () => {
 function logData(domain, command, data) {
   // This is to associate data collected during analysis w/ first party domain
   domain = changingSitesOnAnalysis ? firstPartyDomain : domain;
-  let dns_link = null;
-  let sent_gpc = false;
-  let uspapi_before_gpc = null;
-  let uspapi_after_gpc = null;
-  let uspapi_opted_out = null;
-  let usp_cookies_before_gpc = null;
-  let usp_cookies_after_gpc = null;
-  let usp_cookies_opted_out = null;
   let gpcStatusKey = changingSitesOnAnalysis ? "AFTER_GPC" : "BEFORE_GPC";
 
   // If domain doesn't exist, initialize it
@@ -478,7 +542,6 @@ function logData(domain, command, data) {
   if (changingSitesOnAnalysis) {
     analysis[domain][callIndex]["SENT_GPC"] = true;
     analysis_userend[domain]["SENT_GPC"] = true;
-    sent_gpc = true;
   }
 
   // Let's assume that data does have a name property as a cookie should
@@ -497,10 +560,10 @@ function logData(domain, command, data) {
           analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"].push({
             value: data[i]["value"],
           });
-          usp_cookies_before_gpc = data[i]["value"];
         }
       }
     }
+
     if (gpcStatusKey == "AFTER_GPC") {
       analysis_userend[domain]["USP_COOKIES_AFTER_GPC"] = [];
       for (let i in data) {
@@ -508,7 +571,6 @@ function logData(domain, command, data) {
           analysis_userend[domain]["USP_COOKIES_AFTER_GPC"].push({
             value: data[i]["value"],
           });
-          usp_cookies_after_gpc = data[i]["value"];
         }
         try {
           if (analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] !== true) {
@@ -518,19 +580,15 @@ function logData(domain, command, data) {
             if (optedOut !== null || optedOut !== undefined) {
               if (USPrivacyString[2] === "Y" || USPrivacyString[2] === "y") {
                 analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = true;
-                usp_cookies_opted_out = true;
               } else if (USPrivacyString[2] === "-") {
                 analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = "NOT_IN_CA";
-                usp_cookies_opted_out = "NOT_IN_CA";
               } else if (
                 USPrivacyString[2] === "N" ||
                 USPrivacyString[2] == "n"
               ) {
                 analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = false;
-                usp_cookies_opted_out = false;
               } else {
                 analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = null;
-                usp_cookies_opted_out = null;
               }
             }
           }
@@ -552,35 +610,28 @@ function logData(domain, command, data) {
       analysis_userend[domain]["USPAPI_BEFORE_GPC"].push({
         uspString: data["uspString"],
       });
-      uspapi_before_gpc = data["uspString"];
     }
     if (gpcStatusKey == "AFTER_GPC") {
       analysis_userend[domain]["USPAPI_AFTER_GPC"] = [];
       analysis_userend[domain]["USPAPI_AFTER_GPC"].push({
         uspString: data["uspString"],
       });
-      uspapi_after_gpc = data["uspString"];
 
       try {
         let USPrivacyString = data.value || data.uspString;
 
         if (USPrivacyString[2] === "Y" || USPrivacyString[2] === "y") {
           analysis_userend[domain]["USPAPI_OPTED_OUT"] = true;
-          uspapi_opted_out = true;
         } else if (USPrivacyString[2] === "-") {
           analysis_userend[domain]["USPAPI_OPTED_OUT"] = "NOT_IN_CA";
-          uspapi_opted_out = "NOT_IN_CA";
         } else if (USPrivacyString[2] === "N" || USPrivacyString[2] == "n") {
           analysis_userend[domain]["USPAPI_OPTED_OUT"] = false;
-          uspapi_opted_out = false;
         } else {
           analysis_userend[domain]["USPAPI_OPTED_OUT"] = null;
-          uspapi_opted_out = null;
         }
       } catch (e) {
         console.error("Parsing USPAPI for analysis_userend failed.", e);
         analysis_userend[domain]["USPAPI_OPTED_OUT"] = "PARSE_FAILED";
-        uspapi_opted_out = "PARSE_FAILED";
       }
     }
   }
@@ -589,7 +640,6 @@ function logData(domain, command, data) {
     analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK"].push(data);
     analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK_EXISTS"] = true;
     analysis_userend[domain]["DO_NOT_SELL_LINK_EXISTS"] = true;
-    dns_link = true;
   }
   if (command === "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING") {
     analysis[domain][callIndex][gpcStatusKey][
@@ -600,31 +650,8 @@ function logData(domain, command, data) {
     ].push(data);
     analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK_EXISTS"] = true;
     analysis_userend[domain]["DO_NOT_SELL_LINK_EXISTS"] = true;
-    dns_link = true;
   }
   storage.set(stores.analysis, analysis_userend[domain], domain);
-  // Insert into MySQL database
-  var analysis_data = {
-    domain: domain,
-    dns_link: dns_link,
-    sent_gpc: sent_gpc,
-    uspapi_before_gpc: uspapi_before_gpc,
-    uspapi_after_gpc: uspapi_after_gpc,
-    uspapi_opted_out: uspapi_opted_out,
-    usp_cookies_before_gpc: usp_cookies_before_gpc,
-    usp_cookies_after_gpc: usp_cookies_after_gpc,
-    usp_cookies_opted_out: usp_cookies_opted_out,
-  };
-  console.log("analysis data:", analysis_data);
-
-  axios
-    .post("http://localhost:8080/analysis", analysis_data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then((res) => console.log(res.data))
-    .catch((err) => console.log(err));
 }
 
 /******************************************************************************/
