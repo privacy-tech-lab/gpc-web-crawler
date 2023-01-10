@@ -53,15 +53,15 @@ node crawler.js
 - Data of US Privacy String List is stored in this [Google sheet](https://docs.google.com/spreadsheets/d/1nb6-bI8d6-hDTvoj6Y3YT2HME_qVyHyVOQtY9do_Foo/edit?usp=sharing).
 - Data of US API Live List is stored in this [Google sheet](https://docs.google.com/spreadsheets/d/1sdmD8Y3jb82PZ_YOREYmRez3_Wi1FUApsP1we1GV29Y/edit#gid=984860887).
 
-## 3. Running the Firefox-Analysis-Extension with Google Cloud MySQL
+## 3. Running the Firefox-Analysis-Extension with REST API and Google Cloud MySQL
 
-1. Clone or download the contents of this repo, navigate to the `gpc-analysis-extension` folder, and run
+1. Clone or download the contents of this repo, navigate to the `rest-api` folder, and run
 
 ```console
 npm install
 ```
 
-2. Navigate to the `src/database` folder and create a `.env` file. Enter hostname, database name, username, password, and database instance name according to the following template:
+2. Create a `.env` file. Enter hostname, database name, username, password, and database instance name according to the following template:
 
 ```console
 DB_HOST=12.345.678.910
@@ -71,21 +71,29 @@ DB_PASS=yourpassword
 DB_INSTANCE_NAME=yourdbinstancename
 ```
 
-3. To test if the connection with Google Cloud MySQL is established, under the `database` folder, run
+3. To run the REST API and test if the connection with Google Cloud MySQL is established, under the `database` folder, run
 
 ```console
 node index.js
 ```
 
-(This step will be deleted after the development of extension is complete)
-
 4. If the `ETIMEDOUT` error appears, check your IPv4 address (e.g., [here](https://www.whatsmyip.org/)) and contact @Jocelyn0830 to allowlist your IP address.
 
-5. If no error is displayed, open a browser and navigate to `http://localhost:8080/analysis` and check if you can see the analysis data (assuming your database name is `analysis`).
+5. If no error is displayed, open a browser and navigate to `http://localhost:8080/analysis` and check if you can see the analysis data.
 
 6. An alternative way to check your connection and obtain a GUI for MySQL:
 
 Download MySQL workbench [here](https://www.mysql.com/products/workbench/). Follow the instructions to add your MySQL connection and see if it is successful.
+
+7. Make sure your REST API is running on one terminal. Open another terminal, navigate to the `gpc-analysis-extension` folder. Build the project by running `npm run build`, which will create a built for Firefox in `.../gpc-optmeowt/dist/firefox/`.
+
+8. Open a Firefox browser, navigate to the addons page with developer privileges at `about:debugging#/runtime/this-firefox`.
+
+9. Under `Temporary extensions`, click `Load Temporary Add-on...`.
+
+10. Select the manifest from the directory where you built OptMeowt, by default `/gpc-analysis-extension/dist/firefox/manifest.json/`.
+
+11. After the extension is installed, you should be able to see the extension icon turning yellow. After about 10 seconds, the icon will turn back to blue. This means one analysis run is complete. You can view the analysis result at `http://localhost:8080/analysis`.
 
 ## 4. Thank You!
 
