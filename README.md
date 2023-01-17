@@ -59,7 +59,7 @@ node crawler.js
 - Data of US Privacy String List is stored in this [Google sheet](https://docs.google.com/spreadsheets/d/1nb6-bI8d6-hDTvoj6Y3YT2HME_qVyHyVOQtY9do_Foo/edit?usp=sharing).
 - Data of US API Live List is stored in this [Google sheet](https://docs.google.com/spreadsheets/d/1sdmD8Y3jb82PZ_YOREYmRez3_Wi1FUApsP1we1GV29Y/edit#gid=984860887).
 
-For example results, view the `my_data.csv` file in the `Firefox-analysis-mode-crawler` folder. This was ran twice and gave the same results, and was ran on January 12, 2023.
+For example results, view the `my_data.csv` file in the `Firefox-analysis-mode-crawler` folder. This was ran twice and gave the same results, and was ran on January 17, 2023.
 
 ## 3. Running the Firefox-Analysis-Extension with REST API and Google Cloud MySQL
 
