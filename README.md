@@ -30,28 +30,29 @@ Firefox Analysis Mode crawler is a crawler for analysis functionality of [OptMeo
 ## 2. Development
 
 1. Clone this repo locally or download a zipped copy and unzip it.
-2. Ensure that you have [node and npm](https://docs.npmjs.com/getting-started) installed.
-3. Navigate to the root directory of Firefox Analysis Mode crawler in terminal by running:
+2. Download the [v3.0.0 version of OptMeowt](https://github.com/privacy-tech-lab/gpc-optmeowt/tree/v3.0.0-paper) or the [v4.0.1 version](https://github.com/privacy-tech-lab/gpc-optmeowt/tree/v4.0.1). Following the instructions on that repo, make sure that it is built.
+3. Ensure that you have [node and npm](https://docs.npmjs.com/getting-started) installed.
+4. Navigate to the root directory of Firefox Analysis Mode crawler in terminal by running:
 
 ```console
 cd Firefox-analysis-mode-crawler
 ```
 
-4. Open sites.csv and enter the links you want to analyze in the first column. (Some examples included in the file)
-5. Install the dependencies by running:
+5. Open sites.csv and enter the links you want to analyze in the first column. (Some examples included in the file)
+6. Install the dependencies by running:
 
 ```console
 PUPPETEER_PRODUCT=firefox npm install
 ```
 
-6. To start the crawler, run:
+7. To start the crawler, run:
 
 ```console
 node crawler.js
 ```
 
-7. The Firefox Nightly browser will be launched. In about one minute (before page navigation starts), load the extension from source. Open the popup, click 'More' in the upper right corner to navigate to the Settings page and switch to Analysis Mode.
-8. After the terminal prints "ALL TESTING DONE", navigate to the Settings page and click 'Export Analysis Data'.
+8. The Firefox Nightly browser will be launched. In about one minute (before page navigation starts), load the extension from source (wherever you performed step 2). If using v4.0.1, open the popup, click 'More' in the upper right corner to navigate to the Settings page and switch to Analysis Mode. If the v3.0.0 version is used, simply open the popup and click on `Protection Mode` to switch to Analysis Mode.
+9. After the terminal prints "ALL TESTING DONE", navigate to the Settings page and click 'Export Analysis Data'.
 
    NOTE: 1. The Firefox Nightly browser should always be on the testing site once page navigation starts. Do not open or navigate to other pages. Otherwise, the crawler will not work. 2. Killing the crawler before all testing done will lead to loss of all analysis data.
 
