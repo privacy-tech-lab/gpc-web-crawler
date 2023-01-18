@@ -26,6 +26,7 @@ Firefox Analysis Mode crawler is a crawler for analysis functionality of [OptMeo
 
 1. Some sites do not allow scripts, which may disrupt the crawling process.
 2. Some sites have an automatic text box that can prevent the keyboard shortcut from being triggered.
+3. At rare times, crawler findings may differ from manual analyses.
 
 ## 2. Development
 
@@ -59,7 +60,7 @@ node crawler.js
 - Data of US Privacy String List is stored in this [Google sheet](https://docs.google.com/spreadsheets/d/1nb6-bI8d6-hDTvoj6Y3YT2HME_qVyHyVOQtY9do_Foo/edit?usp=sharing).
 - Data of US API Live List is stored in this [Google sheet](https://docs.google.com/spreadsheets/d/1sdmD8Y3jb82PZ_YOREYmRez3_Wi1FUApsP1we1GV29Y/edit#gid=984860887).
 
-For example results, view the `my_data.csv` file in the `Firefox-analysis-mode-crawler` folder. This was ran twice and gave the same results, and was ran on January 17, 2023.
+For example results, view the `my_data.csv` file in the `Firefox-analysis-mode-crawler` folder. This was ran twice and gave the same results, and was ran on January 17, 2023. They were done with the Mullvad VPN on a Los Angeles server.
 
 ## 3. Running the Firefox-Analysis-Extension with REST API and Google Cloud MySQL
 
