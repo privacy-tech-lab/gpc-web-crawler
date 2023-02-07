@@ -241,7 +241,8 @@ async function fetchUSPStringData() {
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset() {
   axios
-    .post("http://localhost:8080/analysis", sql_data, {
+
+    .post("https://rest-api-e6djybuuea-ue.a.run.app/analysis", sql_data, {
       headers: {
         "Content-Type": "application/json",
       },
