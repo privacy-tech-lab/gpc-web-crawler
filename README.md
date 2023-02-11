@@ -18,17 +18,7 @@
 
 GPC web crawler code. The GPC Web crawler is developed and maintained by the [OptMeowt team](https://github.com/privacy-tech-lab/gpc-optmeowt#optmeowt-).
 
-## 1. Firefox Analysis Mode crawler
-
-Firefox Analysis Mode crawler is a crawler for analysis functionality of [OptMeowt](https://github.com/privacy-tech-lab/gpc-web-crawler). It automatically runs [OptMeowt Analysis mode](https://github.com/privacy-tech-lab/gpc-optmeowt/tree/v4.0.1/#4-analysis-mode-firefox-only) on all the given sites of the [input csv file](https://github.com/privacy-tech-lab/gpc-web-data-and-scripts/blob/main/Firefox-analysis-mode-crawler/sites.csv) in Firefox. The crawler is implemented using [Puppeteer](https://pptr.dev/).
-
-### Known Issues
-
-1. Some sites do not allow scripts, which may disrupt the crawling process.
-2. Some sites have an automatic text box that can prevent the keyboard shortcut from being triggered.
-3. At rare times, crawler findings may differ from manual analyses.
-
-## 2. Development
+## 1. Development
 
 1. Clone this repo locally or download a zipped copy and unzip it.
 2. Download the [v3.0.0 version of OptMeowt](https://github.com/privacy-tech-lab/gpc-optmeowt/tree/v3.0.0-paper) or the [v4.0.1 version](https://github.com/privacy-tech-lab/gpc-optmeowt/tree/v4.0.1). Following the instructions on that repo, make sure that it is built.
@@ -62,7 +52,7 @@ node crawler.js
 
 For example results, view the `my_data.csv` file in the `Firefox-analysis-mode-crawler` folder. This was ran twice and gave the same results, and was ran on January 17, 2023. They were done with the Mullvad VPN on a Los Angeles server.
 
-## 3. Running the Firefox-Analysis-Extension with REST API and Google Cloud MySQL
+## 2. Running the Firefox-Analysis-Extension with REST API and Google Cloud MySQL
 
 1. Clone or download the contents of this repo, navigate to the `rest-api` folder, and run
 
@@ -104,7 +94,7 @@ Download MySQL workbench [here](https://www.mysql.com/products/workbench/). Foll
 
 11. After the extension is installed, you should be able to see the extension icon turning yellow. After about 10 seconds, the icon will turn back to blue. This means one analysis run is complete. You can view the analysis result at `http://localhost:8080/analysis`.
 
-## 4. Thank You!
+## 3. Thank You!
 
 <p align="center"><strong>We would like to thank our financial supporters!</strong></p><br>
 
