@@ -13,7 +13,7 @@ const { parse } = require("csv-parse");
 
 // Loads sites to crawl
 const sites = [];
-fs.createReadStream("sites.csv")
+fs.createReadStream("sites1.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
     sites.push(row[0]);
@@ -60,10 +60,9 @@ fs.createReadStream("sites.csv")
 
   for (let site_id in sites) {
     console.log(site_id);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 10000));
     await driver.get(sites[site_id]);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 10000));
   }
 
   // Export csv data
