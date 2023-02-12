@@ -25,7 +25,7 @@ fs.createReadStream("sites.csv")
 (async () => {
     // Set firefox
     var options = new firefox.Options().setBinary(firefox.Channel.NIGHTLY);
-    options.addArguments("--headless");
+    options.addArguments("--headful");
     const driver = new Builder().forBrowser('firefox').setFirefoxOptions(options).build();
     // let driver = new Builder().setFirefoxOptions(options).build();
     console.log("built")
@@ -40,7 +40,7 @@ fs.createReadStream("sites.csv")
     await driver.findElement(By.xpath('/html/body/table/tr/td[2]/button')).click().finally();
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    await driver.installAddon("/Users/jocelynwang/Desktop/WES/privacy-tech-lab/selenium_optmeowt_crawler/myextension.xpi")
+    await driver.installAddon("./myextension.xpi")
 
     await new Promise(resolve => setTimeout(resolve, 3000));
     const switchAnalysis = Key.chord(Key.ALT, Key.SHIFT, 'T');
@@ -54,18 +54,6 @@ fs.createReadStream("sites.csv")
       await new Promise(resolve => setTimeout(resolve, 3000));
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
-    
-    await driver.takeScreenshot().then(
-      function(image) {
-          require('fs').writeFileSync('captured_image_3.png', image, 'base64');
-      }
-    );
-
-    // Export csv data
-    await driver.get('about:debugging');
-    const exportAnalysis = Key.chord(Key.ALT, Key.SHIFT, 'C');
-    await driver.findElement(By.xpath('/html')).sendKeys(exportAnalysis);
-    await new Promise(resolve => setTimeout(resolve, 3000));
     
     driver.quit();
 })();

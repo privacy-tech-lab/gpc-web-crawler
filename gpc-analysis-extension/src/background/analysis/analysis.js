@@ -241,7 +241,8 @@ async function fetchUSPStringData() {
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset() {
   axios
-    .post("http://localhost:8080/analysis", sql_data, {
+    // lab version rest api
+    .post("https://rest-api-dl7hml6cxq-uc.a.run.app/analysis", sql_data, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -332,7 +333,7 @@ async function runAnalysis() {
     afterFetchingFirstPartyDomain();
   });
 
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   await haltAnalysis();
   send_sql_and_reset(); //send global var sql_data to db via post request
