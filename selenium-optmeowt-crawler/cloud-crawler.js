@@ -60,9 +60,13 @@ fs.createReadStream("sites1.csv")
 
   for (let site_id in sites) {
     console.log(site_id);
-    await new Promise((resolve) => setTimeout(resolve, 10000));
-    await driver.get(sites[site_id]);
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    try {
+      await Promise.race([await driver.get(sites[site_id]), new Promise(resolve => setTimeout(resolve, 10000))]);
+    } catch(e) {
+      print(e)
+    }
+      await new Promise((resolve) => setTimeout(resolve, 10000));
   }
 
   // Export csv data
