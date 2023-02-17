@@ -22,15 +22,20 @@ fs.createReadStream("sites1.csv")
     console.log(error.message);
   });
 
-(async () => {
+//set options and driver as global
+var options;
+let driver;
+
+//start the selenium driver
+async function setup() {
   // Set firefox
-  var options = new firefox.Options().setBinary(firefox.Channel.NIGHTLY);
+  options = new firefox.Options().setBinary(firefox.Channel.NIGHTLY);
   options.addArguments("--headless");
 
-  let driver = new Builder()
-    // .usingServer("http://localhost:4444")
-    // .usingServer("https://standalone-firefox-jxxphy2r5a-uc.a.run.app/") # my deployed version
-    .usingServer("https://selenium-firefox-dl7hml6cxq-uc.a.run.app/") //lab account version
+  driver = new Builder()
+    .usingServer("http://localhost:4444")
+    // .usingServer("https://standalone-firefox-jxxphy2r5a-uc.a.run.app/") // my deployed version
+    // .usingServer("https://selenium-firefox-dl7hml6cxq-uc.a.run.app/") //lab account version
     .withCapabilities(capabilities)
     // .setFirefoxOptions(options)
     .build();
@@ -57,16 +62,29 @@ fs.createReadStream("sites1.csv")
   await driver.findElement(By.xpath("/html")).sendKeys(switchAnalysis);
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
+  console.log("setup complete");
+}
+
+(async () => {
+  await setup(); //setup the selenium driver
 
   for (let site_id in sites) {
-    console.log(site_id);
+    console.time("time-elapsed");
+    console.log(site_id, ": ", sites[site_id]);
     await new Promise((resolve) => setTimeout(resolve, 3000));
     try {
-      await Promise.race([await driver.get(sites[site_id]), new Promise(resolve => setTimeout(resolve, 10000))]);
-    } catch(e) {
-      print(e)
+      await Promise.race([
+        await driver.get(sites[site_id]),
+        new Promise((resolve) => setTimeout(resolve, 10000)),
+      ]);
+    } catch (e) {
+      console.log(e);
+      driver.quit(); //not sure if this is necessary
+      console.log("------restarting driver------");
+      await setup(); //restart the selenium driver
     }
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+    console.timeEnd("time-elapsed");
   }
 
   // Export csv data
