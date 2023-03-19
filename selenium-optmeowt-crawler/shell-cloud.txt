@@ -1,0 +1,9 @@
+#!bin/zsh
+for i in {1..10}
+do
+echo "Iteration $i"
+node cloud-crawler-forGCR.js
+echo "sleeping for 30s"
+sleep 30
+done
+
