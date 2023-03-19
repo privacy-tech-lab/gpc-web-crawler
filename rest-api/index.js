@@ -22,6 +22,15 @@ app.get("/analysis", (req, res) => {
     }
   );
 });
+app.get("/last_input_domain", (req, res) => {
+  connection.query(
+    "SELECT * FROM analysis.entries WHERE id=(SELECT max(id) FROM analysis.entries)",
+    (error, results, fields) => {
+      if (error) throw error;
+      res.json(results);
+    }
+  );
+});
 
 app.post("/analysis", jsonParser, (req, res) => {
   var domain = req.body.domain;
