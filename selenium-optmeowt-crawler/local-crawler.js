@@ -65,6 +65,7 @@ async function setup() {
     } catch (e) {
       console.log(e);
       // driver.quit(); //not sure if this is necessary--try it without
+      driver.quit();
       console.log("------restarting driver------");
       await setup(); //restart the selenium driver
     }
