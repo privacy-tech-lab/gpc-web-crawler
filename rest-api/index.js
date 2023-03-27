@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 
 const bodyParser = require("body-parser");
-const connection = require("./databse.js");
+const connection = require("./database.js");
 const app = express();
 
 // create application/json parser
@@ -16,6 +16,15 @@ app.get("/status", (req, res) => res.send("Success."));
 app.get("/analysis", (req, res) => {
   connection.query(
     "SELECT * FROM analysis.entries",
+    (error, results, fields) => {
+      if (error) throw error;
+      res.json(results);
+    }
+  );
+});
+app.get("/last_input_domain", (req, res) => {
+  connection.query(
+    "SELECT * FROM analysis.entries WHERE id=(SELECT max(id) FROM analysis.entries)",
     (error, results, fields) => {
       if (error) throw error;
       res.json(results);
@@ -47,6 +56,17 @@ app.post("/analysis", jsonParser, (req, res) => {
       usp_cookies_after_gpc,
       usp_cookies_opted_out,
     ],
+    (error, results, fields) => {
+      if (error) throw error;
+      res.json(results);
+    }
+  );
+});
+
+app.route("/analysis/:domain").get((req, res, next) => {
+  connection.query(
+    "SELECT * FROM analysis.entries WHERE domain = ?",
+    req.params.domain,
     (error, results, fields) => {
       if (error) throw error;
       res.json(results);
