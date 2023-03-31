@@ -36,16 +36,16 @@ cd selenium-optmeowt-crawler
 npm install
 ```
 
-7. To start the cloud crawler, run:
+7. To start the crawler, run:
 
 ```console
-node cloud-crawler.js
+node local-crawler.js
 ```
 
 8. To check the analysis results, open a browser and navigate to https://rest-api-dl7hml6cxq-uc.a.run.app/analysis.
 
 
-- If you want to run the crawler locally, reference the guide [here](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Running-the-Crawler-Locally).
+- If you want to run the cloud crawler, reference the guide in the wiki.
 
 ## 2. Thank You!
 
