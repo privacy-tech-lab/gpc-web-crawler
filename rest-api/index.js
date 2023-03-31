@@ -32,6 +32,16 @@ app.get("/last_input_domain", (req, res) => {
   );
 });
 
+app.get("/null", (req, res) => {
+  connection.query(
+    "SELECT * FROM analysis.entries WHERE site_id IS NULL",
+    (error, results, fields) => {
+      if (error) throw error;
+      res.json(results);
+    }
+  );
+});
+
 app.post("/analysis", jsonParser, (req, res) => {
   var domain = req.body.domain;
   var dns_link = req.body.dns_link;
@@ -67,6 +77,28 @@ app.route("/analysis/:domain").get((req, res, next) => {
   connection.query(
     "SELECT * FROM analysis.entries WHERE domain = ?",
     req.params.domain,
+    (error, results, fields) => {
+      if (error) throw error;
+      res.json(results);
+    }
+  );
+});
+// this works if we need it
+// app.route("/id/:id").get((req, res, next) => {
+//   connection.query(
+//     "SELECT * FROM analysis.entries WHERE id = ?",
+//     req.params.id,
+//     (error, results, fields) => {
+//       if (error) throw error;
+//       res.json(results);
+//     }
+//   );
+// });
+
+app.put("/analysis", jsonParser, (req, res) => {
+  connection.query(
+    "UPDATE `entries` SET site_id = ? WHERE id = ? ",
+    [req.body.site_id, req.body.id],
     (error, results, fields) => {
       if (error) throw error;
       res.json(results);
