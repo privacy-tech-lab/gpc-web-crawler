@@ -18,10 +18,12 @@
 
 GPC web crawler code. The GPC Web crawler is developed and maintained by the [OptMeowt team](https://github.com/privacy-tech-lab/gpc-optmeowt#optmeowt-).
 
-## 1. Selenium Optmeowt Crawler 
-Selenium Optmeowt Crawler is a crawler for analysis functionality of [OptMeowt](https://github.com/privacy-tech-lab/gpc-web-crawler) deployed in Google Cloud Run. It automatically runs [OptMeowt Analysis mode](https://github.com/privacy-tech-lab/gpc-optmeowt/tree/v4.0.1/#4-analysis-mode-firefox-only) on all the given sites of the input csv file in Firefox. The crawler is implemented using [Selenium](https://www.selenium.dev/), [docker](https://www.docker.com/) and [Google Cloud](https://cloud.google.com/).
+## 1. Selenium Optmeowt Crawler
+
+Selenium Optmeowt Crawler is a crawler for analysis functionality of [OptMeowt](https://github.com/privacy-tech-lab/gpc-web-crawler). It automatically runs [OptMeowt Analysis mode](https://github.com/privacy-tech-lab/gpc-optmeowt/tree/v4.0.1/#4-analysis-mode-firefox-only) on all the given sites of the input csv file in Firefox. The crawler is implemented using [Selenium](https://www.selenium.dev/).
 
 ## 2. Development
+
 1. Clone this repo locally or download a zipped copy and unzip it.
 2. Navigate to the root directory of selenium-optmeowt-crawler in terminal by running:
 
@@ -43,7 +45,6 @@ node local-crawler.js
 ```
 
 8. To check the analysis results, open a browser and navigate to https://rest-api-dl7hml6cxq-uc.a.run.app/analysis.
-
 
 - If you want to run the cloud crawler, reference the guide in the wiki.
 
