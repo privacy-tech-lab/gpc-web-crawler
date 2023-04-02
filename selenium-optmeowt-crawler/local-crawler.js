@@ -78,14 +78,14 @@ async function put_site_id(data) {
   try {
     if (table_id == 1) {
       var response = await axios.put(
-        // `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis`,
-        `http://localhost:8080/analysis`,
+        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis`,
+        // `http://localhost:8080/analysis`,
         data
       );
     } else {
       var response = await axios.put(
-        // `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2`,
-        `http://localhost:8080/analysis2`,
+        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2`,
+        //`http://localhost:8080/analysis2`,
         data
       );
     }
@@ -107,8 +107,8 @@ async function check_update_DB(site, site_id) {
       );
     } else {
       var response = await axios.get(
-        `http://localhost:8080/analysis2/${site_str}`
-        //`https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2/${site_str}`
+        //`http://localhost:8080/analysis2/${site_str}`
+        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2/${site_str}`
       );
     }
     latest_res_data = response.data;
@@ -126,9 +126,9 @@ async function check_update_DB(site, site_id) {
       // is not in db -- due to not getting added or redirect
       // then just search for null val and update the last site with null site_id
       if (table_id == 1) {
-        var res = await axios.get(`http://localhost:8080/null_analysis`);
+        var res = await axios.get(`https://rest-api-dl7hml6cxq-uc.a.run.app/null_analysis`);
       } else {
-        var res = await axios.get(`http://localhost:8080/null_analysis2`);
+        var res = await axios.get(`https://rest-api-dl7hml6cxq-uc.a.run.app/null_analysis2`);
       }
       latest_res_data = res.data;
       console.log("null site_id: ", latest_res_data);
