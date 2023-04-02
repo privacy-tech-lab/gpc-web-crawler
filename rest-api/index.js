@@ -11,27 +11,29 @@ async function rest(table) {
   var jsonParser = bodyParser.json();
 
   if (table == "analysis") {
-    var entry = "entries"
+    var entry = "entries";
   } else {
-    var entry = "entries_2"
+    var entry = "entries_2";
   }
 
-  app.get("/", (req, res) => res.send("Try: /"+table));
+  app.get("/", (req, res) => res.send("Try: /" + table));
 
   app.get("/status", (req, res) => res.send("Success."));
 
-  app.get("/"+table, (req, res) => {
+  app.get("/" + table, (req, res) => {
     connection.query(
-      "SELECT * FROM analysis."+entry,
+      "SELECT * FROM analysis.??",
+      entry,
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
       }
     );
   });
-  app.get("/last_input_domain_"+table, (req, res) => {
+  app.get("/last_input_domain_" + table, (req, res) => {
     connection.query(
-      "SELECT * FROM analysis."+entry+" WHERE id=(SELECT max(id) FROM analysis."+entry+")",
+      "SELECT * FROM analysis.?? WHERE id=(SELECT max(id) FROM analysis.??)",
+      [entry, entry],
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
@@ -41,7 +43,8 @@ async function rest(table) {
 
   app.get("/null_" + table, (req, res) => {
     connection.query(
-      "SELECT * FROM analysis." + entry + " WHERE site_id IS NULL",
+      "SELECT * FROM analysis.?? WHERE site_id IS NULL",
+      entry,
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
@@ -49,7 +52,7 @@ async function rest(table) {
     );
   });
 
-  app.post("/"+table, jsonParser, (req, res) => {
+  app.post("/" + table, jsonParser, (req, res) => {
     var domain = req.body.domain;
     var dns_link = req.body.dns_link;
     var sent_gpc = req.body.sent_gpc;
@@ -61,8 +64,9 @@ async function rest(table) {
     var usp_cookies_opted_out = req.body.usp_cookies_opted_out;
 
     connection.query(
-      "INSERT INTO `" + entry + "` (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, uspapi_opted_out, usp_cookies_before_gpc, usp_cookies_after_gpc, usp_cookies_opted_out) VALUES (?,?,?,?,?,?,?,?,?)",
+      "INSERT INTO ?? (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, uspapi_opted_out, usp_cookies_before_gpc, usp_cookies_after_gpc, usp_cookies_opted_out) VALUES (?,?,?,?,?,?,?,?,?)",
       [
+        entry,
         domain,
         dns_link,
         sent_gpc,
@@ -80,10 +84,10 @@ async function rest(table) {
     );
   });
 
-  app.route("/"+table+"/:domain").get((req, res, next) => {
+  app.route("/" + table + "/:domain").get((req, res, next) => {
     connection.query(
-      "SELECT * FROM analysis." + entry + " WHERE domain = ?",
-      req.params.domain,
+      "SELECT * FROM analysis.?? WHERE domain = ?",
+      [entry, req.params.domain],
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
@@ -102,22 +106,21 @@ async function rest(table) {
   //   );
   // });
 
-  app.put("/"+table, jsonParser, (req, res) => {
+  app.put("/" + table, jsonParser, (req, res) => {
     connection.query(
-      "UPDATE `" + entry + "` SET site_id = ? WHERE id = ? ",
-      [req.body.site_id, req.body.id],
+      "UPDATE ?? SET site_id = ? WHERE id = ? ",
+      [entry, req.body.site_id, req.body.id],
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
       }
     );
   });
-
 }
 
 // "analysis" is for the first table, "analysis2" is for the second table
-rest("analysis")
-rest("analysis2")
+rest("analysis");
+rest("analysis2");
 // Use port 8080 by default, unless configured differently in Google Cloud
 const port = process.env.PORT || 8080;
 app.listen(port, () => {

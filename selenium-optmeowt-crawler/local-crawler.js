@@ -6,8 +6,8 @@ const firefox = require("selenium-webdriver/firefox");
 //   headless: true,
 // };
 
-const prompt = require('prompt-sync')({sigint: true});
-let table_id = prompt('Enter table number (1 or 2): ');
+const prompt = require("prompt-sync")({ sigint: true });
+let table_id = prompt("Enter table number (1 or 2): ");
 
 const { By } = require("selenium-webdriver");
 const { Key } = require("selenium-webdriver");
@@ -94,7 +94,7 @@ async function put_site_id(data) {
   }
 }
 
-async function check_update_DB(site) {
+async function check_update_DB(site, site_id) {
   site_str = site.replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
   // https://www.npmjs.com/package//axios?activeTab=readme --axios with async
   //   console.log(site_str);
@@ -107,11 +107,10 @@ async function check_update_DB(site) {
       );
     } else {
       var response = await axios.get(
-        `http://localhost:8080/analysis2`
+        `http://localhost:8080/analysis2/${site_str}`
         //`https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2/${site_str}`
       );
     }
-    
     latest_res_data = response.data;
 
     if (latest_res_data.length >= 1) {
