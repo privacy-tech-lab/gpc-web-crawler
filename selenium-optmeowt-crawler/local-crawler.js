@@ -5,6 +5,10 @@ const firefox = require("selenium-webdriver/firefox");
 //   browserName: "firefox",
 //   headless: true,
 // };
+
+const prompt = require('prompt-sync')({sigint: true});
+let table_id = prompt('Enter table number (1 or 2): ');
+
 const { By } = require("selenium-webdriver");
 const { Key } = require("selenium-webdriver");
 const fs = require("fs");
@@ -28,10 +32,18 @@ var options;
 let driver;
 
 async function setup() {
-  options = new firefox.Options()
-    .setBinary(firefox.Channel.NIGHTLY)
-    .setPreference("xpinstall.signatures.required", false)
-    .addExtensions("./myextension.xpi");
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  if (table_id == 1) {
+    options = new firefox.Options()
+      .setBinary(firefox.Channel.NIGHTLY)
+      .setPreference("xpinstall.signatures.required", false)
+      .addExtensions("./myextension.xpi");
+  } else {
+    options = new firefox.Options()
+      .setBinary(firefox.Channel.NIGHTLY)
+      .setPreference("xpinstall.signatures.required", false)
+      .addExtensions("./myextension2.xpi");
+  }
   options.addArguments("--headful");
   driver = new Builder()
     .forBrowser("firefox")
@@ -64,26 +76,42 @@ async function setup() {
 
 async function put_site_id(data) {
   try {
-    const response = await axios.put(
-      // `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis`,
-      `http://localhost:8080/analysis`,
-      data
-    );
+    if (table_id == 1) {
+      var response = await axios.put(
+        // `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis`,
+        `http://localhost:8080/analysis`,
+        data
+      );
+    } else {
+      var response = await axios.put(
+        // `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2`,
+        `http://localhost:8080/analysis2`,
+        data
+      );
+    }
   } catch (error) {
     console.error(error);
   }
 }
 
-async function check_update_DB(site, site_id) {
+async function check_update_DB(site) {
   site_str = site.replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
   // https://www.npmjs.com/package//axios?activeTab=readme --axios with async
   //   console.log(site_str);
 
   try {
     // after a site is visited, to see if the data was added to the db
-    const response = await axios.get(
-      `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis/${site_str}`
-    );
+    if (table_id == 1) {
+      var response = await axios.get(
+        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis/${site_str}`
+      );
+    } else {
+      var response = await axios.get(
+        `http://localhost:8080/analysis2`
+        //`https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2/${site_str}`
+      );
+    }
+    
     latest_res_data = response.data;
 
     if (latest_res_data.length >= 1) {
@@ -98,7 +126,11 @@ async function check_update_DB(site, site_id) {
     } else {
       // is not in db -- due to not getting added or redirect
       // then just search for null val and update the last site with null site_id
-      const res = await axios.get(`http://localhost:8080/null`);
+      if (table_id == 1) {
+        var res = await axios.get(`http://localhost:8080/null_analysis`);
+      } else {
+        var res = await axios.get(`http://localhost:8080/null_analysis2`);
+      }
       latest_res_data = res.data;
       console.log("null site_id: ", latest_res_data);
       if (latest_res_data.length >= 1) {
