@@ -48,7 +48,27 @@ node local-crawler.js
 
 - If you want to run the cloud crawler, reference the guide in the wiki.
 
-## 2. Thank You!
+## 3. Architecture
+
+![architecture](https://user-images.githubusercontent.com/40359590/230727149-bbfc0b06-38a3-4ee1-8be7-a113938da224.png)
+
+Components:
+
+- Crawler Script:
+The flow of the crawler script is described in the diagram below.
+![analysis-flow](https://user-images.githubusercontent.com/40359590/230727730-73ffc349-a7b6-4407-9958-f2583f2ecb2d.png)
+This script is stored and executed locally.
+
+- OptMeowt Analysis Extension:
+The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request.
+
+- Node.js Rest API:
+We use the Rest API to make GET, PUT, and POST requests to the Cloud SQL database. The Rest API is deployed to Google Cloud Run. Instructions for deployment can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Google-Cloud-REST-API-Deployment).
+
+- Cloud SQL Database:
+The Cloud SQL database is a Google Cloud SQL database that stores analysis data. Instructions to set up a Cloud SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Google-Cloud-MySQL-Configurations).
+
+## 4. Thank You!
 
 <p align="center"><strong>We would like to thank our financial supporters!</strong></p><br>
 
