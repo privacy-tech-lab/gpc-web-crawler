@@ -150,7 +150,7 @@ async function check_update_DB(site, site_id) {
   }
   return added;
 }
-async function visit_site(driver, sites, site_id) {
+async function visit_site(sites, site_id) {
   var error_value = "no_error";
   console.log(site_id, ": ", sites[site_id]);
   try {
@@ -173,6 +173,20 @@ async function visit_site(driver, sites, site_id) {
   }
   return error_value;
 }
+async function putReq_and_checkRedo(sites, site_id, error_value) {
+  // check the db to see if prev site was added / add the site_id
+  var added = await check_update_DB(sites[site_id], site_id);
+  if (
+    //determine whether to redo the site--redo if it wasn't added and there was not
+    //an error that prevents us from analyzing that site
+    added == false &&
+    error_value != "InsecureCertificateError" &&
+    error_value != "WebDriverError"
+  ) {
+    console.log("redo prev site");
+    await visit_site(sites, site_id);
+  }
+}
 
 (async () => {
   await setup();
@@ -181,33 +195,18 @@ async function visit_site(driver, sites, site_id) {
     var begin_site = Date.now(); // for timing
     await new Promise((resolve) => setTimeout(resolve, 3000));
     if (site_id > 0) {
-      // check the db to see if prev site was added / add the site_id
-      // check here so that we don't have to increase timeouts
-      var added = await check_update_DB(sites[site_id - 1], site_id - 1);
-      if (
-        //determine whether to redo the site--redo if it wasn't added and there was not
-        //an error that prevents us from analyzing that site
-        added == false &&
-        error_value != "InsecureCertificateError" &&
-        error_value != "WebDriverError"
-      ) {
-        await visit_site(driver, sites, site_id - 1);
-      }
+      // check if previous site was added
+      // if so, do the put request accordingly
+      // if not, see if we need to redo it
+      await putReq_and_checkRedo(sites, site_id - 1, error_value);
     }
-    error_value = await visit_site(driver, sites, site_id);
+    error_value = await visit_site(sites, site_id);
 
     //just for the last entry--inc timeout to make sure it is input before checking
     if (site_id == sites.length - 1) {
+      // give it extra time for site to be added to db
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      var added = await check_update_DB(sites[site_id], site_id);
-      if (
-        //determine whether to redo the site
-        added == false &&
-        error_value != "InsecureCertificateError" &&
-        error_value != "WebDriverError"
-      ) {
-        await visit_site(driver, sites, site_id);
-      }
+      await putReq_and_checkRedo(sites, site_id, error_value);
     }
 
     var end_site = Date.now();
