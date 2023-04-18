@@ -55,18 +55,44 @@ node local-crawler.js
 Components:
 
 - Crawler Script:
-The flow of the crawler script is described in the diagram below.
-![analysis-flow](https://user-images.githubusercontent.com/40359590/230727730-73ffc349-a7b6-4407-9958-f2583f2ecb2d.png)
-This script is stored and executed locally.
+  The flow of the crawler script is described in the diagram below.
+  ![analysis-flow](https://user-images.githubusercontent.com/40359590/230727730-73ffc349-a7b6-4407-9958-f2583f2ecb2d.png)
+  This script is stored and executed locally.
 
 - OptMeowt Analysis Extension:
-The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request.
+  The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser by the crawler script. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request. The analysis of a site is performed by the extension as follows:
+
+  1. Check if a site has a Do Not Sell link
+  2. Check the site's US Privacy String to determine a user's current opt out status
+  3. Send a GPC opt out signal to opt out
+  4. Check the site's US Privacy String again to determine the user's current opt out status
 
 - Node.js Rest API:
-We use the Rest API to make GET, PUT, and POST requests to the Cloud SQL database. The Rest API is deployed to Google Cloud Run. Instructions for deployment can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Google-Cloud-REST-API-Deployment).
+  We use the Rest API to make GET, PUT, and POST requests to the Cloud SQL database. The Rest API is deployed to Google Cloud Run. Instructions for deployment can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Google-Cloud-REST-API-Deployment).
 
 - Cloud SQL Database:
-The Cloud SQL database is a Google Cloud SQL database that stores analysis data. Instructions to set up a Cloud SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Google-Cloud-MySQL-Configurations).
+  The Cloud SQL database is a Google Cloud SQL database that stores analysis data. Instructions to set up a Cloud SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Google-Cloud-MySQL-Configurations). The columns of our database tables are below:
+  | id | site_id | domain | dns_link | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | uspapi_opted_out | usp_cookies_before_gpc | usp_cookies_after_gpc | usp_cookies_opted_out |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+  The first few columns primarily pertain to identifying the site and verifying that the OptMeowt Analysis extension is working properly.
+
+  - id: autoincrement primary key to identify the database entry
+  - site_id: the id of the domain in the csv file that lists the sites to crawl. This is used for processing purposes (i.e. to identify domains that redirect to another domain) and is set by the crawler script.
+  - domain: the domain name of the site
+  - dns_link: a binary indictor of whether the site has a Do Not Sell link
+  - sent_gpc: a binary indicator of whether the OptMeowt Analysis extension sent a GPC opt out signal to the site
+
+  The remaining columns pertain to the opt out status of a user, which is indicated by the value of the US Privacy String. The US Privacy String can be implemented on a site via (1) the client-side JavaScript USPAPI, which returns the US Privacy String value when called, or (2) an HTTP cookie that stores its value. The OptMeowt analysis extension checks each site for both implementations of the US Privacy String by calling the USPAPI and checking all cookies.
+
+  - uspapi_before_gpc: return value of calling the USPAPI before a GPC opt out signal was sent
+  - uspapi_after_gpc: return value of calling the USPAPI after a GPC opt out signal were sent
+  - uspapi_opted_out: a binary indicator of whether the site respected the GPC opt out signal based on the change in the USPAPI return value
+  - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie before a GPC opt out signal was sent
+  - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
+  - usp_cookies_opted_out: a binary indicator of whether the site respected the GPC opt out signal based on the change in the US Privacy String in an HTTP cookie
+
+  We run the crawler script on multiple computers at once. We maintain one database table per computer used. When starting the crawler script, the user will be prompted to enter the table number to use. Currently, there are 2 tables.
 
 ## 4. Thank You!
 
