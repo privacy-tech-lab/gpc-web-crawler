@@ -242,7 +242,7 @@ async function fetchUSPStringData() {
 function send_sql_and_reset() {
   axios
     // lab version rest api
-    .post("https://rest-api-dl7hml6cxq-uc.a.run.app/analysis", sql_data, {
+    .post("https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2", sql_data, {
       headers: {
         "Content-Type": "application/json",
       },
