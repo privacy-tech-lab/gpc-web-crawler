@@ -18,9 +18,14 @@
 
 GPC web crawler code. The GPC Web crawler is developed and maintained by the [OptMeowt team](https://github.com/privacy-tech-lab/gpc-optmeowt#optmeowt-).
 
-## 1. Selenium Optmeowt Crawler
+[1. Selenium OptMeowt Crawler](#1-selenium-optmeowt-crawler)  
+[2. Development](#2-development)  
+[3. Architecture](#3-architecture)  
+[4. Thank You!](#4-thank-you)
 
-Selenium Optmeowt Crawler is a crawler for analysis functionality of [OptMeowt](https://github.com/privacy-tech-lab/gpc-web-crawler). It automatically runs [OptMeowt Analysis mode](https://github.com/privacy-tech-lab/gpc-optmeowt/tree/v4.0.1/#4-analysis-mode-firefox-only) on all the given sites of the input csv file in Firefox. The crawler is implemented using [Selenium](https://www.selenium.dev/).
+## 1. Selenium OptMeowt Crawler
+
+Selenium OptMeowt Crawler is a crawler for analysis functionality of [OptMeowt](https://github.com/privacy-tech-lab/gpc-web-crawler). It automatically runs [OptMeowt Analysis mode](https://github.com/privacy-tech-lab/gpc-optmeowt/tree/v4.0.1/#4-analysis-mode-firefox-only) on all the given sites of the input csv file in Firefox. The crawler is implemented using [Selenium](https://www.selenium.dev/).
 
 ## 2. Development
 
@@ -106,7 +111,7 @@ Components:
   </a>
 </p>
 
-<p align="center">Additional financial support provided by the Anil Fernando Endowment, the Alfred P. Sloan Foundation, and Wesleyan University.</p>
+<p align="center">Additional financial support provided by the Alfred P. Sloan Foundation, Wesleyan University, and the Anil Fernando Endowment.</p>
 
 <p align="center">
   <a href="https://sloan.org/grant-detail/9631">
