@@ -6,9 +6,6 @@ const firefox = require("selenium-webdriver/firefox");
 //   headless: true,
 // };
 
-const prompt = require("prompt-sync")({ sigint: true });
-let table_id = prompt("Enter table number (1 or 2): ");
-
 const { By } = require("selenium-webdriver");
 const { Key } = require("selenium-webdriver");
 const fs = require("fs");
@@ -33,17 +30,12 @@ let driver;
 
 async function setup() {
   await new Promise((resolve) => setTimeout(resolve, 5000));
-  if (table_id == 1) {
-    options = new firefox.Options()
-      .setBinary(firefox.Channel.NIGHTLY)
-      .setPreference("xpinstall.signatures.required", false)
-      .addExtensions("./myextension.xpi");
-  } else {
-    options = new firefox.Options()
-      .setBinary(firefox.Channel.NIGHTLY)
-      .setPreference("xpinstall.signatures.required", false)
-      .addExtensions("./myextension2.xpi");
-  }
+  // if (table_id == 1) {
+  options = new firefox.Options()
+    .setBinary(firefox.Channel.NIGHTLY)
+    .setPreference("xpinstall.signatures.required", false)
+    .addExtensions("./myextension.xpi");
+
   options.addArguments("--headful");
   driver = new Builder()
     .forBrowser("firefox")
@@ -76,19 +68,8 @@ async function setup() {
 
 async function put_site_id(data) {
   try {
-    if (table_id == 1) {
-      var response = await axios.put(
-        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis`,
-        // `http://localhost:8080/analysis`,
-        data
-      );
-    } else {
-      var response = await axios.put(
-        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2`,
-        //`http://localhost:8080/analysis2`,
-        data
-      );
-    }
+    // if (table_id == 1) {
+    var response = await axios.put(`http://localhost:8080/analysis`, data);
   } catch (error) {
     console.error(error);
   }
@@ -101,16 +82,10 @@ async function check_update_DB(site, site_id) {
   var added = false;
   try {
     // after a site is visited, to see if the data was added to the db
-    if (table_id == 1) {
-      var response = await axios.get(
-        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis/${site_str}`
-      );
-    } else {
-      var response = await axios.get(
-        //`http://localhost:8080/analysis2/${site_str}`
-        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2/${site_str}`
-      );
-    }
+    var response = await axios.get(
+      `http://localhost:8080/analysis/${site_str}`
+    );
+
     latest_res_data = response.data;
 
     if (latest_res_data.length >= 1) {
@@ -124,17 +99,8 @@ async function check_update_DB(site, site_id) {
         added = true;
       }
     } else {
-      // is not in db -- due to not getting added or redirect
-      // then just search for null val and update the last site with null site_id
-      if (table_id == 1) {
-        var res = await axios.get(
-          `https://rest-api-dl7hml6cxq-uc.a.run.app/null_analysis`
-        );
-      } else {
-        var res = await axios.get(
-          `https://rest-api-dl7hml6cxq-uc.a.run.app/null_analysis2`
-        );
-      }
+      var res = await axios.get(`http://localhost:8080/null_analysis`);
+
       latest_res_data = res.data;
       console.log("null site_id: ", latest_res_data);
       if (latest_res_data.length >= 1) {

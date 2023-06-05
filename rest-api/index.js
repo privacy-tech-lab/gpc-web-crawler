@@ -10,11 +10,8 @@ async function rest(table) {
   // create application/json parser
   var jsonParser = bodyParser.json();
 
-  if (table == "analysis") {
-    var entry = "entries";
-  } else {
-    var entry = "entries_2";
-  }
+  // set table name
+  var table_name = "entries";
 
   app.get("/", (req, res) => res.send("Try: /" + table));
 
@@ -23,7 +20,7 @@ async function rest(table) {
   app.get("/" + table, (req, res) => {
     connection.query(
       "SELECT * FROM analysis.??",
-      entry,
+      table_name,
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
@@ -33,7 +30,7 @@ async function rest(table) {
   app.get("/last_input_domain_" + table, (req, res) => {
     connection.query(
       "SELECT * FROM analysis.?? WHERE id=(SELECT max(id) FROM analysis.??)",
-      [entry, entry],
+      [table_name, table_name],
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
@@ -44,7 +41,7 @@ async function rest(table) {
   app.get("/null_" + table, (req, res) => {
     connection.query(
       "SELECT * FROM analysis.?? WHERE site_id IS NULL",
-      entry,
+      table_name,
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
@@ -66,7 +63,7 @@ async function rest(table) {
     connection.query(
       "INSERT INTO ?? (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, uspapi_opted_out, usp_cookies_before_gpc, usp_cookies_after_gpc, usp_cookies_opted_out) VALUES (?,?,?,?,?,?,?,?,?)",
       [
-        entry,
+        table_name,
         domain,
         dns_link,
         sent_gpc,
@@ -87,7 +84,7 @@ async function rest(table) {
   app.route("/" + table + "/:domain").get((req, res, next) => {
     connection.query(
       "SELECT * FROM analysis.?? WHERE domain = ?",
-      [entry, req.params.domain],
+      [table_name, req.params.domain],
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
@@ -109,7 +106,7 @@ async function rest(table) {
   app.put("/" + table, jsonParser, (req, res) => {
     connection.query(
       "UPDATE ?? SET site_id = ? WHERE id = ? ",
-      [entry, req.body.site_id, req.body.id],
+      [table_name, req.body.site_id, req.body.id],
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
@@ -118,9 +115,8 @@ async function rest(table) {
   });
 }
 
-// "analysis" is for the first table, "analysis2" is for the second table
 rest("analysis");
-rest("analysis2");
+
 // Use port 8080 by default, unless configured differently in Google Cloud
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
