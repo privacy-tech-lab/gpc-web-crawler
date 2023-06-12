@@ -33,17 +33,12 @@ let driver;
 
 async function setup() {
   await new Promise((resolve) => setTimeout(resolve, 5000));
-  if (table_id == 1) {
-    options = new firefox.Options()
-      .setBinary(firefox.Channel.NIGHTLY)
-      .setPreference("xpinstall.signatures.required", false)
-      .addExtensions("./myextension.xpi");
-  } else {
-    options = new firefox.Options()
-      .setBinary(firefox.Channel.NIGHTLY)
-      .setPreference("xpinstall.signatures.required", false)
-      .addExtensions("./myextension2.xpi");
-  }
+  
+  options = new firefox.Options()
+    .setBinary(firefox.Channel.NIGHTLY)
+    .setPreference("xpinstall.signatures.required", false)
+    .addExtensions("./optmeowt.xpi");
+
   options.addArguments("--headful");
   driver = new Builder()
     .forBrowser("firefox")
