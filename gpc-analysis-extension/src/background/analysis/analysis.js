@@ -239,7 +239,8 @@ async function fetchUSPStringData() {
 }
 
 //sends sql post request to db and then resets the global sql_data
-function send_sql_and_reset() {
+function send_sql_and_reset(domain) {
+  sql_data["domain"] = domain;
   axios
     .post("http://localhost:8080/analysis", sql_data, {
       headers: {
@@ -306,6 +307,7 @@ function create_sql_data(domain) {
  * (3) Attach DOM property to page after reload
  */
 async function runAnalysis() {
+  let domain_ra;
   async function afterFetchingFirstPartyDomain() {
     const uspapiData = await fetchUSPStringData();
     let url = new URL(uspapiData.location);
@@ -329,13 +331,18 @@ async function runAnalysis() {
     let domain = parsed.domain;
     firstPartyDomain = domain; // Saves first party domain to global scope
 
-    afterFetchingFirstPartyDomain();
+    domain_ra = domain;
   });
 
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await afterFetchingFirstPartyDomain(); //moved this out of chrome.tabs.query so it could be await
+  await new Promise((resolve) => setTimeout(resolve, 4000)); //used to be 3 s
 
-  await haltAnalysis();
-  send_sql_and_reset(); //send global var sql_data to db via post request
+  // await haltAnalysis(); //////////////////
+
+  // log more specific data to other table //
+  create_sql_data(domain_ra);
+
+  // send_sql_and_reset(); //send global var sql_data to db via post request
 }
 
 /**
@@ -371,7 +378,7 @@ async function haltAnalysis() {
   if (uspapiData.cookies) {
     logData(domain, "COOKIES", uspapiData.cookies);
   }
-  create_sql_data(domain); //adding data to global var to send to sql db
+  // create_sql_data(domain); //adding data to global var to send to sql db
   afterUSPStringFetched();
 }
 
@@ -716,6 +723,7 @@ async function runAnalysisonce(location) {
   if (analysis_started === true) {
     await new Promise((resolve) => setTimeout(resolve, 3000));
     haltAnalysis();
+    send_sql_and_reset(domain); //send global var sql_data to db via post request
     await storage.set(stores.settings, false, "ANALYSIS_STARTED");
   }
 }

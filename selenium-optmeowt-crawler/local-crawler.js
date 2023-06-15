@@ -37,9 +37,15 @@ class AccessDeniedError extends Error {
     this.name = "AccessDeniedError";
   }
 }
+class VerifyHumanError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "VerifyHumanError";
+  }
+}
 
 async function setup() {
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   options = new firefox.Options()
     .setBinary(firefox.Channel.NIGHTLY)
     .setPreference("xpinstall.signatures.required", false)
@@ -114,12 +120,15 @@ async function visit_site(sites, site_id) {
   console.log(site_id, ": ", sites[site_id]);
   try {
     await driver.get(sites[site_id]);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     // check if access is denied
     // if so, throw an error so it gets tagged as an access denied site
     var title = await driver.getTitle();
     if (title.match(/Access Denied/i)) {
       throw new AccessDeniedError("Access Denied");
+    }
+    if (title.match(/Just a moment.../i)) {
+      throw new VerifyHumanError("page asked to verify you are human");
     }
   } catch (e) {
     console.log(e);
@@ -132,7 +141,7 @@ async function visit_site(sites, site_id) {
     console.log(err_obj);
     error_value = e.name; // update error value
     // if it's just access denied, we don't need to restart
-    if (e.name != "AccessDeniedError") {
+    if (e.name != "AccessDeniedError" && e.name != "VerifyHumanError") {
       driver.quit();
       console.log("------restarting driver------");
       new Promise((resolve) => setTimeout(resolve, 10000));
@@ -150,7 +159,8 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
     added == false &&
     error_value != "InsecureCertificateError" &&
     error_value != "WebDriverError" &&
-    error_value != "AccessDeniedError"
+    error_value != "AccessDeniedError" &&
+    error_value != "VerifyHumanError"
   ) {
     console.log("redo prev site");
     await visit_site(sites, site_id);
