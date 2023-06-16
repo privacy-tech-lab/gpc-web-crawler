@@ -49,13 +49,12 @@ npm install
 node local-crawler.js
 ```
 
-8. To check the analysis results, open a browser and navigate to https://rest-api-dl7hml6cxq-uc.a.run.app/analysis.
-
-- If you want to run the cloud crawler, reference the guide in the wiki.
+8. To check the analysis results, open a browser and navigate to http://localhost:8080/analysis.
 
 ## 3. Architecture
 
-![architecture](https://user-images.githubusercontent.com/40359590/230727149-bbfc0b06-38a3-4ee1-8be7-a113938da224.png)
+![crawler-architecture](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/71088392-1542-45d6-ae87-ffedf5339bca)
+
 
 Components:
 
@@ -73,10 +72,10 @@ Components:
   4. Check the site's US Privacy String again to determine the user's current opt out status
 
 - Node.js Rest API:
-  We use the Rest API to make GET, PUT, and POST requests to the Cloud SQL database. The Rest API is deployed to Google Cloud Run. Instructions for deployment can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Google-Cloud-REST-API-Deployment).
+  We use the Rest API to make GET, PUT, and POST requests to the SQL database. The Rest API is also local and is run in a separate terminal from the crawler. 
 
-- Cloud SQL Database:
-  The Cloud SQL database is a Google Cloud SQL database that stores analysis data. Instructions to set up a Cloud SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Google-Cloud-MySQL-Configurations). The columns of our database tables are below:
+- SQL Database:
+  The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
   | id | site_id | domain | dns_link | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | uspapi_opted_out | usp_cookies_before_gpc | usp_cookies_after_gpc | usp_cookies_opted_out |
   | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
@@ -96,8 +95,6 @@ Components:
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie before a GPC opt out signal was sent
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
   - usp_cookies_opted_out: a binary indicator of whether the site respected the GPC opt out signal based on the change in the US Privacy String in an HTTP cookie
-
-  We run the crawler script on multiple computers at once. We maintain one database table per computer used. When starting the crawler script, the user will be prompted to enter the table number to use. Currently, there are 2 tables.
 
 ## 4. Thank You!
 
