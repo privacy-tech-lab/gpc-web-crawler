@@ -6,9 +6,6 @@ const firefox = require("selenium-webdriver/firefox");
 //   headless: true,
 // };
 
-const prompt = require("prompt-sync")({ sigint: true });
-let table_id = prompt("Enter table number (1 or 2): ");
-
 const { By } = require("selenium-webdriver");
 const { Key } = require("selenium-webdriver");
 const fs = require("fs");
@@ -31,46 +28,39 @@ fs.createReadStream("sites1.csv")
 var options;
 let driver;
 
-async function setup() {
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  
-  if (table_id == 1) {
-    options = new firefox.Options()
-      .setBinary(firefox.Channel.NIGHTLY)
-      .setPreference("xpinstall.signatures.required", false)
-      .addExtensions("./optmeowt.xpi");
-  } else {
-    options = new firefox.Options()
-      .setBinary(firefox.Channel.NIGHTLY)
-      .setPreference("xpinstall.signatures.required", false)
-      .addExtensions("./optmeowt.xpi");
+// write a custom error
+// we throw this the title of the site is access denied
+// then we can identify sites that we can't crawl with the vpn on
+class AccessDeniedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "AccessDeniedError";
   }
+}
+class VerifyHumanError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "VerifyHumanError";
+  }
+}
+
+async function setup() {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  options = new firefox.Options()
+    .setBinary(firefox.Channel.NIGHTLY)
+    .setPreference("xpinstall.signatures.required", false)
+    .addExtensions("./myextension.xpi");
 
   options.addArguments("--headful");
   driver = new Builder()
     .forBrowser("firefox")
     .setFirefoxOptions(options)
     .build();
-  // set timeout so that if a page doesn't load in 10 s, it times out
+  // set timeout so that if a page doesn't load in 30 s, it times out
   await driver
     .manage()
-    .setTimeouts({ implicit: 0, pageLoad: 20000, script: 30000 });
+    .setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 });
   console.log("built");
-  // await driver.get("about:config");
-  // console.log("built");
-  // await driver.findElement(By.id("warningButton")).click().finally();
-  // console.log("built");
-  // await new Promise((resolve) => setTimeout(resolve, 1000));
-  // box = driver.findElement(By.xpath('//*[@id="about-config-search"]'));
-  // await box.sendKeys("xpinstall.signatures.required");
-  // await new Promise((resolve) => setTimeout(resolve, 1000));
-  // await driver
-  //   .findElement(By.xpath("/html/body/table/tr/td[2]/button"))
-  //   .click()
-  //   .finally();
-  // await new Promise((resolve) => setTimeout(resolve, 1000));
-  // console.log("installing addon...");
-  // await driver.installAddon("./myextension.xpi");
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
   console.log("setup complete");
@@ -78,19 +68,7 @@ async function setup() {
 
 async function put_site_id(data) {
   try {
-    if (table_id == 1) {
-      var response = await axios.put(
-        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis`,
-        // `http://localhost:8080/analysis`,
-        data
-      );
-    } else {
-      var response = await axios.put(
-        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2`,
-        //`http://localhost:8080/analysis2`,
-        data
-      );
-    }
+    var response = await axios.put(`http://localhost:8080/analysis`, data);
   } catch (error) {
     console.error(error);
   }
@@ -103,16 +81,10 @@ async function check_update_DB(site, site_id) {
   var added = false;
   try {
     // after a site is visited, to see if the data was added to the db
-    if (table_id == 1) {
-      var response = await axios.get(
-        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis/${site_str}`
-      );
-    } else {
-      var response = await axios.get(
-        //`http://localhost:8080/analysis2/${site_str}`
-        `https://rest-api-dl7hml6cxq-uc.a.run.app/analysis2/${site_str}`
-      );
-    }
+    var response = await axios.get(
+      `http://localhost:8080/analysis/${site_str}`
+    );
+
     latest_res_data = response.data;
 
     if (latest_res_data.length >= 1) {
@@ -126,17 +98,8 @@ async function check_update_DB(site, site_id) {
         added = true;
       }
     } else {
-      // is not in db -- due to not getting added or redirect
-      // then just search for null val and update the last site with null site_id
-      if (table_id == 1) {
-        var res = await axios.get(
-          `https://rest-api-dl7hml6cxq-uc.a.run.app/null_analysis`
-        );
-      } else {
-        var res = await axios.get(
-          `https://rest-api-dl7hml6cxq-uc.a.run.app/null_analysis2`
-        );
-      }
+      var res = await axios.get(`http://localhost:8080/null_analysis`);
+
       latest_res_data = res.data;
       console.log("null site_id: ", latest_res_data);
       if (latest_res_data.length >= 1) {
@@ -157,7 +120,16 @@ async function visit_site(sites, site_id) {
   console.log(site_id, ": ", sites[site_id]);
   try {
     await driver.get(sites[site_id]);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    // check if access is denied
+    // if so, throw an error so it gets tagged as an access denied site
+    var title = await driver.getTitle();
+    if (title.match(/Access Denied/i)) {
+      throw new AccessDeniedError("Access Denied");
+    }
+    if (title.match(/Just a moment.../i)) {
+      throw new VerifyHumanError("page asked to verify you are human");
+    }
   } catch (e) {
     console.log(e);
     // log the errors in an object so you don't have to sort through manually
@@ -168,10 +140,13 @@ async function visit_site(sites, site_id) {
     }
     console.log(err_obj);
     error_value = e.name; // update error value
-    driver.quit();
-    console.log("------restarting driver------");
-    new Promise((resolve) => setTimeout(resolve, 10000));
-    await setup(); //restart the selenium driver
+    // if it's just access denied, we don't need to restart
+    if (e.name != "AccessDeniedError" && e.name != "VerifyHumanError") {
+      driver.quit();
+      console.log("------restarting driver------");
+      new Promise((resolve) => setTimeout(resolve, 10000));
+      await setup(); //restart the selenium driver
+    }
   }
   return error_value;
 }
@@ -183,7 +158,9 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
     //an error that prevents us from analyzing that site
     added == false &&
     error_value != "InsecureCertificateError" &&
-    error_value != "WebDriverError"
+    error_value != "WebDriverError" &&
+    error_value != "AccessDeniedError" &&
+    error_value != "VerifyHumanError"
   ) {
     console.log("redo prev site");
     await visit_site(sites, site_id);
