@@ -33,7 +33,7 @@ Selenium OptMeowt Crawler is a crawler for analysis functionality of [OptMeowt](
 
 2. Set up the local SQL database by following the instructions in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database).
 
-3. Then, run the Rest API by following the instructions in the wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-REST-API).
+3. Then, run the Rest API by following the instructions in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-REST-API).
 
 4. With the Rest API running, open a new terminal, and navigate to the root directory of selenium-optmeowt-crawler in terminal by running:
 
