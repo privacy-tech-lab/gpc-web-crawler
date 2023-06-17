@@ -30,14 +30,20 @@ Selenium OptMeowt Crawler is a crawler for analysis functionality of [OptMeowt](
 ## 2. Development
 
 1. Clone this repo locally or download a zipped copy and unzip it.
-2. Navigate to the root directory of selenium-optmeowt-crawler in terminal by running:
+
+2. Set up the local SQL database by following the instructions in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database).
+
+3. Then, run the Rest API by following the instructions in the wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-REST-API).
+
+4. With the Rest API running, open a new terminal, and navigate to the root directory of selenium-optmeowt-crawler in terminal by running:
 
 ```console
 cd selenium-optmeowt-crawler
 ```
 
-3. Open sites.csv and enter the links you want to analyze in the first column. (Some examples included in the file)
-4. Install the dependencies by running:
+5. Open sites.csv and enter the links you want to analyze in the first column. (Some examples included in the file)
+
+6. Install the dependencies by running:
 
 ```console
 npm install
@@ -55,7 +61,6 @@ node local-crawler.js
 
 ![crawler-architecture](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/71088392-1542-45d6-ae87-ffedf5339bca)
 
-
 Components:
 
 - Crawler Script:
@@ -72,7 +77,7 @@ Components:
   4. Check the site's US Privacy String again to determine the user's current opt out status
 
 - Node.js Rest API:
-  We use the Rest API to make GET, PUT, and POST requests to the SQL database. The Rest API is also local and is run in a separate terminal from the crawler. 
+  We use the Rest API to make GET, PUT, and POST requests to the SQL database. The Rest API is also local and is run in a separate terminal from the crawler.
 
 - SQL Database:
   The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
