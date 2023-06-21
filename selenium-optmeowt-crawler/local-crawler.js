@@ -140,6 +140,25 @@ async function visit_site(sites, site_id) {
     }
     console.log(err_obj);
     error_value = e.name; // update error value
+
+    ///////////////
+    // converting the JSON object to a string
+    var err_data = JSON.stringify(err_obj);
+
+    // writing the JSON string content to a file
+    fs.writeFile("error-logging.json", err_data, (error) => {
+      // throwing the error
+      // in case of a writing problem
+      if (error) {
+        // logging the error
+        console.error(error);
+
+        throw error;
+      }
+      console.log("error-logging.json written correctly");
+    });
+    //////////////////////
+
     // if it's just access denied, we don't need to restart
     if (e.name != "AccessDeniedError" && e.name != "VerifyHumanError") {
       driver.quit();
