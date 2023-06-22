@@ -16,7 +16,7 @@ var total_begin = Date.now(); //start logging time
 var err_obj = new Object();
 // Loads sites to crawl
 const sites = [];
-fs.createReadStream("sites1.csv")
+fs.createReadStream("sites.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
     sites.push(row[0]);
@@ -43,6 +43,12 @@ class VerifyHumanError extends Error {
     this.name = "VerifyHumanError";
   }
 }
+class SiteError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "SiteError";
+  }
+}
 
 async function setup() {
   await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -61,7 +67,7 @@ async function setup() {
     .manage()
     .setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 });
   console.log("built");
-
+  await driver.manage().window().maximize();
   await new Promise((resolve) => setTimeout(resolve, 3000));
   console.log("setup complete");
 }
@@ -124,10 +130,26 @@ async function visit_site(sites, site_id) {
     // check if access is denied
     // if so, throw an error so it gets tagged as an access denied site
     var title = await driver.getTitle();
-    if (title.match(/Access Denied/i)) {
+    if (title.match(/Access/i) && title.match(/Denied/i)) {
       throw new AccessDeniedError("Access Denied");
     }
+    if (
+      title.match(/error/i) ||
+      (title.match(/service/i) && title.match(/unavailable/i))
+    ) {
+      throw new SiteError("fastly error or service unavailable");
+    }
     if (title.match(/Just a moment.../i)) {
+      /////attempting to bypass the captcha
+      // await new Promise((resolve) => setTimeout(resolve, 4000));
+      // console.log("switching");
+      // await driver.switchTo().frame(0);
+      // console.log("switched --- clicking");
+      // await driver
+      //   .findElement(By.xpath('//*[@id="cf-stage"]'))
+      //   .click()
+      //   .finally();
+      // await new Promise((resolve) => setTimeout(resolve, 15000));
       throw new VerifyHumanError("page asked to verify you are human");
     }
   } catch (e) {
@@ -160,7 +182,11 @@ async function visit_site(sites, site_id) {
     //////////////////////
 
     // if it's just access denied, we don't need to restart
-    if (e.name != "AccessDeniedError" && e.name != "VerifyHumanError") {
+    if (
+      e.name != "AccessDeniedError" &&
+      e.name != "VerifyHumanError" &&
+      e.name != "SiteError"
+    ) {
       driver.quit();
       console.log("------restarting driver------");
       new Promise((resolve) => setTimeout(resolve, 10000));
@@ -179,7 +205,8 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
     error_value != "InsecureCertificateError" &&
     error_value != "WebDriverError" &&
     error_value != "AccessDeniedError" &&
-    error_value != "VerifyHumanError"
+    error_value != "VerifyHumanError" &&
+    error_value != "SiteError"
   ) {
     console.log("redo prev site");
     await visit_site(sites, site_id);
