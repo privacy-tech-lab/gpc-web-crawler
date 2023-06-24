@@ -144,9 +144,6 @@ window.addEventListener('message', function(event) {
       location: this.location.href
     });
   }
-	if (event.data.type == "RUN_ANALYSIS") {
-		chrome.runtime.sendMessage({ msg: "RUN_ANALYSIS", data: event.data.result });	
-	}
 }, false);
 
 chrome.runtime.sendMessage({ msg: "QUERY_ANALYSIS", location: this.location.href});

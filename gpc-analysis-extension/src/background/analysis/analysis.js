@@ -734,54 +734,8 @@ function onMessageHandler(message, sender, sendResponse) {
     let domain = parseURL(url);
     logData(domain, "USPAPI", message.data);
   }
-  if (message.msg === "DNS_FINDER_TO_BACKGROUND") {
-    let url = new URL(message.location);
-    let domain = parseURL(url);
-    logData(domain, "DO_NOT_SELL_LINK", message.data);
-  }
-  if (message.msg === "RUN_ANALYSIS") {
-    runAnalysis();
-  }
-  if (message.msg === "HALT_ANALYSIS") {
-    haltAnalysis();
-  }
-  if (message.msg === "POPUP_ANALYSIS") {
-    chrome.runtime.sendMessage({
-      msg: "POPUP_ANALYSIS_DATA",
-      data: { analysis, analysis_userend },
-    });
-  }
-  if (message.msg === "CSV_DATA_REQUEST") {
-    chrome.runtime.sendMessage({
-      msg: "CSV_DATA_RESPONSE",
-      data: {
-        titles: analysisUserendSkeleton(),
-      },
-    });
-  }
-  if (message.msg === "CSV_DATA_REQUEST_FROM_SETTINGS") {
-    chrome.runtime.sendMessage({
-      msg: "CSV_DATA_RESPONSE_TO_SETTINGS",
-      data: {
-        titles: analysisUserendSkeleton(),
-      },
-    });
-  }
 }
 
-/**
- * Handles actually running the analysis when it is fired
- */
-function onConnectHandler(port) {
-  port.onMessage.addListener(function (message) {
-    if (message.msg === "RUN_ANALYSIS_FROM_BACKGROUND") {
-      runAnalysis();
-    }
-    if (message.msg === "STOP_ANALYSIS_FROM_BACKGROUND") {
-      haltAnalysis();
-    }
-  });
-}
 
 async function exportCSV() {
   const csvData = await storage.getStore(stores.analysis);
