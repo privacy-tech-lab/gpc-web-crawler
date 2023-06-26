@@ -16,7 +16,7 @@ var total_begin = Date.now(); //start logging time
 var err_obj = new Object();
 // Loads sites to crawl
 const sites = [];
-fs.createReadStream("sites.csv")
+fs.createReadStream("sites1.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
     sites.push(row[0]);
@@ -29,24 +29,12 @@ var options;
 let driver;
 
 // write a custom error
-// we throw this the title of the site is access denied
+// we throw this the title of the site has a human check
 // then we can identify sites that we can't crawl with the vpn on
-class AccessDeniedError extends Error {
+class HumanCheckError extends Error {
   constructor(message) {
     super(message);
-    this.name = "AccessDeniedError";
-  }
-}
-class VerifyHumanError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "VerifyHumanError";
-  }
-}
-class SiteError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "SiteError";
+    this.name = "HumanCheckError";
   }
 }
 
@@ -128,29 +116,16 @@ async function visit_site(sites, site_id) {
     await driver.get(sites[site_id]);
     await new Promise((resolve) => setTimeout(resolve, 3000));
     // check if access is denied
-    // if so, throw an error so it gets tagged as an access denied site
+    // if so, throw an error so it gets tagged as a human check site
     var title = await driver.getTitle();
-    if (title.match(/Access/i) && title.match(/Denied/i)) {
-      throw new AccessDeniedError("Access Denied");
-    }
     if (
+      (title.match(/Access/i) && title.match(/Denied/i)) ||
       title.match(/error/i) ||
-      (title.match(/service/i) && title.match(/unavailable/i))
+      (title.match(/service/i) && title.match(/unavailable/i)) ||
+      title.match(/Just a moment.../i) ||
+      title.match(/pardon our interruption/i)
     ) {
-      throw new SiteError("fastly error or service unavailable");
-    }
-    if (title.match(/Just a moment.../i)) {
-      /////attempting to bypass the captcha
-      // await new Promise((resolve) => setTimeout(resolve, 4000));
-      // console.log("switching");
-      // await driver.switchTo().frame(0);
-      // console.log("switched --- clicking");
-      // await driver
-      //   .findElement(By.xpath('//*[@id="cf-stage"]'))
-      //   .click()
-      //   .finally();
-      // await new Promise((resolve) => setTimeout(resolve, 15000));
-      throw new VerifyHumanError("page asked to verify you are human");
+      throw new HumanCheckError("Human Check");
     }
   } catch (e) {
     console.log(e);
@@ -181,12 +156,8 @@ async function visit_site(sites, site_id) {
     });
     //////////////////////
 
-    // if it's just access denied, we don't need to restart
-    if (
-      e.name != "AccessDeniedError" &&
-      e.name != "VerifyHumanError" &&
-      e.name != "SiteError"
-    ) {
+    // if it's just a human check site, we don't need to restart
+    if (e.name != "HumanCheckError") {
       driver.quit();
       console.log("------restarting driver------");
       new Promise((resolve) => setTimeout(resolve, 10000));
@@ -204,9 +175,7 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
     added == false &&
     error_value != "InsecureCertificateError" &&
     error_value != "WebDriverError" &&
-    error_value != "AccessDeniedError" &&
-    error_value != "VerifyHumanError" &&
-    error_value != "SiteError"
+    error_value != "HumanCheckError"
   ) {
     console.log("redo prev site");
     await visit_site(sites, site_id);
