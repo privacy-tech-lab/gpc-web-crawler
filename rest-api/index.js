@@ -55,13 +55,11 @@ async function rest(table) {
     var sent_gpc = req.body.sent_gpc;
     var uspapi_before_gpc = req.body.uspapi_before_gpc;
     var uspapi_after_gpc = req.body.uspapi_after_gpc;
-    var uspapi_opted_out = req.body.uspapi_opted_out;
     var usp_cookies_before_gpc = req.body.usp_cookies_before_gpc;
     var usp_cookies_after_gpc = req.body.usp_cookies_after_gpc;
-    var usp_cookies_opted_out = req.body.usp_cookies_opted_out;
     console.log("posting", domain, "to analysis...");
     connection.query(
-      "INSERT INTO ?? (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, uspapi_opted_out, usp_cookies_before_gpc, usp_cookies_after_gpc, usp_cookies_opted_out) VALUES (?,?,?,?,?,?,?,?,?)",
+      "INSERT INTO ?? (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc) VALUES (?,?,?,?,?,?,?)",
       [
         table_name,
         domain,
@@ -69,10 +67,8 @@ async function rest(table) {
         sent_gpc,
         uspapi_before_gpc,
         uspapi_after_gpc,
-        uspapi_opted_out,
         usp_cookies_before_gpc,
         usp_cookies_after_gpc,
-        usp_cookies_opted_out,
       ],
       (error, results, fields) => {
         if (error) throw error;

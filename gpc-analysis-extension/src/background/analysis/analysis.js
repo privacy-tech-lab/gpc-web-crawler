@@ -34,9 +34,6 @@ WARNING:  Content Security Policies are DISABLED while Analysis Mode is ON.
 - See disableCSPPerRequest function for more details
 */
 import axios from "axios";
-import { csvGenerator } from "../../common/csvGenerator.js";
-import { modes } from "../../data/modes.js";
-import { defaultSettings } from "../../data/defaultSettings.js";
 import { stores, storage } from "./../storage.js";
 import {
   cookiesPhrasing,
@@ -66,10 +63,8 @@ var sql_data = {
   sent_gpc: false,
   uspapi_before_gpc: null,
   uspapi_after_gpc: null,
-  uspapi_opted_out: null,
   usp_cookies_before_gpc: null,
   usp_cookies_after_gpc: null,
-  usp_cookies_opted_out: null,
 };
 /******************************************************************************/
 /******************************************************************************/
@@ -255,10 +250,8 @@ function send_sql_and_reset() {
     sent_gpc: false,
     uspapi_before_gpc: null,
     uspapi_after_gpc: null,
-    uspapi_opted_out: null,
     usp_cookies_before_gpc: null,
     usp_cookies_after_gpc: null,
-    usp_cookies_opted_out: null,
   };
 }
 
@@ -280,7 +273,6 @@ function create_sql_data(domain) {
         analysis_userend[domain]["USPAPI_AFTER_GPC"][i]["uspString"];
     }
   }
-  sql_data["uspapi_opted_out"] = analysis_userend[domain]["USPAPI_OPTED_OUT"];
 
   for (let i in analysis_userend[domain]["USP_COOKIES_AFTER_GPC"]) {
     if (analysis_userend[domain]["USP_COOKIES_AFTER_GPC"][i]["value"]) {
@@ -294,8 +286,6 @@ function create_sql_data(domain) {
         analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"][i]["value"];
     }
   }
-  sql_data["usp_cookies_opted_out"] =
-    analysis_userend[domain]["USP_COOKIE_OPTED_OUT"];
 }
 
 /**
@@ -465,10 +455,8 @@ var analysisUserendSkeleton = () => {
     SENT_GPC: false,
     USPAPI_BEFORE_GPC: [],
     USPAPI_AFTER_GPC: [],
-    USPAPI_OPTED_OUT: undefined,
     USP_COOKIES_BEFORE_GPC: [],
     USP_COOKIES_AFTER_GPC: [],
-    USP_COOKIE_OPTED_OUT: undefined,
   };
 };
 
@@ -574,30 +562,6 @@ function logData(domain, command, data) {
             value: data[i]["value"],
           });
         }
-        try {
-          if (analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] !== true) {
-            let USPrivacyString = data[i].value || "";
-            // Give precedence to USPAPI
-            let optedOut = analysis_userend[domain]["USP_COOKIE_OPTED_OUT"];
-            if (optedOut !== null || optedOut !== undefined) {
-              if (USPrivacyString[2] === "Y" || USPrivacyString[2] === "y") {
-                analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = true;
-              } else if (USPrivacyString[2] === "-") {
-                analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = "NOT_IN_CA";
-              } else if (
-                USPrivacyString[2] === "N" ||
-                USPrivacyString[2] == "n"
-              ) {
-                analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = false;
-              } else {
-                analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = null;
-              }
-            }
-          }
-        } catch (e) {
-          console.error("Parsing USPAPI for analysis_userend failed.", e);
-          analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = "PARSE_FAILED";
-        }
       }
     }
   }
@@ -618,23 +582,6 @@ function logData(domain, command, data) {
       analysis_userend[domain]["USPAPI_AFTER_GPC"].push({
         uspString: data["uspString"],
       });
-
-      try {
-        let USPrivacyString = data.value || data.uspString;
-
-        if (USPrivacyString[2] === "Y" || USPrivacyString[2] === "y") {
-          analysis_userend[domain]["USPAPI_OPTED_OUT"] = true;
-        } else if (USPrivacyString[2] === "-") {
-          analysis_userend[domain]["USPAPI_OPTED_OUT"] = "NOT_IN_CA";
-        } else if (USPrivacyString[2] === "N" || USPrivacyString[2] == "n") {
-          analysis_userend[domain]["USPAPI_OPTED_OUT"] = false;
-        } else {
-          analysis_userend[domain]["USPAPI_OPTED_OUT"] = null;
-        }
-      } catch (e) {
-        console.error("Parsing USPAPI for analysis_userend failed.", e);
-        analysis_userend[domain]["USPAPI_OPTED_OUT"] = "PARSE_FAILED";
-      }
     }
   }
   if (command === "DO_NOT_SELL_LINK") {
@@ -729,18 +676,6 @@ function onMessageHandler(message, sender, sendResponse) {
   if (message.msg === "QUERY_ANALYSIS") {
     runAnalysisonce(message.location);
   }
-  if (message.msg === "USPAPI_TO_BACKGROUND") {
-    let url = new URL(message.location);
-    let domain = parseURL(url);
-    logData(domain, "USPAPI", message.data);
-  }
-}
-
-
-async function exportCSV() {
-  const csvData = await storage.getStore(stores.analysis);
-  csvGenerator(csvData, analysisUserendSkeleton());
-  return;
 }
 
 function commandsHandler(command) {
@@ -749,9 +684,6 @@ function commandsHandler(command) {
   }
   if (command === "halt_analysis") {
     haltAnalysis();
-  }
-  if (command === "export_csv") {
-    exportCSV();
   }
 }
 
@@ -762,7 +694,6 @@ function enableListeners() {
   chrome.cookies.onChanged.addListener(cookiesOnChangedCallback);
   chrome.webNavigation.onCommitted.addListener(onCommittedCallback);
   chrome.runtime.onMessage.addListener(onMessageHandler);
-  chrome.runtime.onConnect.addListener(onConnectHandler);
   chrome.commands.onCommand.addListener(commandsHandler);
   chrome.webRequest.onHeadersReceived.addListener(
     disableCSPCallback,
@@ -775,7 +706,6 @@ function disableListeners() {
   chrome.cookies.onChanged.removeListener(cookiesOnChangedCallback);
   chrome.webNavigation.onCommitted.removeListener(onCommittedCallback);
   chrome.runtime.onMessage.removeListener(onMessageHandler);
-  chrome.runtime.onConnect.removeListener(onConnectHandler);
   chrome.commands.onCommand.removeListener(commandsHandler);
   chrome.webRequest.onHeadersReceived.removeListener(disableCSPCallback);
 }

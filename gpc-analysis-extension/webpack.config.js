@@ -116,15 +116,6 @@ export default (env, argv) => {
           },
         ],
       }),
-      new CopyPlugin({
-        patterns: [
-          {
-            context: path.resolve(__dirname, "src"),
-            from: "rules",
-            to: "rules",
-          },
-        ],
-      }),
     ],
   };
 };
