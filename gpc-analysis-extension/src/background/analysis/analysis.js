@@ -297,6 +297,18 @@ function create_sql_data(domain) {
  */
 async function runAnalysis() {
   let domain_ra;
+
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    let tab = tabs[0];
+    let url = new URL(tab.url);
+    let parsed = psl.parse(url.hostname);
+    let domain = parsed.domain;
+    firstPartyDomain = domain; // Saves first party domain to global scope
+
+    domain_ra = domain;
+  });
+  await new Promise((resolve) => setTimeout(resolve, 1000)); //new
+
   async function afterFetchingFirstPartyDomain() {
     const uspapiData = await fetchUSPStringData();
     let url = new URL(uspapiData.location);
@@ -312,19 +324,8 @@ async function runAnalysis() {
     addGPCHeaders();
     chrome.tabs.reload();
   }
-
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    let tab = tabs[0];
-    let url = new URL(tab.url);
-    let parsed = psl.parse(url.hostname);
-    let domain = parsed.domain;
-    firstPartyDomain = domain; // Saves first party domain to global scope
-
-    domain_ra = domain;
-  });
-
   await afterFetchingFirstPartyDomain(); //moved this out of chrome.tabs.query so it could be await
-  await new Promise((resolve) => setTimeout(resolve, 3000)); //used to be 3 s
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   await haltAnalysis(); //////////////////
   send_sql_and_reset(); //send global var sql_data to db via post request
@@ -334,6 +335,17 @@ async function runAnalysis() {
  * Disables analysis collection
  */
 async function haltAnalysis() {
+  const uspapiData = await fetchUSPStringData();
+  let url = new URL(uspapiData.location);
+  let domain = parseURL(url);
+  if (uspapiData.data !== "USPAPI_FAILED") {
+    logData(domain, "USPAPI", uspapiData.data);
+  }
+  if (uspapiData.cookies) {
+    logData(domain, "COOKIES", uspapiData.cookies);
+  }
+  create_sql_data(domain); //adding data to global var to send to sql db
+
   function afterUSPStringFetched() {
     changingSitesOnAnalysis = false;
     firstPartyDomain = "";
@@ -353,17 +365,6 @@ async function haltAnalysis() {
       );
     });
   }
-
-  const uspapiData = await fetchUSPStringData();
-  let url = new URL(uspapiData.location);
-  let domain = parseURL(url);
-  if (uspapiData.data !== "USPAPI_FAILED") {
-    logData(domain, "USPAPI", uspapiData.data);
-  }
-  if (uspapiData.cookies) {
-    logData(domain, "COOKIES", uspapiData.cookies);
-  }
-  create_sql_data(domain); //adding data to global var to send to sql db
   afterUSPStringFetched();
 }
 
@@ -583,12 +584,6 @@ function logData(domain, command, data) {
         uspString: data["uspString"],
       });
     }
-  }
-  if (command === "DO_NOT_SELL_LINK") {
-    analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK"] = [];
-    analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK"].push(data);
-    analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK_EXISTS"] = true;
-    analysis_userend[domain]["DO_NOT_SELL_LINK_EXISTS"] = true;
   }
   if (command === "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING") {
     analysis[domain][callIndex][gpcStatusKey][

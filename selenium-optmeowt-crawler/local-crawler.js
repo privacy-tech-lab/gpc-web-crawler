@@ -86,6 +86,7 @@ async function check_update_DB(site, site_id) {
     );
 
     latest_res_data = response.data;
+    // console.log("getting: ", site_str, "-->", latest_res_data);
 
     if (latest_res_data.length >= 1) {
       // console.log(latest_res_data[latest_res_data.length - 1]);
@@ -164,6 +165,9 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
   ) {
     console.log("redo prev site");
     await visit_site(sites, site_id);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // putting site id on redo site
+    added = await check_update_DB(sites[site_id], site_id);
   }
 }
 
