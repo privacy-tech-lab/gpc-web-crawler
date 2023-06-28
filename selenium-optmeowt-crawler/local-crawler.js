@@ -29,18 +29,12 @@ var options;
 let driver;
 
 // write a custom error
-// we throw this the title of the site is access denied
+// we throw this the title of the site has a human check
 // then we can identify sites that we can't crawl with the vpn on
-class AccessDeniedError extends Error {
+class HumanCheckError extends Error {
   constructor(message) {
     super(message);
-    this.name = "AccessDeniedError";
-  }
-}
-class VerifyHumanError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "VerifyHumanError";
+    this.name = "HumanCheckError";
   }
 }
 
@@ -61,7 +55,7 @@ async function setup() {
     .manage()
     .setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 });
   console.log("built");
-
+  await driver.manage().window().maximize();
   await new Promise((resolve) => setTimeout(resolve, 3000));
   console.log("setup complete");
 }
@@ -122,13 +116,16 @@ async function visit_site(sites, site_id) {
     await driver.get(sites[site_id]);
     await new Promise((resolve) => setTimeout(resolve, 3000));
     // check if access is denied
-    // if so, throw an error so it gets tagged as an access denied site
+    // if so, throw an error so it gets tagged as a human check site
     var title = await driver.getTitle();
-    if (title.match(/Access Denied/i)) {
-      throw new AccessDeniedError("Access Denied");
-    }
-    if (title.match(/Just a moment.../i)) {
-      throw new VerifyHumanError("page asked to verify you are human");
+    if (
+      (title.match(/Access/i) && title.match(/Denied/i)) ||
+      title.match(/error/i) ||
+      (title.match(/service/i) && title.match(/unavailable/i)) ||
+      title.match(/Just a moment.../i) ||
+      title.match(/pardon our interruption/i)
+    ) {
+      throw new HumanCheckError("Human Check");
     }
   } catch (e) {
     console.log(e);
@@ -140,8 +137,27 @@ async function visit_site(sites, site_id) {
     }
     console.log(err_obj);
     error_value = e.name; // update error value
-    // if it's just access denied, we don't need to restart
-    if (e.name != "AccessDeniedError" && e.name != "VerifyHumanError") {
+
+    ///////////////
+    // converting the JSON object to a string
+    var err_data = JSON.stringify(err_obj);
+
+    // writing the JSON string content to a file
+    fs.writeFile("error-logging.json", err_data, (error) => {
+      // throwing the error
+      // in case of a writing problem
+      if (error) {
+        // logging the error
+        console.error(error);
+
+        throw error;
+      }
+      console.log("error-logging.json written correctly");
+    });
+    //////////////////////
+
+    // if it's just a human check site, we don't need to restart
+    if (e.name != "HumanCheckError") {
       driver.quit();
       console.log("------restarting driver------");
       new Promise((resolve) => setTimeout(resolve, 10000));
@@ -159,8 +175,7 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
     added == false &&
     error_value != "InsecureCertificateError" &&
     error_value != "WebDriverError" &&
-    error_value != "AccessDeniedError" &&
-    error_value != "VerifyHumanError"
+    error_value != "HumanCheckError"
   ) {
     console.log("redo prev site");
     await visit_site(sites, site_id);
