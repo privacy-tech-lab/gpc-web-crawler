@@ -101,7 +101,20 @@ Components:
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
   - usp_cookies_opted_out: a binary indicator of whether the site respected the GPC opt out signal based on the change in the US Privacy String in an HTTP cookie
 
-## 4. Thank You!
+## 4. Limitations/Known Issues
+Since we are using Selenium and a VPN to visit the sites we analyze, there are some limitations to the sites we can analyze.
+There are 2 main types of sites that we cannot analyze due to our methodology:
+1. Sites where the VPN’s IP address is blocked.
+   
+A site titled “Access Denied” that says we don’t have permission to access the site on this server is loaded instead of the real site.
+
+2. Sites that have some kind of human check.
+
+Some sites can detect that we are using automation tools (i.e. Selenium) and do not let us access the real site. Instead, we’re redirected to a page with some kind of captcha or puzzle. We do not try to bypass any human checks.
+
+Since the data collected from both of these types of sites will be incorrect, we list them under HumanCheckError in error-logging.json. We have observed a few different site titles that indicate we have reached a site in one of these categories. Most of the titles occur for multiple sites, with the most common being “Just a Moment…” on a captcha from Cloudflare. We detect when our crawler visits one of these sites by matching the site title of the loaded site with a set of regular expressions that match with the known titles. Clearly, we will miss some sites in this category if we have not seen it and added the title to the set of regular expressions. We are updating the regular expressions as we see more sites like this. For more information, see [issue #51](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/51).
+
+## 5. Thank You!
 
 <p align="center"><strong>We would like to thank our financial supporters!</strong></p><br>
 
