@@ -133,11 +133,16 @@ async function visit_site(sites, site_id) {
     }
   } catch (e) {
     console.log(e);
+    var msg = "";
+    // we want to separate the reaching an error page from other webdriver errors
+    if (e.message.match(/reached error page/i)) {
+      msg = ": Reached Error Page";
+    }
     // log the errors in an object so you don't have to sort through manually
-    if (e.name in err_obj) {
-      err_obj[e.name].push(sites[site_id]);
+    if (e.name + msg in err_obj) {
+      err_obj[e.name + msg].push(sites[site_id]);
     } else {
-      err_obj[e.name] = [sites[site_id]];
+      err_obj[e.name + msg] = [sites[site_id]];
     }
     console.log(err_obj);
     error_value = e.name; // update error value

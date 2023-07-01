@@ -66,6 +66,7 @@ var sql_data = {
   usp_cookies_before_gpc: null,
   usp_cookies_after_gpc: null,
 };
+var debugging_version = true; // assume that the debugging table exists
 /******************************************************************************/
 /******************************************************************************/
 /**********                       # Functions                        **********/
@@ -287,7 +288,26 @@ function create_sql_data(domain) {
     }
   }
 }
-
+function post_to_debug(domain, a, b) {
+  if (debugging_version == true) {
+    var debug_data_post = {
+      domain: domain,
+      a: JSON.stringify(a),
+      b: JSON.stringify(b),
+    };
+    axios
+      .post("http://localhost:8080/debug", debug_data_post, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => console.log(res.data))
+      .catch(function (err) {
+        // we assume the debugging table doesn't exist, so stop trying to post things to it
+        debugging_version = false;
+      });
+  }
+}
 /**
  * Initializes the analysis with a refresh after being triggered
  *
@@ -299,6 +319,7 @@ async function runAnalysis() {
   let domain_ra;
 
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    post_to_debug(firstPartyDomain, "line 322", "query tab runAnalysis");
     let tab = tabs[0];
     let url = new URL(tab.url);
     let parsed = psl.parse(url.hostname);
@@ -310,7 +331,9 @@ async function runAnalysis() {
   await new Promise((resolve) => setTimeout(resolve, 1000)); //new
 
   async function afterFetchingFirstPartyDomain() {
+    post_to_debug(firstPartyDomain, "line 334", "runAnalysis");
     const uspapiData = await fetchUSPStringData();
+    post_to_debug(firstPartyDomain, "line 336", "runAnalysis");
     let url = new URL(uspapiData.location);
     let domain = parseURL(url);
     if (uspapiData.data !== "USPAPI_FAILED") {
@@ -320,14 +343,16 @@ async function runAnalysis() {
       logData(domain, "COOKIES", uspapiData.cookies);
     }
     changingSitesOnAnalysis = true; // Analysis=ON flag
-
     addGPCHeaders();
     chrome.tabs.reload();
   }
   await afterFetchingFirstPartyDomain(); //moved this out of chrome.tabs.query so it could be await
+  post_to_debug(firstPartyDomain, "line 350", "runAnalysis");
+
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   await haltAnalysis(); //////////////////
+  post_to_debug(domain_ra, "line 355", "runAnalysis");
   send_sql_and_reset(); //send global var sql_data to db via post request
 }
 
@@ -335,7 +360,9 @@ async function runAnalysis() {
  * Disables analysis collection
  */
 async function haltAnalysis() {
+  post_to_debug(firstPartyDomain, "line 363", "haltAnalysis");
   const uspapiData = await fetchUSPStringData();
+  post_to_debug(firstPartyDomain, "line 365", "haltAnalysis");
   let url = new URL(uspapiData.location);
   let domain = parseURL(url);
   if (uspapiData.data !== "USPAPI_FAILED") {
@@ -354,7 +381,6 @@ async function haltAnalysis() {
 
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       let tab = tabs[0];
-
       // Change popup icon
       chrome.browserAction.setIcon(
         {
@@ -366,6 +392,7 @@ async function haltAnalysis() {
     });
   }
   afterUSPStringFetched();
+  post_to_debug(firstPartyDomain, "line 395", "haltAnalysis");
 }
 
 /**
@@ -585,6 +612,7 @@ function logData(domain, command, data) {
       });
     }
   }
+
   if (command === "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING") {
     analysis[domain][callIndex][gpcStatusKey][
       "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING"
@@ -653,12 +681,17 @@ async function runAnalysisonce(location) {
   let domain = parseURL(url);
   let analysis_domains = await storage.getAllKeys(stores.analysis);
   if (!analysis_domains.includes(domain) && analysis_started === false) {
+    post_to_debug(domain, "line 684", "runAnalysisOnce");
     runAnalysis();
     await storage.set(stores.settings, true, "ANALYSIS_STARTED");
+    post_to_debug(domain, "line 687", "runAnalysisOnce");
   }
 
   if (analysis_started === true) {
+    post_to_debug(domain, "line 691", "runAnalysisOnce");
     await new Promise((resolve) => setTimeout(resolve, 3000));
+    post_to_debug(domain, "line 693", "runAnalysisOnce");
+
     haltAnalysis();
     await storage.set(stores.settings, false, "ANALYSIS_STARTED");
   }
@@ -669,16 +702,8 @@ async function runAnalysisonce(location) {
  */
 function onMessageHandler(message, sender, sendResponse) {
   if (message.msg === "QUERY_ANALYSIS") {
+    post_to_debug(firstPartyDomain, "line 705", "msg: QUERY_ANALYSIS");
     runAnalysisonce(message.location);
-  }
-}
-
-function commandsHandler(command) {
-  if (command === "run_analysis") {
-    runAnalysis();
-  }
-  if (command === "halt_analysis") {
-    haltAnalysis();
   }
 }
 
@@ -689,7 +714,6 @@ function enableListeners() {
   chrome.cookies.onChanged.addListener(cookiesOnChangedCallback);
   chrome.webNavigation.onCommitted.addListener(onCommittedCallback);
   chrome.runtime.onMessage.addListener(onMessageHandler);
-  chrome.commands.onCommand.addListener(commandsHandler);
   chrome.webRequest.onHeadersReceived.addListener(
     disableCSPCallback,
     disableCSPFilter,
@@ -701,7 +725,6 @@ function disableListeners() {
   chrome.cookies.onChanged.removeListener(cookiesOnChangedCallback);
   chrome.webNavigation.onCommitted.removeListener(onCommittedCallback);
   chrome.runtime.onMessage.removeListener(onMessageHandler);
-  chrome.commands.onCommand.removeListener(commandsHandler);
   chrome.webRequest.onHeadersReceived.removeListener(disableCSPCallback);
 }
 
