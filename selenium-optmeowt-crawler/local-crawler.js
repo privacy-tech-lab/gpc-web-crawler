@@ -1,13 +1,6 @@
-const { Builder, Capabilities } = require("selenium-webdriver");
+const { Builder } = require("selenium-webdriver");
 const firefox = require("selenium-webdriver/firefox");
-// var capabilities = {
-//   "moz:debuggerAddress": true,
-//   browserName: "firefox",
-//   headless: true,
-// };
 
-const { By } = require("selenium-webdriver");
-const { Key } = require("selenium-webdriver");
 const fs = require("fs");
 const { parse } = require("csv-parse");
 const axios = require("axios");
@@ -121,7 +114,8 @@ async function visit_site(sites, site_id) {
   console.log(site_id, ": ", sites[site_id]);
   try {
     await driver.get(sites[site_id]);
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    // console.log(Date.now()); to compare to site loading time in debug table
+    await new Promise((resolve) => setTimeout(resolve, 8000));
     // check if access is denied
     // if so, throw an error so it gets tagged as an access denied site
     var title = await driver.getTitle();

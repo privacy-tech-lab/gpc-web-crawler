@@ -329,7 +329,7 @@ async function runAnalysis() {
     domain_ra = domain;
   });
 
-  await new Promise((resolve) => setTimeout(resolve, 1000)); //new
+  await new Promise((resolve) => setTimeout(resolve, 500)); //new
 
   post_to_debug(firstPartyDomain, "line 334", "runAnalysis-fetching");
   const uspapiData = await fetchUSPStringData();
@@ -344,6 +344,7 @@ async function runAnalysis() {
   }
   changingSitesOnAnalysis = true; // Analysis=ON flag
   addGPCHeaders();
+  await new Promise((resolve) => setTimeout(resolve, 500)); //new
   chrome.tabs.reload();
   post_to_debug(domain_ra, "line 348", "runAnalysis-end");
 }
@@ -650,7 +651,7 @@ function onCommittedCallback(details) {
 
 // Used for crawling
 async function runAnalysisonce(location) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 100));
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
   let domain = parseURL(url);
@@ -662,7 +663,7 @@ async function runAnalysisonce(location) {
   }
 
   if (analysis_started === true) {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // await new Promise((resolve) => setTimeout(resolve, 2000));
     post_to_debug(domain, "line 666", "runAnalysisOnce-halting");
     haltAnalysis();
     await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -699,8 +700,11 @@ async function runAnalysisonce(location) {
  * Message passing listener - for collecting USPAPI call data from the window
  */
 function onMessageHandler(message, sender, sendResponse) {
-  if (message.msg === "QUERY_ANALYSIS") {
-    post_to_debug(firstPartyDomain, "line 703", "msg: QUERY_ANALYSIS");
+  // if (message.msg === "QUERY_ANALYSIS") {
+  //   post_to_debug(firstPartyDomain, "line 703", "msg: QUERY_ANALYSIS");
+  // }
+  if (message.msg === "SITE_LOADED") {
+    post_to_debug(firstPartyDomain, "SITE_LOADED", Date.now());
     runAnalysisonce(message.location);
   }
 }
