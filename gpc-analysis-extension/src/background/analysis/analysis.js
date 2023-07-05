@@ -304,6 +304,7 @@ function post_to_debug(domain, a, b) {
       .then((res) => console.log(res.data))
       .catch(function (err) {
         // we assume the debugging table doesn't exist, so stop trying to post things to it
+        // more information on how this works in issue #50.
         debugging_version = false;
       });
   }
@@ -317,7 +318,6 @@ function post_to_debug(domain, a, b) {
  */
 async function runAnalysis() {
   let domain_ra;
-
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     post_to_debug(firstPartyDomain, "line 322", "query tab runAnalysis");
     let tab = tabs[0];
@@ -328,41 +328,12 @@ async function runAnalysis() {
 
     domain_ra = domain;
   });
+
   await new Promise((resolve) => setTimeout(resolve, 1000)); //new
 
-  async function afterFetchingFirstPartyDomain() {
-    post_to_debug(firstPartyDomain, "line 334", "runAnalysis");
-    const uspapiData = await fetchUSPStringData();
-    post_to_debug(firstPartyDomain, "line 336", "runAnalysis");
-    let url = new URL(uspapiData.location);
-    let domain = parseURL(url);
-    if (uspapiData.data !== "USPAPI_FAILED") {
-      logData(domain, "USPAPI", uspapiData.data);
-    }
-    if (uspapiData.cookies) {
-      logData(domain, "COOKIES", uspapiData.cookies);
-    }
-    changingSitesOnAnalysis = true; // Analysis=ON flag
-    addGPCHeaders();
-    chrome.tabs.reload();
-  }
-  await afterFetchingFirstPartyDomain(); //moved this out of chrome.tabs.query so it could be await
-  post_to_debug(firstPartyDomain, "line 350", "runAnalysis");
-
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  await haltAnalysis(); //////////////////
-  post_to_debug(domain_ra, "line 355", "runAnalysis");
-  send_sql_and_reset(); //send global var sql_data to db via post request
-}
-
-/**
- * Disables analysis collection
- */
-async function haltAnalysis() {
-  post_to_debug(firstPartyDomain, "line 363", "haltAnalysis");
+  post_to_debug(firstPartyDomain, "line 334", "runAnalysis-fetching");
   const uspapiData = await fetchUSPStringData();
-  post_to_debug(firstPartyDomain, "line 365", "haltAnalysis");
+  post_to_debug(firstPartyDomain, "line 336", "runAnalysis-uspsFetched");
   let url = new URL(uspapiData.location);
   let domain = parseURL(url);
   if (uspapiData.data !== "USPAPI_FAILED") {
@@ -371,28 +342,32 @@ async function haltAnalysis() {
   if (uspapiData.cookies) {
     logData(domain, "COOKIES", uspapiData.cookies);
   }
-  create_sql_data(domain); //adding data to global var to send to sql db
+  changingSitesOnAnalysis = true; // Analysis=ON flag
+  addGPCHeaders();
+  chrome.tabs.reload();
+  post_to_debug(domain_ra, "line 348", "runAnalysis-end");
+}
 
-  function afterUSPStringFetched() {
-    changingSitesOnAnalysis = false;
-    firstPartyDomain = "";
-    updateAnalysisCounter();
-    removeGPCSignals();
+/**
+ * Disables analysis collection
+ */
+async function haltAnalysis() {
+  post_to_debug(firstPartyDomain, "line 355", "haltAnalysis-begin");
 
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      let tab = tabs[0];
-      // Change popup icon
-      chrome.browserAction.setIcon(
-        {
-          tabId: tab.id,
-          path: "../../assets/face-icons/icon128-face-circle.png",
-        },
-        () => {}
-      );
-    });
+  const uspapiData = await fetchUSPStringData();
+  post_to_debug(firstPartyDomain, "line 358", "haltAnalysis-uspsFetched");
+  let url = new URL(uspapiData.location);
+  let domain = parseURL(url);
+  if (uspapiData.data !== "USPAPI_FAILED") {
+    logData(domain, "USPAPI", uspapiData.data);
   }
-  afterUSPStringFetched();
-  post_to_debug(firstPartyDomain, "line 395", "haltAnalysis");
+  if (uspapiData.cookies) {
+    logData(domain, "COOKIES", uspapiData.cookies);
+  }
+  await new Promise((resolve) => setTimeout(resolve, 1000)); //new
+
+  create_sql_data(firstPartyDomain); //adding data to global var to send to sql db
+  post_to_debug(firstPartyDomain, "line 370", "haltAnalysis-end");
 }
 
 /**
@@ -681,18 +656,41 @@ async function runAnalysisonce(location) {
   let domain = parseURL(url);
   let analysis_domains = await storage.getAllKeys(stores.analysis);
   if (!analysis_domains.includes(domain) && analysis_started === false) {
-    post_to_debug(domain, "line 684", "runAnalysisOnce");
+    post_to_debug(domain, "line 659", "runAnalysisOnce-running");
     runAnalysis();
     await storage.set(stores.settings, true, "ANALYSIS_STARTED");
-    post_to_debug(domain, "line 687", "runAnalysisOnce");
   }
 
   if (analysis_started === true) {
-    post_to_debug(domain, "line 691", "runAnalysisOnce");
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    post_to_debug(domain, "line 693", "runAnalysisOnce");
-
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    post_to_debug(domain, "line 666", "runAnalysisOnce-halting");
     haltAnalysis();
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    post_to_debug(firstPartyDomain, "line 669", "runAnalysisOnce--posting");
+    send_sql_and_reset(); //send global var sql_data to db via post request
+
+    //resetting vars
+    function afterUSPStringFetched() {
+      changingSitesOnAnalysis = false;
+      firstPartyDomain = "";
+      updateAnalysisCounter();
+      removeGPCSignals();
+
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        let tab = tabs[0];
+        // Change popup icon
+        chrome.browserAction.setIcon(
+          {
+            tabId: tab.id,
+            path: "../../assets/face-icons/icon128-face-circle.png",
+          },
+          () => {}
+        );
+      });
+    }
+    afterUSPStringFetched();
+    post_to_debug(domain, "line 692", "runAnalysisOnce-done");
+
     await storage.set(stores.settings, false, "ANALYSIS_STARTED");
   }
 }
@@ -702,7 +700,7 @@ async function runAnalysisonce(location) {
  */
 function onMessageHandler(message, sender, sendResponse) {
   if (message.msg === "QUERY_ANALYSIS") {
-    post_to_debug(firstPartyDomain, "line 705", "msg: QUERY_ANALYSIS");
+    post_to_debug(firstPartyDomain, "line 703", "msg: QUERY_ANALYSIS");
     runAnalysisonce(message.location);
   }
 }

@@ -121,7 +121,7 @@ async function visit_site(sites, site_id) {
   console.log(site_id, ": ", sites[site_id]);
   try {
     await driver.get(sites[site_id]);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     // check if access is denied
     // if so, throw an error so it gets tagged as an access denied site
     var title = await driver.getTitle();
