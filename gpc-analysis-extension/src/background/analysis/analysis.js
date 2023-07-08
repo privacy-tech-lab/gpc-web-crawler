@@ -236,24 +236,26 @@ async function fetchUSPStringData() {
 
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset() {
-  axios
-    .post("http://localhost:8080/analysis", sql_data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then((res) => console.log(res.data))
-    .catch((err) => console.log(err));
-  //reset
-  sql_data = {
-    domain: "",
-    dns_link: null,
-    sent_gpc: false,
-    uspapi_before_gpc: null,
-    uspapi_after_gpc: null,
-    usp_cookies_before_gpc: null,
-    usp_cookies_after_gpc: null,
-  };
+  if (sql_data["domain"] != "") {
+    axios
+      .post("http://localhost:8080/analysis", sql_data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+    //reset
+    sql_data = {
+      domain: "",
+      dns_link: null,
+      sent_gpc: false,
+      uspapi_before_gpc: null,
+      uspapi_after_gpc: null,
+      usp_cookies_before_gpc: null,
+      usp_cookies_after_gpc: null,
+    };
+  }
 }
 
 function create_sql_data(domain) {
@@ -651,7 +653,7 @@ function onCommittedCallback(details) {
 
 // Used for crawling
 async function runAnalysisonce(location) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  await new Promise((resolve) => setTimeout(resolve, 4000));
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
   let domain = parseURL(url);
@@ -663,11 +665,14 @@ async function runAnalysisonce(location) {
   }
 
   if (analysis_started === true) {
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
     post_to_debug(domain, "line 666", "runAnalysisOnce-halting");
     haltAnalysis();
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    post_to_debug(firstPartyDomain, "line 669", "runAnalysisOnce--posting");
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    post_to_debug(
+      domain,
+      analysis[domain][analysis_counter[domain]]["BEFORE_GPC"],
+      analysis[domain][analysis_counter[domain]]["AFTER_GPC"]
+    );
     send_sql_and_reset(); //send global var sql_data to db via post request
 
     //resetting vars
