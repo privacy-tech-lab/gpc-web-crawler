@@ -34,9 +34,6 @@ WARNING:  Content Security Policies are DISABLED while Analysis Mode is ON.
 - See disableCSPPerRequest function for more details
 */
 import axios from "axios";
-import { csvGenerator } from "../../common/csvGenerator.js";
-import { modes } from "../../data/modes.js";
-import { defaultSettings } from "../../data/defaultSettings.js";
 import { stores, storage } from "./../storage.js";
 import {
   cookiesPhrasing,
@@ -66,11 +63,10 @@ var sql_data = {
   sent_gpc: false,
   uspapi_before_gpc: null,
   uspapi_after_gpc: null,
-  uspapi_opted_out: null,
   usp_cookies_before_gpc: null,
   usp_cookies_after_gpc: null,
-  usp_cookies_opted_out: null,
 };
+var debugging_version = true; // assume that the debugging table exists
 /******************************************************************************/
 /******************************************************************************/
 /**********                       # Functions                        **********/
@@ -240,26 +236,26 @@ async function fetchUSPStringData() {
 
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset() {
-  axios
-    .post("http://localhost:8080/analysis", sql_data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then((res) => console.log(res.data))
-    .catch((err) => console.log(err));
-  //reset
-  sql_data = {
-    domain: "",
-    dns_link: null,
-    sent_gpc: false,
-    uspapi_before_gpc: null,
-    uspapi_after_gpc: null,
-    uspapi_opted_out: null,
-    usp_cookies_before_gpc: null,
-    usp_cookies_after_gpc: null,
-    usp_cookies_opted_out: null,
-  };
+  if (sql_data["domain"] != "") {
+    axios
+      .post("http://localhost:8080/analysis", sql_data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+    //reset
+    sql_data = {
+      domain: "",
+      dns_link: null,
+      sent_gpc: false,
+      uspapi_before_gpc: null,
+      uspapi_after_gpc: null,
+      usp_cookies_before_gpc: null,
+      usp_cookies_after_gpc: null,
+    };
+  }
 }
 
 function create_sql_data(domain) {
@@ -280,7 +276,6 @@ function create_sql_data(domain) {
         analysis_userend[domain]["USPAPI_AFTER_GPC"][i]["uspString"];
     }
   }
-  sql_data["uspapi_opted_out"] = analysis_userend[domain]["USPAPI_OPTED_OUT"];
 
   for (let i in analysis_userend[domain]["USP_COOKIES_AFTER_GPC"]) {
     if (analysis_userend[domain]["USP_COOKIES_AFTER_GPC"][i]["value"]) {
@@ -294,10 +289,28 @@ function create_sql_data(domain) {
         analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"][i]["value"];
     }
   }
-  sql_data["usp_cookies_opted_out"] =
-    analysis_userend[domain]["USP_COOKIE_OPTED_OUT"];
 }
-
+function post_to_debug(domain, a, b) {
+  if (debugging_version == true) {
+    var debug_data_post = {
+      domain: domain,
+      a: JSON.stringify(a),
+      b: JSON.stringify(b),
+    };
+    axios
+      .post("http://localhost:8080/debug", debug_data_post, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => console.log(res.data))
+      .catch(function (err) {
+        // we assume the debugging table doesn't exist, so stop trying to post things to it
+        // more information on how this works in issue #50.
+        debugging_version = false;
+      });
+  }
+}
 /**
  * Initializes the analysis with a refresh after being triggered
  *
@@ -307,23 +320,8 @@ function create_sql_data(domain) {
  */
 async function runAnalysis() {
   let domain_ra;
-  async function afterFetchingFirstPartyDomain() {
-    const uspapiData = await fetchUSPStringData();
-    let url = new URL(uspapiData.location);
-    let domain = parseURL(url);
-    if (uspapiData.data !== "USPAPI_FAILED") {
-      logData(domain, "USPAPI", uspapiData.data);
-    }
-    if (uspapiData.cookies) {
-      logData(domain, "COOKIES", uspapiData.cookies);
-    }
-    changingSitesOnAnalysis = true; // Analysis=ON flag
-
-    addGPCHeaders();
-    chrome.tabs.reload();
-  }
-
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    post_to_debug(firstPartyDomain, "line 322", "query tab runAnalysis");
     let tab = tabs[0];
     let url = new URL(tab.url);
     let parsed = psl.parse(url.hostname);
@@ -333,38 +331,11 @@ async function runAnalysis() {
     domain_ra = domain;
   });
 
-  await afterFetchingFirstPartyDomain(); //moved this out of chrome.tabs.query so it could be await
-  await new Promise((resolve) => setTimeout(resolve, 3000)); //used to be 3 s
+  await new Promise((resolve) => setTimeout(resolve, 500)); //new
 
-  await haltAnalysis(); //////////////////
-  send_sql_and_reset(); //send global var sql_data to db via post request
-}
-
-/**
- * Disables analysis collection
- */
-async function haltAnalysis() {
-  function afterUSPStringFetched() {
-    changingSitesOnAnalysis = false;
-    firstPartyDomain = "";
-    updateAnalysisCounter();
-    removeGPCSignals();
-
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      let tab = tabs[0];
-
-      // Change popup icon
-      chrome.browserAction.setIcon(
-        {
-          tabId: tab.id,
-          path: "../../assets/face-icons/icon128-face-circle.png",
-        },
-        () => {}
-      );
-    });
-  }
-
+  post_to_debug(firstPartyDomain, "line 334", "runAnalysis-fetching");
   const uspapiData = await fetchUSPStringData();
+  post_to_debug(firstPartyDomain, "line 336", "runAnalysis-uspsFetched");
   let url = new URL(uspapiData.location);
   let domain = parseURL(url);
   if (uspapiData.data !== "USPAPI_FAILED") {
@@ -373,8 +344,33 @@ async function haltAnalysis() {
   if (uspapiData.cookies) {
     logData(domain, "COOKIES", uspapiData.cookies);
   }
-  create_sql_data(domain); //adding data to global var to send to sql db
-  afterUSPStringFetched();
+  changingSitesOnAnalysis = true; // Analysis=ON flag
+  addGPCHeaders();
+  await new Promise((resolve) => setTimeout(resolve, 500)); //new
+  chrome.tabs.reload();
+  post_to_debug(domain_ra, "line 348", "runAnalysis-end");
+}
+
+/**
+ * Disables analysis collection
+ */
+async function haltAnalysis() {
+  post_to_debug(firstPartyDomain, "line 355", "haltAnalysis-begin");
+
+  const uspapiData = await fetchUSPStringData();
+  post_to_debug(firstPartyDomain, "line 358", "haltAnalysis-uspsFetched");
+  let url = new URL(uspapiData.location);
+  let domain = parseURL(url);
+  if (uspapiData.data !== "USPAPI_FAILED") {
+    logData(domain, "USPAPI", uspapiData.data);
+  }
+  if (uspapiData.cookies) {
+    logData(domain, "COOKIES", uspapiData.cookies);
+  }
+  await new Promise((resolve) => setTimeout(resolve, 1000)); //new
+
+  create_sql_data(firstPartyDomain); //adding data to global var to send to sql db
+  post_to_debug(firstPartyDomain, "line 370", "haltAnalysis-end");
 }
 
 /**
@@ -465,10 +461,8 @@ var analysisUserendSkeleton = () => {
     SENT_GPC: false,
     USPAPI_BEFORE_GPC: [],
     USPAPI_AFTER_GPC: [],
-    USPAPI_OPTED_OUT: undefined,
     USP_COOKIES_BEFORE_GPC: [],
     USP_COOKIES_AFTER_GPC: [],
-    USP_COOKIE_OPTED_OUT: undefined,
   };
 };
 
@@ -574,30 +568,6 @@ function logData(domain, command, data) {
             value: data[i]["value"],
           });
         }
-        try {
-          if (analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] !== true) {
-            let USPrivacyString = data[i].value || "";
-            // Give precedence to USPAPI
-            let optedOut = analysis_userend[domain]["USP_COOKIE_OPTED_OUT"];
-            if (optedOut !== null || optedOut !== undefined) {
-              if (USPrivacyString[2] === "Y" || USPrivacyString[2] === "y") {
-                analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = true;
-              } else if (USPrivacyString[2] === "-") {
-                analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = "NOT_IN_CA";
-              } else if (
-                USPrivacyString[2] === "N" ||
-                USPrivacyString[2] == "n"
-              ) {
-                analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = false;
-              } else {
-                analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = null;
-              }
-            }
-          }
-        } catch (e) {
-          console.error("Parsing USPAPI for analysis_userend failed.", e);
-          analysis_userend[domain]["USP_COOKIE_OPTED_OUT"] = "PARSE_FAILED";
-        }
       }
     }
   }
@@ -618,31 +588,9 @@ function logData(domain, command, data) {
       analysis_userend[domain]["USPAPI_AFTER_GPC"].push({
         uspString: data["uspString"],
       });
-
-      try {
-        let USPrivacyString = data.value || data.uspString;
-
-        if (USPrivacyString[2] === "Y" || USPrivacyString[2] === "y") {
-          analysis_userend[domain]["USPAPI_OPTED_OUT"] = true;
-        } else if (USPrivacyString[2] === "-") {
-          analysis_userend[domain]["USPAPI_OPTED_OUT"] = "NOT_IN_CA";
-        } else if (USPrivacyString[2] === "N" || USPrivacyString[2] == "n") {
-          analysis_userend[domain]["USPAPI_OPTED_OUT"] = false;
-        } else {
-          analysis_userend[domain]["USPAPI_OPTED_OUT"] = null;
-        }
-      } catch (e) {
-        console.error("Parsing USPAPI for analysis_userend failed.", e);
-        analysis_userend[domain]["USPAPI_OPTED_OUT"] = "PARSE_FAILED";
-      }
     }
   }
-  if (command === "DO_NOT_SELL_LINK") {
-    analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK"] = [];
-    analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK"].push(data);
-    analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK_EXISTS"] = true;
-    analysis_userend[domain]["DO_NOT_SELL_LINK_EXISTS"] = true;
-  }
+
   if (command === "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING") {
     analysis[domain][callIndex][gpcStatusKey][
       "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING"
@@ -705,19 +653,50 @@ function onCommittedCallback(details) {
 
 // Used for crawling
 async function runAnalysisonce(location) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 4000));
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
   let domain = parseURL(url);
   let analysis_domains = await storage.getAllKeys(stores.analysis);
   if (!analysis_domains.includes(domain) && analysis_started === false) {
+    post_to_debug(domain, "line 659", "runAnalysisOnce-running");
     runAnalysis();
     await storage.set(stores.settings, true, "ANALYSIS_STARTED");
   }
 
   if (analysis_started === true) {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    post_to_debug(domain, "line 666", "runAnalysisOnce-halting");
     haltAnalysis();
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    post_to_debug(
+      domain,
+      analysis[domain][analysis_counter[domain]]["BEFORE_GPC"],
+      analysis[domain][analysis_counter[domain]]["AFTER_GPC"]
+    );
+    send_sql_and_reset(); //send global var sql_data to db via post request
+
+    //resetting vars
+    function afterUSPStringFetched() {
+      changingSitesOnAnalysis = false;
+      firstPartyDomain = "";
+      updateAnalysisCounter();
+      removeGPCSignals();
+
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        let tab = tabs[0];
+        // Change popup icon
+        chrome.browserAction.setIcon(
+          {
+            tabId: tab.id,
+            path: "../../assets/face-icons/icon128-face-circle.png",
+          },
+          () => {}
+        );
+      });
+    }
+    afterUSPStringFetched();
+    post_to_debug(domain, "line 692", "runAnalysisOnce-done");
+
     await storage.set(stores.settings, false, "ANALYSIS_STARTED");
   }
 }
@@ -726,78 +705,12 @@ async function runAnalysisonce(location) {
  * Message passing listener - for collecting USPAPI call data from the window
  */
 function onMessageHandler(message, sender, sendResponse) {
-  if (message.msg === "QUERY_ANALYSIS") {
+  // if (message.msg === "QUERY_ANALYSIS") {
+  //   post_to_debug(firstPartyDomain, "line 703", "msg: QUERY_ANALYSIS");
+  // }
+  if (message.msg === "SITE_LOADED") {
+    post_to_debug(firstPartyDomain, "SITE_LOADED", Date.now());
     runAnalysisonce(message.location);
-  }
-  if (message.msg === "USPAPI_TO_BACKGROUND") {
-    let url = new URL(message.location);
-    let domain = parseURL(url);
-    logData(domain, "USPAPI", message.data);
-  }
-  if (message.msg === "DNS_FINDER_TO_BACKGROUND") {
-    let url = new URL(message.location);
-    let domain = parseURL(url);
-    logData(domain, "DO_NOT_SELL_LINK", message.data);
-  }
-  if (message.msg === "RUN_ANALYSIS") {
-    runAnalysis();
-  }
-  if (message.msg === "HALT_ANALYSIS") {
-    haltAnalysis();
-  }
-  if (message.msg === "POPUP_ANALYSIS") {
-    chrome.runtime.sendMessage({
-      msg: "POPUP_ANALYSIS_DATA",
-      data: { analysis, analysis_userend },
-    });
-  }
-  if (message.msg === "CSV_DATA_REQUEST") {
-    chrome.runtime.sendMessage({
-      msg: "CSV_DATA_RESPONSE",
-      data: {
-        titles: analysisUserendSkeleton(),
-      },
-    });
-  }
-  if (message.msg === "CSV_DATA_REQUEST_FROM_SETTINGS") {
-    chrome.runtime.sendMessage({
-      msg: "CSV_DATA_RESPONSE_TO_SETTINGS",
-      data: {
-        titles: analysisUserendSkeleton(),
-      },
-    });
-  }
-}
-
-/**
- * Handles actually running the analysis when it is fired
- */
-function onConnectHandler(port) {
-  port.onMessage.addListener(function (message) {
-    if (message.msg === "RUN_ANALYSIS_FROM_BACKGROUND") {
-      runAnalysis();
-    }
-    if (message.msg === "STOP_ANALYSIS_FROM_BACKGROUND") {
-      haltAnalysis();
-    }
-  });
-}
-
-async function exportCSV() {
-  const csvData = await storage.getStore(stores.analysis);
-  csvGenerator(csvData, analysisUserendSkeleton());
-  return;
-}
-
-function commandsHandler(command) {
-  if (command === "run_analysis") {
-    runAnalysis();
-  }
-  if (command === "halt_analysis") {
-    haltAnalysis();
-  }
-  if (command === "export_csv") {
-    exportCSV();
   }
 }
 
@@ -808,8 +721,6 @@ function enableListeners() {
   chrome.cookies.onChanged.addListener(cookiesOnChangedCallback);
   chrome.webNavigation.onCommitted.addListener(onCommittedCallback);
   chrome.runtime.onMessage.addListener(onMessageHandler);
-  chrome.runtime.onConnect.addListener(onConnectHandler);
-  chrome.commands.onCommand.addListener(commandsHandler);
   chrome.webRequest.onHeadersReceived.addListener(
     disableCSPCallback,
     disableCSPFilter,
@@ -821,8 +732,6 @@ function disableListeners() {
   chrome.cookies.onChanged.removeListener(cookiesOnChangedCallback);
   chrome.webNavigation.onCommitted.removeListener(onCommittedCallback);
   chrome.runtime.onMessage.removeListener(onMessageHandler);
-  chrome.runtime.onConnect.removeListener(onConnectHandler);
-  chrome.commands.onCommand.removeListener(commandsHandler);
   chrome.webRequest.onHeadersReceived.removeListener(disableCSPCallback);
 }
 

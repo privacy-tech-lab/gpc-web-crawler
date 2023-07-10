@@ -1,13 +1,6 @@
-const { Builder, Capabilities } = require("selenium-webdriver");
+const { Builder } = require("selenium-webdriver");
 const firefox = require("selenium-webdriver/firefox");
-// var capabilities = {
-//   "moz:debuggerAddress": true,
-//   browserName: "firefox",
-//   headless: true,
-// };
 
-const { By } = require("selenium-webdriver");
-const { Key } = require("selenium-webdriver");
 const fs = require("fs");
 const { parse } = require("csv-parse");
 const axios = require("axios");
@@ -80,6 +73,7 @@ async function check_update_DB(site, site_id) {
     );
 
     latest_res_data = response.data;
+    // console.log("getting: ", site_str, "-->", latest_res_data);
 
     if (latest_res_data.length >= 1) {
       // console.log(latest_res_data[latest_res_data.length - 1]);
@@ -114,7 +108,8 @@ async function visit_site(sites, site_id) {
   console.log(site_id, ": ", sites[site_id]);
   try {
     await driver.get(sites[site_id]);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // console.log(Date.now()); to compare to site loading time in debug table
+    await new Promise((resolve) => setTimeout(resolve, 20000));
     // check if access is denied
     // if so, throw an error so it gets tagged as a human check site
     var title = await driver.getTitle();
@@ -129,11 +124,16 @@ async function visit_site(sites, site_id) {
     }
   } catch (e) {
     console.log(e);
+    var msg = "";
+    // we want to separate the reaching an error page from other webdriver errors
+    if (e.message.match(/reached error page/i)) {
+      msg = ": Reached Error Page";
+    }
     // log the errors in an object so you don't have to sort through manually
-    if (e.name in err_obj) {
-      err_obj[e.name].push(sites[site_id]);
+    if (e.name + msg in err_obj) {
+      err_obj[e.name + msg].push(sites[site_id]);
     } else {
-      err_obj[e.name] = [sites[site_id]];
+      err_obj[e.name + msg] = [sites[site_id]];
     }
     console.log(err_obj);
     error_value = e.name; // update error value
@@ -179,6 +179,9 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
   ) {
     console.log("redo prev site");
     await visit_site(sites, site_id);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // putting site id on redo site
+    added = await check_update_DB(sites[site_id], site_id);
   }
 }
 
