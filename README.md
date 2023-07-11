@@ -65,8 +65,17 @@ Components:
 
 - Crawler Script:
   The flow of the crawler script is described in the diagram below.
-  ![analysis-flow](https://user-images.githubusercontent.com/40359590/230727730-73ffc349-a7b6-4407-9958-f2583f2ecb2d.png)
-  This script is stored and executed locally.
+  ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/1d0a31e3-77b1-4662-8ceb-3bd18d850378)
+
+ 
+  This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error. 
+  
+  Types of Errors that may be logged:
+  1. TimeoutError: A Selenium error that is thrown when either the page has not loaded in 30 seconds or the page has not responded for 30 seconds. Timeouts are set in driver.setTimeouts.
+  2. HumanCheckError: A custom error that is thrown when the site has a title that we have observed means our VPN IP address is blocked or there is a human check on that site. See [Limitations/Known Issues](https://github.com/privacy-tech-lab/gpc-web-crawler#4-limitationsknown-issues) for more details.
+  3. InsecureCertificateError: A Selenium error that indicates that the site will not be loaded, as it has an insecure certificate.
+  4. WebDriverError: A Selenium error that indicates that the WebDriver has failed to execute some part of the script. 
+  5. WebDriverError: Reached Error Page: This indicates that an error page has been reached when Selenium tried to load the site.
 
 - OptMeowt Analysis Extension:
   The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser by the crawler script. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request. The analysis of a site is performed by the extension as follows:
@@ -81,8 +90,8 @@ Components:
 
 - SQL Database:
   The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
-  | id | site_id | domain | dns_link | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | uspapi_opted_out | usp_cookies_before_gpc | usp_cookies_after_gpc | usp_cookies_opted_out |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | id | site_id | domain | dns_link | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
   The first few columns primarily pertain to identifying the site and verifying that the OptMeowt Analysis extension is working properly.
 
@@ -96,10 +105,8 @@ Components:
 
   - uspapi_before_gpc: return value of calling the USPAPI before a GPC opt out signal was sent
   - uspapi_after_gpc: return value of calling the USPAPI after a GPC opt out signal were sent
-  - uspapi_opted_out: a binary indicator of whether the site respected the GPC opt out signal based on the change in the USPAPI return value
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie before a GPC opt out signal was sent
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
-  - usp_cookies_opted_out: a binary indicator of whether the site respected the GPC opt out signal based on the change in the US Privacy String in an HTTP cookie
 
 ## 4. Limitations/Known Issues
 Since we are using Selenium and a VPN to visit the sites we analyze, there are some limitations to the sites we can analyze.
