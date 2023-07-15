@@ -16,7 +16,6 @@ src
 ├── data       # Stores constant data (DNS signals, settings, etc.)
 │   ├── defaultSettings.js
 │   ├── headers.js
-│   ├── modes.js
 │   └── regex.js
 └── manifests      # Stores manifests
     └── firefox
@@ -39,7 +38,7 @@ The following source folders have detailed descriptions further in the document.
 3. `storage.js`
    
 
-The background folder has an `analysis` folder that builds analysis mode.
+The background folder has an `analysis` folder that contains scripts used to analyze sites.
 
 ### `src/background/analysis`
 
@@ -48,15 +47,15 @@ The background folder has an `analysis` folder that builds analysis mode.
 
 #### `analysis/analysis-listeners.js`
 
-Initializes the listeners for analysis mode using `webRequest` and `webNavigation` (links found below). This file only needs to deal with Firefox listeners as we only crawl using Firefox Nightly.
+Initializes the listeners using `webRequest` and `webNavigation` (links found below). This file only needs to deal with Firefox listeners as we only crawl using Firefox Nightly.
 
 #### `analysis/analysis.js`
 
-Contains all the logic and processes for running analysis mode. `FetchUSPCookies();` is used to identify and save US Privacy cookies and `fetchUSPAPIData();` uses the USPAPI query to check the US Privacy string. `runAnalysis();` collects the US Privacy values and sends the GPC signal. `haltAnalysis();` then rechecks the US Privacy values and removes the GPC signal, then allowing the US Privacy Values from before and after to be compared. `logData();` then records the found data to local storage.
+Contains all the logic and processes. `FetchUSPCookies();` is used to identify and save US Privacy cookies and `fetchUSPAPIData();` uses the USPAPI query to check the US Privacy string. `runAnalysis();` collects the US Privacy values and sends the GPC signal. `haltAnalysis();` then rechecks the US Privacy values and removes the GPC signal, then allowing the US Privacy Values from before and after to be compared. `logData();` then records the found data to local storage.
 
 ### `background/control.js`
 
-Uses `analysis.js` and `protection.js` to switch between modes.
+Initializes default settings and enables the extension.
 
 ### `background/storage.js`
 
@@ -84,8 +83,7 @@ This runs on every page and sends information to signal background processes.
 
 1. `defaultSettings.js`
 2. `headers.js`
-3. `modes.js`
-4. `regex.js`
+3. `regex.js`
 
 This folder contains static data.
 
@@ -96,10 +94,6 @@ Contains the default OptMeowt settings.
 ### `data/headers.js`
 
 Contains the default headers to be attached to online requests.
-
-### `data/modes.js`
-
-Contains the modes for OptMeowt.
 
 ### `data/regex.js`
 
