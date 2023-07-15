@@ -11,7 +11,6 @@ If the domainlist is being handled, then cookies are added/removed here too
 */
 
 import { openDB } from "idb";
-import { saveAs } from "file-saver";
 
 /******************************************************************************/
 /**************************  Enumerated settings  *****************************/

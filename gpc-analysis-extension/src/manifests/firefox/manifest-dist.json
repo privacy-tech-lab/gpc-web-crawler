@@ -13,26 +13,6 @@
     "cookies",
     "tabs"
   ],
-  "commands": {
-    "run_analysis": {
-      "description": "Starts an analysis on the current site",
-      "suggested_key": {
-        "default": "Alt+Shift+A"
-      }
-    },
-    "halt_analysis": {
-      "description": "Halts the started analysis",
-      "suggested_key": {
-        "default": "Alt+Shift+S"
-      }
-    },
-    "export_csv": {
-      "description": "Exports the csv data",
-      "suggested_key": {
-        "default": "Alt+Shift+C"
-      }
-    }
-  },
   "icons": {
     "128": "assets/face-icons/icon128-face-circle.png"
   },
@@ -53,9 +33,7 @@
   "background": {
     "scripts": ["background.bundle.js"]
   },
-  "web_accessible_resources": [
-    "json/*.json"
-  ],
+  "web_accessible_resources": ["json/*.json"],
   "manifest_version": 2,
   "incognito": "spanning"
 }

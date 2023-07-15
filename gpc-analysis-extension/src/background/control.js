@@ -15,13 +15,11 @@ import {
   halt as haltAnalysis,
 } from "./analysis/analysis.js";
 import { defaultSettings } from "../data/defaultSettings.js";
-import { modes } from "../data/modes.js";
 import { stores, storage } from "./storage.js";
 
 async function enable() {
   initAnalysis();
 }
-
 
 /******************************************************************************/
 // Initializers
@@ -36,8 +34,6 @@ async function enable() {
     }
   }
 
-
-
   // Turns on the extension
   enable();
 })();
@@ -49,11 +45,9 @@ async function enable() {
 // 	 - Make sure that I switch extensionmode and separate it from mode.domainlist
 // (2) Handle extension functionality with listeners and message passing
 
-
 /**
  * IF YOU EVER NEED TO DEBUG THIS:
  * This is outmoded in manifest V3. We cannot maintain global variables anymore.
  */
 
 // Create keyboard shortcuts for switching to analysis mode
-
