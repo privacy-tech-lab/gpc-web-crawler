@@ -48,7 +48,7 @@ async function setup() {
     .manage()
     .setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 });
   console.log("built");
-  await driver.manage().window().maximize();
+  // await driver.manage().window().maximize();
   await new Promise((resolve) => setTimeout(resolve, 3000));
   console.log("setup complete");
 }
