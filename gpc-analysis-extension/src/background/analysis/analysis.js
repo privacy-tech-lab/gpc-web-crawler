@@ -223,7 +223,7 @@ function fetchUSPAPIData() {
  * @returns Object - Contains USP cookies, USPAPI data, and the location
  */
 async function fetchUSPStringData() {
-  let uspCookiePhrasings = [...uspCookiePhrasingList];
+  // let uspCookiePhrasings = [...uspCookiePhrasingList];
   const uspapiData = await fetchUSPAPIData();
   const uspCookies = await fetchUSPCookies(); // returns array of all cookies, irrespective of order
 
@@ -342,6 +342,7 @@ async function runAnalysis() {
     logData(domain, "USPAPI", uspapiData.data);
   }
   if (uspapiData.cookies) {
+    post_to_debug(domain, "RA-cookies", uspapiData.cookies);
     logData(domain, "COOKIES", uspapiData.cookies);
   }
   changingSitesOnAnalysis = true; // Analysis=ON flag
@@ -466,15 +467,15 @@ var analysisUserendSkeleton = () => {
   };
 };
 
-var analysisDataSkeletonThirdParties = () => {
-  return {
-    COOKIES: [],
-    HEADERS: {},
-    URLS: {},
-    USPAPI: [],
-    USPAPI_LOCATOR: {},
-  };
-};
+// var analysisDataSkeletonThirdParties = () => {
+//   return {
+//     COOKIES: [],
+//     HEADERS: {},
+//     URLS: {},
+//     USPAPI: [],
+//     USPAPI_LOCATOR: {},
+//   };
+// };
 
 var analysisDataSkeletonFirstParties = () => {
   return {
@@ -544,7 +545,9 @@ function logData(domain, command, data) {
   // NOTE: Cookies should be an array of "cookies" objects, not promises, etc.
   if (command === "COOKIES") {
     analysis[domain][callIndex][gpcStatusKey]["COOKIES"] = [];
+    post_to_debug(domain, "DATA-: ", data);
     for (let i in data) {
+      post_to_debug(domain, "LD: " + i, data[i]);
       analysis[domain][callIndex][gpcStatusKey]["COOKIES"].push(data[i]);
     }
 
@@ -614,18 +617,17 @@ function logData(domain, command, data) {
  * Cookie listener - grabs ALL cookies as they are changed
  */
 function cookiesOnChangedCallback(changeInfo) {
-  (changeInfo) => {
-    if (!changeInfo.removed) {
-      let cookie = changeInfo.cookie;
-      let domain = cookie.domain;
-      domain = domain[0] == "." ? domain.substring(1) : domain;
-      let urlObj = psl.parse(domain);
+  if (!changeInfo.removed) {
+    let cookie = changeInfo.cookie;
+    let domain = cookie.domain;
+    domain = domain[0] == "." ? domain.substring(1) : domain;
+    let urlObj = psl.parse(domain);
 
-      if (cookiesPhrasing.test(cookie.name)) {
-        logData(urlObj.domain, "COOKIES", cookie);
-      }
+    if (cookiesPhrasing.test(cookie.name)) {
+      post_to_debug(domain, "cookie.name", cookie);
+      logData(urlObj.domain, "COOKIES", cookie);
     }
-  };
+  }
 }
 
 /**
@@ -653,7 +655,7 @@ function onCommittedCallback(details) {
 
 // Used for crawling
 async function runAnalysisonce(location) {
-  await new Promise((resolve) => setTimeout(resolve, 4000));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
   let domain = parseURL(url);

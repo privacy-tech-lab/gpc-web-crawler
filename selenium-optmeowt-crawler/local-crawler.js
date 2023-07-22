@@ -1,4 +1,4 @@
-const { Builder } = require("selenium-webdriver");
+const { Builder, By } = require("selenium-webdriver");
 const firefox = require("selenium-webdriver/firefox");
 
 const fs = require("fs");
@@ -48,7 +48,6 @@ async function setup() {
     .manage()
     .setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 });
   console.log("built");
-  // await driver.manage().window().maximize();
   await new Promise((resolve) => setTimeout(resolve, 3000));
   console.log("setup complete");
 }
@@ -109,7 +108,7 @@ async function visit_site(sites, site_id) {
   try {
     await driver.get(sites[site_id]);
     // console.log(Date.now()); to compare to site loading time in debug table
-    await new Promise((resolve) => setTimeout(resolve, 20000));
+    await new Promise((resolve) => setTimeout(resolve, 22000));
     // check if access is denied
     // if so, throw an error so it gets tagged as a human check site
     var title = await driver.getTitle();
