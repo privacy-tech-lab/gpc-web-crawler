@@ -9,7 +9,7 @@ var total_begin = Date.now(); //start logging time
 var err_obj = new Object();
 // Loads sites to crawl
 const sites = [];
-fs.createReadStream("sites1.csv")
+fs.createReadStream("val_set_sites1.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
     sites.push(row[0]);
@@ -109,7 +109,7 @@ async function visit_site(sites, site_id) {
   try {
     await driver.get(sites[site_id]);
     // console.log(Date.now()); to compare to site loading time in debug table
-    await new Promise((resolve) => setTimeout(resolve, 20000));
+    await new Promise((resolve) => setTimeout(resolve, 22000));
     // check if access is denied
     // if so, throw an error so it gets tagged as a human check site
     var title = await driver.getTitle();
@@ -190,7 +190,7 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
   var error_value = "no_error";
   for (let site_id in sites) {
     var begin_site = Date.now(); // for timing
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 3500));
     if (site_id > 0) {
       // check if previous site was added
       // if so, do the put request accordingly

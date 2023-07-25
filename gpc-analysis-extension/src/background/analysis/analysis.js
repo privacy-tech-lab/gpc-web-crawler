@@ -36,7 +36,6 @@ WARNING:  Content Security Policies are DISABLED while Analysis Mode is ON.
 import axios from "axios";
 import { stores, storage } from "./../storage.js";
 import {
-  cookiesPhrasing,
   uspPhrasing,
   uspCookiePhrasingList,
   doNotSellPhrasing,
@@ -57,15 +56,6 @@ var domains_collected_during_analysis = [];
 var urlsWithUSPString = [];
 var firstPartyDomain = "";
 var changingSitesOnAnalysis = false;
-var sql_data = {
-  domain: "",
-  dns_link: null,
-  sent_gpc: false,
-  uspapi_before_gpc: null,
-  uspapi_after_gpc: null,
-  usp_cookies_before_gpc: null,
-  usp_cookies_after_gpc: null,
-};
 var debugging_version = true; // assume that the debugging table exists
 /******************************************************************************/
 /******************************************************************************/
@@ -223,7 +213,7 @@ function fetchUSPAPIData() {
  * @returns Object - Contains USP cookies, USPAPI data, and the location
  */
 async function fetchUSPStringData() {
-  let uspCookiePhrasings = [...uspCookiePhrasingList];
+  // let uspCookiePhrasings = [...uspCookiePhrasingList];
   const uspapiData = await fetchUSPAPIData();
   const uspCookies = await fetchUSPCookies(); // returns array of all cookies, irrespective of order
 
@@ -235,61 +225,18 @@ async function fetchUSPStringData() {
 }
 
 //sends sql post request to db and then resets the global sql_data
-function send_sql_and_reset() {
-  if (sql_data["domain"] != "") {
-    axios
-      .post("http://localhost:8080/analysis", sql_data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err));
-    //reset
-    sql_data = {
-      domain: "",
-      dns_link: null,
-      sent_gpc: false,
-      uspapi_before_gpc: null,
-      uspapi_after_gpc: null,
-      usp_cookies_before_gpc: null,
-      usp_cookies_after_gpc: null,
-    };
-  }
+function send_sql_and_reset(domain) {
+  analysis_userend[domain]["domain"] = domain;
+  axios
+    .post("http://localhost:8080/analysis", analysis_userend[domain], {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((res) => console.log(res.data))
+    .catch((err) => console.log(err));
 }
 
-function create_sql_data(domain) {
-  // add analysis_userend data to global var
-  sql_data["domain"] = domain;
-  sql_data["dns_link"] = analysis_userend[domain]["DO_NOT_SELL_LINK_EXISTS"];
-  sql_data["sent_gpc"] = analysis_userend[domain]["SENT_GPC"];
-
-  for (let i in analysis_userend[domain]["USPAPI_BEFORE_GPC"]) {
-    if (analysis_userend[domain]["USPAPI_BEFORE_GPC"][i]["uspString"]) {
-      sql_data["uspapi_before_gpc"] =
-        analysis_userend[domain]["USPAPI_BEFORE_GPC"][i]["uspString"];
-    }
-  }
-  for (let i in analysis_userend[domain]["USPAPI_AFTER_GPC"]) {
-    if (analysis_userend[domain]["USPAPI_AFTER_GPC"][i]["uspString"]) {
-      sql_data["uspapi_after_gpc"] =
-        analysis_userend[domain]["USPAPI_AFTER_GPC"][i]["uspString"];
-    }
-  }
-
-  for (let i in analysis_userend[domain]["USP_COOKIES_AFTER_GPC"]) {
-    if (analysis_userend[domain]["USP_COOKIES_AFTER_GPC"][i]["value"]) {
-      sql_data["usp_cookies_after_gpc"] =
-        analysis_userend[domain]["USP_COOKIES_AFTER_GPC"][i]["value"];
-    }
-  }
-  for (let i in analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"]) {
-    if (analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"][i]["value"]) {
-      sql_data["usp_cookies_before_gpc"] =
-        analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"][i]["value"];
-    }
-  }
-}
 function post_to_debug(domain, a, b) {
   if (debugging_version == true) {
     var debug_data_post = {
@@ -369,7 +316,6 @@ async function haltAnalysis() {
   }
   await new Promise((resolve) => setTimeout(resolve, 1000)); //new
 
-  create_sql_data(firstPartyDomain); //adding data to global var to send to sql db
   post_to_debug(firstPartyDomain, "line 370", "haltAnalysis-end");
 }
 
@@ -457,22 +403,14 @@ function webRequestResponseFiltering(details) {
 // convert to a spreadsheet for saving as a .csv file
 var analysisUserendSkeleton = () => {
   return {
-    DO_NOT_SELL_LINK_EXISTS: null,
-    SENT_GPC: false,
-    USPAPI_BEFORE_GPC: [],
-    USPAPI_AFTER_GPC: [],
-    USP_COOKIES_BEFORE_GPC: [],
-    USP_COOKIES_AFTER_GPC: [],
-  };
-};
-
-var analysisDataSkeletonThirdParties = () => {
-  return {
-    COOKIES: [],
-    HEADERS: {},
-    URLS: {},
-    USPAPI: [],
-    USPAPI_LOCATOR: {},
+    dns_link: null,
+    sent_gpc: false,
+    uspapi_before_gpc: null,
+    uspapi_after_gpc: null,
+    usp_cookies_before_gpc: null,
+    usp_cookies_after_gpc: null,
+    OptanonConsent_before_gpc: null,
+    OptanonConsent_after_gpc: null,
   };
 };
 
@@ -537,12 +475,13 @@ function logData(domain, command, data) {
 
   if (changingSitesOnAnalysis) {
     analysis[domain][callIndex]["SENT_GPC"] = true;
-    analysis_userend[domain]["SENT_GPC"] = true;
+    analysis_userend[domain]["sent_gpc"] = true;
   }
 
   // Let's assume that data does have a name property as a cookie should
   // NOTE: Cookies should be an array of "cookies" objects, not promises, etc.
   if (command === "COOKIES") {
+    // all cookies can be logged together here, since it's a list
     analysis[domain][callIndex][gpcStatusKey]["COOKIES"] = [];
     for (let i in data) {
       analysis[domain][callIndex][gpcStatusKey]["COOKIES"].push(data[i]);
@@ -550,26 +489,49 @@ function logData(domain, command, data) {
 
     // Detailed case for summary object
     if (gpcStatusKey == "BEFORE_GPC") {
-      analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"] = [];
+      analysis_userend[domain]["usp_cookies_before_gpc"] = null;
+      analysis_userend[domain]["OptanonConsent_before_gpc"] = null;
       for (let i in data) {
-        if (data[i]["value"]) {
-          analysis_userend[domain]["USP_COOKIES_BEFORE_GPC"].push({
-            value: data[i]["value"],
-          });
+        if (data[i]["name"] == "OptanonConsent") {
+          var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
+          if (match) {
+            analysis_userend[domain]["OptanonConsent_before_gpc"] = match[0]; // [1] would return only the capture group
+          } else {
+            // if cookie is found but gpc enabled tag doesn't exist
+            analysis_userend[domain]["OptanonConsent_before_gpc"] = "no_gpc";
+          }
+        } else {
+          // other cookies would be US privacy
+          if (data[i]["value"]) {
+            analysis_userend[domain]["usp_cookies_before_gpc"] =
+              data[i]["value"];
+          }
         }
       }
     }
 
     if (gpcStatusKey == "AFTER_GPC") {
-      analysis_userend[domain]["USP_COOKIES_AFTER_GPC"] = [];
+      analysis_userend[domain]["usp_cookies_after_gpc"] = null;
+      analysis_userend[domain]["OptanonConsent_after_gpc"] = null;
       for (let i in data) {
-        if (data[i]["value"]) {
-          analysis_userend[domain]["USP_COOKIES_AFTER_GPC"].push({
-            value: data[i]["value"],
-          });
+        if (data[i]["name"] == "OptanonConsent") {
+          var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
+          if (match) {
+            analysis_userend[domain]["OptanonConsent_after_gpc"] = match[0]; // [1] would return only the capture group
+          } else {
+            // if cookie is found but gpc enabled tag doesn't exist
+            analysis_userend[domain]["OptanonConsent_after_gpc"] = "no_gpc";
+          }
+        } else {
+          // other cookies would be us privacy
+          if (data[i]["value"]) {
+            analysis_userend[domain]["usp_cookies_after_gpc"] =
+              data[i]["value"];
+          }
         }
       }
     }
+    post_to_debug(domain, "cookies logged", "");
   }
 
   if (command === "USPAPI") {
@@ -578,16 +540,10 @@ function logData(domain, command, data) {
 
     // Detailed case for summary object
     if (gpcStatusKey == "BEFORE_GPC") {
-      analysis_userend[domain]["USPAPI_BEFORE_GPC"] = [];
-      analysis_userend[domain]["USPAPI_BEFORE_GPC"].push({
-        uspString: data["uspString"],
-      });
+      analysis_userend[domain]["uspapi_before_gpc"] = data["uspString"];
     }
     if (gpcStatusKey == "AFTER_GPC") {
-      analysis_userend[domain]["USPAPI_AFTER_GPC"] = [];
-      analysis_userend[domain]["USPAPI_AFTER_GPC"].push({
-        uspString: data["uspString"],
-      });
+      analysis_userend[domain]["uspapi_after_gpc"] = data["uspString"];
     }
   }
 
@@ -599,7 +555,7 @@ function logData(domain, command, data) {
       "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING"
     ].push(data);
     analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK_EXISTS"] = true;
-    analysis_userend[domain]["DO_NOT_SELL_LINK_EXISTS"] = true;
+    analysis_userend[domain]["dns_link"] = true;
   }
   storage.set(stores.analysis, analysis_userend[domain], domain);
 }
@@ -609,24 +565,6 @@ function logData(domain, command, data) {
 /**********                       # Listeners                        **********/
 /******************************************************************************/
 /******************************************************************************/
-
-/**
- * Cookie listener - grabs ALL cookies as they are changed
- */
-function cookiesOnChangedCallback(changeInfo) {
-  (changeInfo) => {
-    if (!changeInfo.removed) {
-      let cookie = changeInfo.cookie;
-      let domain = cookie.domain;
-      domain = domain[0] == "." ? domain.substring(1) : domain;
-      let urlObj = psl.parse(domain);
-
-      if (cookiesPhrasing.test(cookie.name)) {
-        logData(urlObj.domain, "COOKIES", cookie);
-      }
-    }
-  };
-}
 
 /**
  * Runs anytime the webNavigation.onCommitted listers triggers,
@@ -653,7 +591,7 @@ function onCommittedCallback(details) {
 
 // Used for crawling
 async function runAnalysisonce(location) {
-  await new Promise((resolve) => setTimeout(resolve, 4000));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
   let domain = parseURL(url);
@@ -668,12 +606,9 @@ async function runAnalysisonce(location) {
     post_to_debug(domain, "line 666", "runAnalysisOnce-halting");
     haltAnalysis();
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    post_to_debug(
-      domain,
-      analysis[domain][analysis_counter[domain]]["BEFORE_GPC"],
-      analysis[domain][analysis_counter[domain]]["AFTER_GPC"]
-    );
-    send_sql_and_reset(); //send global var sql_data to db via post request
+
+    post_to_debug(domain, analysis_userend[domain], "");
+    send_sql_and_reset(domain); //send global var sql_data to db via post request
 
     //resetting vars
     function afterUSPStringFetched() {
@@ -705,9 +640,6 @@ async function runAnalysisonce(location) {
  * Message passing listener - for collecting USPAPI call data from the window
  */
 function onMessageHandler(message, sender, sendResponse) {
-  // if (message.msg === "QUERY_ANALYSIS") {
-  //   post_to_debug(firstPartyDomain, "line 703", "msg: QUERY_ANALYSIS");
-  // }
   if (message.msg === "SITE_LOADED") {
     post_to_debug(firstPartyDomain, "SITE_LOADED", Date.now());
     runAnalysisonce(message.location);
@@ -718,7 +650,6 @@ function onMessageHandler(message, sender, sendResponse) {
  * Enables all the important listeners in one place
  */
 function enableListeners() {
-  chrome.cookies.onChanged.addListener(cookiesOnChangedCallback);
   chrome.webNavigation.onCommitted.addListener(onCommittedCallback);
   chrome.runtime.onMessage.addListener(onMessageHandler);
   chrome.webRequest.onHeadersReceived.addListener(
@@ -729,7 +660,6 @@ function enableListeners() {
 }
 
 function disableListeners() {
-  chrome.cookies.onChanged.removeListener(cookiesOnChangedCallback);
   chrome.webNavigation.onCommitted.removeListener(onCommittedCallback);
   chrome.runtime.onMessage.removeListener(onMessageHandler);
   chrome.webRequest.onHeadersReceived.removeListener(disableCSPCallback);
