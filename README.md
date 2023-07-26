@@ -90,8 +90,8 @@ Components:
 
 - SQL Database:
   The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
-  | id | site_id | domain | dns_link | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | id | site_id | domain | dns_link | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
   The first few columns primarily pertain to identifying the site and verifying that the OptMeowt Analysis extension is working properly.
 
@@ -106,7 +106,9 @@ Components:
   - uspapi_before_gpc: return value of calling the USPAPI before a GPC opt out signal was sent
   - uspapi_after_gpc: return value of calling the USPAPI after a GPC opt out signal were sent
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie before a GPC opt out signal was sent
-  - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
+  - usp_cookies_after_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
+  - OptanonConsent_before_gpc: The isGpcEnabled string from One Trust’s OptanonConsent cookie before a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”.
+  - OptanonConsent_after_gpc: The isGpcEnabled string from One Trust’s OptanonConsent cookie after a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”. 
 
 ## 4. Limitations/Known Issues
 Since we are using Selenium and a VPN to visit the sites we analyze, there are some limitations to the sites we can analyze.
