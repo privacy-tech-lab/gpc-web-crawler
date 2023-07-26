@@ -65,9 +65,8 @@ Components:
 
 - Crawler Script:
   The flow of the crawler script is described in the diagram below.
-  ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/1d0a31e3-77b1-4662-8ceb-3bd18d850378)
+  ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/32abede1-7cc8-4259-8047-2f823986518d)
 
- 
   This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error. 
   
   Types of Errors that may be logged:
@@ -107,8 +106,8 @@ Components:
   - uspapi_after_gpc: return value of calling the USPAPI after a GPC opt out signal were sent
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie before a GPC opt out signal was sent
   - usp_cookies_after_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
-  - OptanonConsent_before_gpc: The isGpcEnabled string from One Trust’s OptanonConsent cookie before a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”.
-  - OptanonConsent_after_gpc: The isGpcEnabled string from One Trust’s OptanonConsent cookie after a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”. 
+  - OptanonConsent_before_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie before a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”. 
+  - OptanonConsent_after_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie after a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”. 
 
 ## 4. Limitations/Known Issues
 Since we are using Selenium and a VPN to visit the sites we analyze, there are some limitations to the sites we can analyze.
