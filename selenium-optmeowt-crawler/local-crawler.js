@@ -1,4 +1,4 @@
-const { Builder } = require("selenium-webdriver");
+const { Builder, By } = require("selenium-webdriver");
 const firefox = require("selenium-webdriver/firefox");
 
 const fs = require("fs");
@@ -49,8 +49,55 @@ async function setup() {
     .setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 });
   console.log("built");
   // await driver.manage().window().maximize();
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  // integrating privacy pioneer
+  const originalWindow = await driver.getWindowHandle();
+  await driver.installAddon("./privacy_pioneer-1.2.1.xpi");
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  const windows = await driver.getAllWindowHandles();
+  // console.log(windows, windows.length);
+  for (let w in windows) {
+    if (windows[w] != originalWindow) {
+      // switch to privacy pioneer window
+      console.log("switching");
+      privacyPioneerWindow = windows[w];
+      await driver.switchTo().window(privacyPioneerWindow);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await driver.switchTo().alert().accept(); //close the alert
+      console.log("switched and alert closed");
+      // click skip tour button
+      await driver
+        .findElement(
+          By.xpath("/html/body/div[3]/div/div/div/div[2]/div/button")
+        )
+        .click()
+        .finally();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      // navigate to settings
+      await driver
+        .findElement(By.xpath("/html/body/div/nav/div[2]/div[3]"))
+        .click()
+        .finally();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      break;
+    }
+  }
+
+  await driver.switchTo().window(originalWindow); //Switch back to the old tab or window
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   console.log("setup complete");
+}
+
+async function download_privacy_pioneer_data() {
+  await driver.switchTo().window(privacyPioneerWindow);
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await driver
+    .findElement(
+      By.xpath("/html/body/div/main/section/div[3]/div[3]/div[1]/div[3]/div[3]")
+    )
+    .click()
+    .finally();
+  await new Promise((resolve) => setTimeout(resolve, 500));
 }
 
 async function put_site_id(data) {
@@ -158,6 +205,8 @@ async function visit_site(sites, site_id) {
 
     // if it's just a human check site, we don't need to restart
     if (e.name != "HumanCheckError") {
+      console.log("attempting to download privacy pioneer data");
+      await download_privacy_pioneer_data();
       driver.quit();
       console.log("------restarting driver------");
       new Promise((resolve) => setTimeout(resolve, 10000));
@@ -215,6 +264,7 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
       (end_site - total_begin) / 1000
     );
   }
+  await download_privacy_pioneer_data();
 
   driver.quit();
 })();
