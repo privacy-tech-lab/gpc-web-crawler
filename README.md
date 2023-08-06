@@ -8,6 +8,7 @@
   <a href="https://github.com/privacy-tech-lab/gpc-web-crawler/watchers"><img alt="GitHub watchers" src="https://img.shields.io/github/watchers/privacy-tech-lab/gpc-web-crawler?style=social"></a>
   <a href="https://github.com/privacy-tech-lab/gpc-web-crawler/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/privacy-tech-lab/gpc-web-crawler?style=social"></a>
   <a href="https://github.com/privacy-tech-lab/gpc-web-crawler/network/members"><img alt="GitHub forks" src="https://img.shields.io/github/forks/privacy-tech-lab/gpc-web-crawler?style=social"></a>
+  <a href="https://github.com/sponsors/privacy-tech-lab"><img alt="GitHub sponsors" src="https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86"></a>
 </p>
 
 <p align="center">
@@ -67,13 +68,14 @@ Components:
   The flow of the crawler script is described in the diagram below.
   ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/32abede1-7cc8-4259-8047-2f823986518d)
 
-  This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error. 
-  
+  This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error.
+
   Types of Errors that may be logged:
+
   1. TimeoutError: A Selenium error that is thrown when either the page has not loaded in 30 seconds or the page has not responded for 30 seconds. Timeouts are set in driver.setTimeouts.
   2. HumanCheckError: A custom error that is thrown when the site has a title that we have observed means our VPN IP address is blocked or there is a human check on that site. See [Limitations/Known Issues](https://github.com/privacy-tech-lab/gpc-web-crawler#4-limitationsknown-issues) for more details.
   3. InsecureCertificateError: A Selenium error that indicates that the site will not be loaded, as it has an insecure certificate.
-  4. WebDriverError: A Selenium error that indicates that the WebDriver has failed to execute some part of the script. 
+  4. WebDriverError: A Selenium error that indicates that the WebDriver has failed to execute some part of the script.
   5. WebDriverError: Reached Error Page: This indicates that an error page has been reached when Selenium tried to load the site.
 
 - OptMeowt Analysis Extension:
@@ -106,14 +108,16 @@ Components:
   - uspapi_after_gpc: return value of calling the USPAPI after a GPC opt out signal were sent
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie before a GPC opt out signal was sent
   - usp_cookies_after_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
-  - OptanonConsent_before_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie before a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”. 
-  - OptanonConsent_after_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie after a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”. 
+  - OptanonConsent_before_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie before a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”.
+  - OptanonConsent_after_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie after a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”.
 
 ## 4. Limitations/Known Issues
+
 Since we are using Selenium and a VPN to visit the sites we analyze, there are some limitations to the sites we can analyze.
 There are 2 main types of sites that we cannot analyze due to our methodology:
+
 1. Sites where the VPN’s IP address is blocked.
-   
+
 A site titled “Access Denied” that says we don’t have permission to access the site on this server is loaded instead of the real site.
 
 2. Sites that have some kind of human check.
