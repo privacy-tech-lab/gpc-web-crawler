@@ -57,6 +57,7 @@ var urlsWithUSPString = [];
 var firstPartyDomain = "";
 var changingSitesOnAnalysis = false;
 var debugging_version = true; // assume that the debugging table exists
+var run_halt_counter = {}
 /******************************************************************************/
 /******************************************************************************/
 /**********                       # Functions                        **********/
@@ -266,22 +267,9 @@ function post_to_debug(domain, a, b) {
  * (3) Attach DOM property to page after reload
  */
 async function runAnalysis() {
-  let domain_ra;
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    post_to_debug(firstPartyDomain, "line 322", "query tab runAnalysis");
-    let tab = tabs[0];
-    let url = new URL(tab.url);
-    let parsed = psl.parse(url.hostname);
-    let domain = parsed.domain;
-    firstPartyDomain = domain; // Saves first party domain to global scope
-
-    domain_ra = domain;
-  });
-
-  await new Promise((resolve) => setTimeout(resolve, 500)); //new
-
   post_to_debug(firstPartyDomain, "line 334", "runAnalysis-fetching");
   const uspapiData = await fetchUSPStringData();
+  await new Promise((resolve) => setTimeout(resolve, 500)); //new
   post_to_debug(firstPartyDomain, "line 336", "runAnalysis-uspsFetched");
   let url = new URL(uspapiData.location);
   let domain = parseURL(url);
@@ -293,9 +281,9 @@ async function runAnalysis() {
   }
   changingSitesOnAnalysis = true; // Analysis=ON flag
   addGPCHeaders();
-  await new Promise((resolve) => setTimeout(resolve, 500)); //new
+  await new Promise((resolve) => setTimeout(resolve, 1500)); //new
   chrome.tabs.reload();
-  post_to_debug(domain_ra, "line 348", "runAnalysis-end");
+  post_to_debug(firstPartyDomain, "line 348", "runAnalysis-end");
 }
 
 /**
@@ -531,7 +519,6 @@ function logData(domain, command, data) {
         }
       }
     }
-    post_to_debug(domain, "cookies logged", "");
   }
 
   if (command === "USPAPI") {
@@ -595,21 +582,39 @@ async function runAnalysisonce(location) {
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
   let domain = parseURL(url);
+
+  firstPartyDomain = domain;
+
+  if (run_halt_counter[domain] == null) {
+    run_halt_counter[domain] = [0, 0]; // [count of run Analysis, count of halt analysis]
+  }
+
   let analysis_domains = await storage.getAllKeys(stores.analysis);
   if (!analysis_domains.includes(domain) && analysis_started === false) {
-    post_to_debug(domain, "line 659", "runAnalysisOnce-running");
+    run_halt_counter[domain][0] += 1;
+    post_to_debug(firstPartyDomain, run_halt_counter[domain], "runAnalysisOnce-running");
     runAnalysis();
     await storage.set(stores.settings, true, "ANALYSIS_STARTED");
   }
 
   if (analysis_started === true) {
-    post_to_debug(domain, "line 666", "runAnalysisOnce-halting");
-    haltAnalysis();
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    if (run_halt_counter[domain][1] < run_halt_counter[domain][0]) {
+      run_halt_counter[domain][1] += 1;
+      post_to_debug(domain, run_halt_counter[domain], "runAnalysisOnce-halting");
+      haltAnalysis();
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    post_to_debug(domain, analysis_userend[domain], "");
-    send_sql_and_reset(domain); //send global var sql_data to db via post request
+      if (analysis_userend[domain] != null) {
+        send_sql_and_reset(domain); //send global var sql_data to db via post request
+      }
+      else {
+        post_to_debug(domain, analysis_userend[domain], "SSAR: SOMETHING WENT WRONG");
+      }
 
+    } else {
+      post_to_debug(domain, "tried to run halt 2x", run_halt_counter[domain]);
+    }
+    // always reset vars/set analysis started to false so that it won't get stuck.
     //resetting vars
     function afterUSPStringFetched() {
       changingSitesOnAnalysis = false;
@@ -625,7 +630,7 @@ async function runAnalysisonce(location) {
             tabId: tab.id,
             path: "../../assets/face-icons/icon128-face-circle.png",
           },
-          () => {}
+          () => { }
         );
       });
     }
@@ -641,7 +646,7 @@ async function runAnalysisonce(location) {
  */
 function onMessageHandler(message, sender, sendResponse) {
   if (message.msg === "SITE_LOADED") {
-    post_to_debug(firstPartyDomain, "SITE_LOADED", Date.now());
+    post_to_debug(firstPartyDomain, "SITE_LOADED", message.location);
     runAnalysisonce(message.location);
   }
 }
