@@ -5,6 +5,22 @@ const fs = require("fs");
 const { parse } = require("csv-parse");
 const axios = require("axios");
 
+var privacypioneer = false;
+
+const args = process.argv;
+if (args.length > 2 && args[2] == "privacy-pioneer") {
+  console.log("using privacy pioneer version!");
+  privacypioneer = true;
+}
+if (privacypioneer == false) {
+  //crawl with OptMeowt extension
+  var extension_path = "./myextension.xpi"
+}
+else {
+  // crawl with Privacy Pioneer
+  var extension_path = "./myextension-pp.xpi"
+}
+
 var total_begin = Date.now(); //start logging time
 var err_obj = new Object();
 // Loads sites to crawl
@@ -36,7 +52,7 @@ async function setup() {
   options = new firefox.Options()
     .setBinary(firefox.Channel.NIGHTLY)
     .setPreference("xpinstall.signatures.required", false)
-    .addExtensions("./myextension.xpi");
+    .addExtensions(extension_path);
 
   options.addArguments("--headful");
   driver = new Builder()
@@ -49,84 +65,38 @@ async function setup() {
     .setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 });
   console.log("built");
   // await driver.manage().window().maximize();
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  if (privacypioneer == true) {
+    // integrating privacy pioneer
+    const privacyPioneerWindow = await driver.getWindowHandle();
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const windows = await driver.getAllWindowHandles();
+    for (let w in windows) {
+      if (windows[w] != privacyPioneerWindow) {
+        // switch to privacy pioneer window
+        originalWindow = windows[w];
+        await driver.switchTo().alert().accept(); //close the alert
+        // click skip tour button
+        await driver
+          .findElement(
+            By.xpath("/html/body/div[3]/div/div/div/div[2]/div/button")
+          )
+          .click()
+          .finally();
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        console.log("alert closed/tour skipped");
+        await driver.close() //close pp window
+        await driver.switchTo().window(originalWindow);
+        break;
+      }
+    }
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 1500));
   console.log("setup complete");
 }
 
-// async function setup() {
-//   await new Promise((resolve) => setTimeout(resolve, 3000));
-//   options = new firefox.Options()
-//     .setBinary(firefox.Channel.NIGHTLY)
-//     .setPreference("xpinstall.signatures.required", false)
-//     .addExtensions("./myextension.xpi");
 
-//   options.addArguments("--headful");
-//   options.addArguments("disable-infobars")
-//   options.addArguments('--no-sandbox')
-//   options.addArguments('--disable-application-cache')
-//   options.addArguments('--disable-gpu')
-//   options.addArguments("--disable-dev-shm-usage")
-
-//   driver = new Builder()
-//     .forBrowser("firefox")
-//     .setFirefoxOptions(options)
-//     .build();
-//   // set timeout so that if a page doesn't load in 30 s, it times out
-//   await driver
-//     .manage()
-//     .setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 });
-//   console.log("built");
-//   // await driver.manage().window().maximize();
-
-//   // integrating privacy pioneer
-//   const originalWindow = await driver.getWindowHandle();
-//   await driver.installAddon("./privacy_pioneer-1.2.1.xpi");
-//   await new Promise((resolve) => setTimeout(resolve, 5000));
-//   const windows = await driver.getAllWindowHandles();
-//   // console.log(windows, windows.length);
-//   for (let w in windows) {
-//     if (windows[w] != originalWindow) {
-//       // switch to privacy pioneer window
-//       console.log("switching");
-//       privacyPioneerWindow = windows[w];
-//       await driver.switchTo().window(privacyPioneerWindow);
-//       await new Promise((resolve) => setTimeout(resolve, 500));
-//       await driver.switchTo().alert().accept(); //close the alert
-//       console.log("switched and alert closed");
-//       // click skip tour button
-//       await driver
-//         .findElement(
-//           By.xpath("/html/body/div[3]/div/div/div/div[2]/div/button")
-//         )
-//         .click()
-//         .finally();
-//       await new Promise((resolve) => setTimeout(resolve, 500));
-//       // navigate to settings
-//       await driver
-//         .findElement(By.xpath("/html/body/div/nav/div[2]/div[3]"))
-//         .click()
-//         .finally();
-//       await new Promise((resolve) => setTimeout(resolve, 500));
-//       break;
-//     }
-//   }
-
-//   await driver.switchTo().window(originalWindow); //Switch back to the old tab or window
-//   await new Promise((resolve) => setTimeout(resolve, 1000));
-//   console.log("setup complete");
-// }
-
-async function download_privacy_pioneer_data() {
-  await driver.switchTo().window(privacyPioneerWindow);
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  await driver
-    .findElement(
-      By.xpath("/html/body/div/main/section/div[3]/div[3]/div[1]/div[3]/div[3]")
-    )
-    .click()
-    .finally();
-  await new Promise((resolve) => setTimeout(resolve, 500));
-}
 
 async function put_site_id(data) {
   try {
@@ -238,8 +208,6 @@ async function visit_site(sites, site_id) {
         console.log(e.name + ': ' + e.message + "-- driver should already have quit ");
       }
       else {
-        // console.log("attempting to download privacy pioneer data");
-        // await download_privacy_pioneer_data();
         driver.quit();
       }
 
@@ -274,20 +242,24 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
   var error_value = "no_error";
   for (let site_id in sites) {
     var begin_site = Date.now(); // for timing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    if (site_id > 0) {
-      // check if previous site was added
-      // if so, do the put request accordingly
-      // if not, see if we need to redo it
-      await putReq_and_checkRedo(sites, site_id - 1, error_value);
+    if (privacypioneer == false) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (site_id > 0) {
+        // check if previous site was added
+        // if so, do the put request accordingly
+        // if not, see if we need to redo it
+        await putReq_and_checkRedo(sites, site_id - 1, error_value);
+      }
     }
+
     error_value = await visit_site(sites, site_id);
 
-    //just for the last entry--inc timeout to make sure it is input before checking
-    if (site_id == sites.length - 1) {
-      // give it extra time for site to be added to db
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      await putReq_and_checkRedo(sites, site_id, error_value);
+    if (privacypioneer == false) {   //just for the last entry--inc timeout to make sure it is input before checking
+      if (site_id == sites.length - 1) {
+        // give it extra time for site to be added to db
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await putReq_and_checkRedo(sites, site_id, error_value);
+      }
     }
 
     var end_site = Date.now();
@@ -299,7 +271,6 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
       (end_site - total_begin) / 1000
     );
   }
-  // await download_privacy_pioneer_data();
 
   driver.quit();
 })();
