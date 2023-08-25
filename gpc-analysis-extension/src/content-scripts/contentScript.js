@@ -21,14 +21,6 @@ https://developer.chrome.com/extensions/content_scripts
 /******************************************************************************/
 
 // To be injected to call the USPAPI function in analysis mode
-const uspapi = `
-  try {
-    __uspapi('getUSPData', 1, (data) => {
-      let currURL = document.URL
-      window.postMessage({ type: "USPAPI_TO_CONTENT_SCRIPT", result: data, url: currURL });
-    });
-  }
-`;
 
 const uspapiRequest = `
   try {
@@ -39,6 +31,34 @@ const uspapiRequest = `
   } catch (e) {
     window.postMessage({ type: "USPAPI_TO_CONTENT_SCRIPT_REQUEST", result: "USPAPI_FAILED" });
   }
+`;
+
+const gppRequest = `
+  try {
+    let v = null;
+    let callback_ran = false;
+    let currURL = document.URL;
+    v = __gpp('ping', (data) => {
+      callback_ran = true;
+      window.postMessage({ type: "GPP_TO_CONTENT_SCRIPT_REQUEST", result: data, url: currURL });
+    });
+
+    if (v != null && callback_ran == false) { window.postMessage({ type: "GPP_TO_CONTENT_SCRIPT_REQUEST", result: v, url: currURL }); }
+  } catch (e) { window.postMessage({ type: "GPP_TO_CONTENT_SCRIPT_REQUEST", result: "GPP_FAILED" }); }
+`;
+
+const getGPPDataRequest = `
+  try {
+    let a = null;
+    let callback_ran = false;
+    let currURL = document.URL;
+    a = __gpp('getGPPData', (data) => {
+      callback_ran = true;
+      window.postMessage({ type: "getGPPData_TO_CONTENT_SCRIPT_REQUEST", result: data, url: currURL });
+    });
+
+    if (a != null && callback_ran == false) { window.postMessage({ type: "getGPPData_TO_CONTENT_SCRIPT_REQUEST", result: a, url: currURL }); }
+  } catch (e) { window.postMessage({ type: "getGPPData_TO_CONTENT_SCRIPT_REQUEST", result: "getGPPData_FAILED" }); }
 `;
 
 const runAnalysisProperty = `
@@ -98,7 +118,6 @@ async function getWellknown(url) {
   window.addEventListener(
     "load",
     function () {
-      // injectScript(uspapi);
       injectScript(runAnalysisProperty);
       chrome.runtime.sendMessage({
         msg: "SITE_LOADED",
@@ -122,24 +141,36 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.msg === "USPAPI_FETCH_REQUEST") {
     injectScript(uspapiRequest);
   }
+  if (message.msg === "GPP_FETCH_REQUEST") {
+    injectScript(gppRequest);
+  }
+  if (message.msg === "getGPPData_FETCH_REQUEST") {
+    injectScript(getGPPDataRequest);
+  }
 });
 
 window.addEventListener(
   "message",
   function (event) {
-    if (
-      event.data.type == "USPAPI_TO_CONTENT_SCRIPT"
-      // && typeof chrome.app.isInstalled !== 'undefined'
-    ) {
+
+    if (event.data.type == "USPAPI_TO_CONTENT_SCRIPT_REQUEST") {
       chrome.runtime.sendMessage({
-        msg: "USPAPI_TO_BACKGROUND",
+        msg: "USPAPI_TO_BACKGROUND_FROM_FETCH_REQUEST",
         data: event.data.result,
         location: this.location.href,
       });
     }
-    if (event.data.type == "USPAPI_TO_CONTENT_SCRIPT_REQUEST") {
+    if (event.data.type == "GPP_TO_CONTENT_SCRIPT_REQUEST") {
+
       chrome.runtime.sendMessage({
-        msg: "USPAPI_TO_BACKGROUND_FROM_FETCH_REQUEST",
+        msg: "GPP_TO_BACKGROUND_FROM_FETCH_REQUEST",
+        data: event.data.result,
+        location: this.location.href,
+      });
+    }
+    if (event.data.type == "getGPPData_TO_CONTENT_SCRIPT_REQUEST") {
+      chrome.runtime.sendMessage({
+        msg: "getGPPData_TO_BACKGROUND_FROM_FETCH_REQUEST",
         data: event.data.result,
         location: this.location.href,
       });

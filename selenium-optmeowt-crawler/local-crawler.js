@@ -9,7 +9,7 @@ var total_begin = Date.now(); //start logging time
 var err_obj = new Object();
 // Loads sites to crawl
 const sites = [];
-fs.createReadStream("val_set_sites1.csv")
+fs.createReadStream("sites1.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
     sites.push(row[0]);
@@ -39,6 +39,11 @@ async function setup() {
     .addExtensions("./myextension.xpi");
 
   options.addArguments("--headful");
+  options.addArguments("disable-infobars")
+  options.addArguments('--no-sandbox')
+  options.addArguments('--disable-application-cache')
+  options.addArguments('--disable-gpu')
+  options.addArguments("--disable-dev-shm-usage")
   driver = new Builder()
     .forBrowser("firefox")
     .setFirefoxOptions(options)
@@ -158,7 +163,13 @@ async function visit_site(sites, site_id) {
 
     // if it's just a human check site, we don't need to restart
     if (e.name != "HumanCheckError") {
-      driver.quit();
+
+      if (e.message.match(/Failed to decode response from marionette/i)) {
+        console.log(e.name + ': ' + e.message + "-- driver should already have quit ");
+      }
+      else {
+        driver.quit();
+      }
       console.log("------restarting driver------");
       new Promise((resolve) => setTimeout(resolve, 10000));
       await setup(); //restart the selenium driver
@@ -190,7 +201,7 @@ async function putReq_and_checkRedo(sites, site_id, error_value) {
   var error_value = "no_error";
   for (let site_id in sites) {
     var begin_site = Date.now(); // for timing
-    await new Promise((resolve) => setTimeout(resolve, 3500));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     if (site_id > 0) {
       // check if previous site was added
       // if so, do the put request accordingly
