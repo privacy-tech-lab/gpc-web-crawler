@@ -123,6 +123,13 @@ async function visit_site(sites, site_id) {
       title.match(/error/i) ||
       (title.match(/service/i) && title.match(/unavailable/i)) ||
       title.match(/Just a moment.../i) ||
+      title.match(/you have been blocked/i) ||
+      title.match(/site not available/i) ||
+      title.match(/attention required/i) ||
+      title.match(/access to this page has been blocked/i) ||
+      (title.match(/site/i) && title.match(/temporarily unavailable/i)) ||
+      (title.match(/site/i) && title.match(/temporarily down/i)) ||
+      title.match(/403 forbidden/i) ||
       title.match(/pardon our interruption/i)
     ) {
       throw new HumanCheckError("Human Check");
