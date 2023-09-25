@@ -25,8 +25,7 @@ GPC web crawler code. The GPC Web crawler is developed and maintained by the [Op
 [4. Thank You!](#4-thank-you)
 
 ## 1. Selenium OptMeowt Crawler
-
-Selenium OptMeowt Crawler is a crawler for analysis functionality of [OptMeowt](https://github.com/privacy-tech-lab/gpc-web-crawler). It automatically runs [OptMeowt Analysis mode](https://github.com/privacy-tech-lab/gpc-optmeowt/tree/v4.0.1/#4-analysis-mode-firefox-only) on all the given sites of the input csv file in Firefox. The crawler is implemented using [Selenium](https://www.selenium.dev/).
+The Selenium OptMeowt Crawler is a crawler implemented using [Selenium](https://www.selenium.dev/) that analyzes sites using the [OptMeowt analysis extension](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/gpc-analysis-extension). More details about analysis functionality can be found [here](https://github.com/privacy-tech-lab/gpc-web-crawler/edit/main/README.md#optmeowt-analysis-extension).
 
 ## 2. Development
 
@@ -64,7 +63,7 @@ node local-crawler.js
 
 Components:
 
-- Crawler Script:
+- #### Crawler Script:
   The flow of the crawler script is described in the diagram below.
   ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/32abede1-7cc8-4259-8047-2f823986518d)
 
@@ -78,18 +77,21 @@ Components:
   4. WebDriverError: A Selenium error that indicates that the WebDriver has failed to execute some part of the script.
   5. WebDriverError: Reached Error Page: This indicates that an error page has been reached when Selenium tried to load the site.
 
-- OptMeowt Analysis Extension:
-  The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser by the crawler script. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request. The analysis of a site is performed by the extension as follows:
+- #### OptMeowt Analysis Extension:
+  The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser by the crawler script. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request. The analysis performed by the OptMeowt analysis extension investigates the GPC compliance of a given site using a 4-step approach:
+  1. The extension checks whether the site is subject to the CCPA by searching for a DNS link.
+  2. The extension checks the value of [US Privacy string](https://github.com/InteractiveAdvertisingBureau/USPrivacy/tree/master) and OneTrust’s OptanonConsent cookie, if either of these exist.
+  3. The extension sends a GPC signal to the site.
+  4. The extension rechecks the value of the US Privacy string and OptanonConsent cookie.
+ 
+  The information collected during this process is used to determine whether the site respects GPC. Note that legal obligations to respect GPC differ by geographic location. In order for a site to be GPC compliant, the following statements should be true after the GPC signal was sent for each string or cookie that the site implemented:
+  1. the third character of the US Privacy string is a Y
+  2. the value of the OptanonConsent cookie is `isGpcEnabled=1` 
 
-  1. Check if a site has a Do Not Sell link
-  2. Check the site's US Privacy String to determine a user's current opt out status
-  3. Send a GPC opt out signal to opt out
-  4. Check the site's US Privacy String again to determine the user's current opt out status
-
-- Node.js Rest API:
+- #### Node.js Rest API:
   We use the Rest API to make GET, PUT, and POST requests to the SQL database. The Rest API is also local and is run in a separate terminal from the crawler.
 
-- SQL Database:
+- #### SQL Database:
   The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
   | id | site_id | domain | dns_link | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc |
   | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
