@@ -57,6 +57,8 @@ var urlsWithUSPString = [];
 var firstPartyDomain = "";
 var changingSitesOnAnalysis = false;
 var debugging_version = true; // assume that the debugging table exists
+var urlclassification = { "firstParty": {}, "thirdParty": {} };
+
 /******************************************************************************/
 /******************************************************************************/
 /**********                       # Functions                        **********/
@@ -227,6 +229,7 @@ async function fetchUSPStringData() {
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset(domain) {
   analysis_userend[domain]["domain"] = domain;
+  analysis_userend[domain]["urlClassification"] = JSON.stringify(urlclassification[domain]);
   axios
     .post("http://localhost:8080/analysis", analysis_userend[domain], {
       headers: {
@@ -625,7 +628,7 @@ async function runAnalysisonce(location) {
             tabId: tab.id,
             path: "../../assets/face-icons/icon128-face-circle.png",
           },
-          () => {}
+          () => { }
         );
       });
     }
@@ -657,7 +660,63 @@ function enableListeners() {
     disableCSPFilter,
     ["blocking", "responseHeaders"]
   );
+  chrome.webRequest.onHeadersReceived.addListener(
+    // listener that listens for web requests and filters for requests that have 1st/3rd parties that are on disconnect list ()
+    function (details) {
+      var match = details.documentUrl.match(/moz-extension:\/\//); // returns array if matched, else returns null
+      if (!match) {
+        let url = new URL(details.documentUrl);
+        let a = parseURL(url);
+        let short_details_url = details.url.match(/https:\/\/([^\/]+)/g); //match with regex to get the domain
+        if (short_details_url.length > 0) {
+          short_details_url = short_details_url[0] //to decrease characters, get rid of https://www. or just https:// 
+          if (short_details_url.includes("https://www.")) {
+            short_details_url = short_details_url.replace('https://www.', '')
+          }
+          else if (short_details_url.includes("https://")) {
+            short_details_url = short_details_url.replace('https://', '')
+          }
+        } //if there's more than one match, take the first
+        else { short_details_url = details.url.slice(0, 50) } // if there aren't any matches, take up to the first 50 characters
+        if (details.urlClassification.firstParty.length > 0) {
+          for (let url_class = 0; url_class < details.urlClassification.firstParty.length; i++) {
+            if (!(a in urlclassification)) {
+              urlclassification[a] = { "firstParty": {}, "thirdParty": {} };
+            }
+            if (details.urlClassification.firstParty[url_class] in urlclassification[a]['firstParty']) {
+              if (!(urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]].includes(short_details_url))) {
+                urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]].push(short_details_url);
+              }
+            }
+            else {
+              urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]] = [short_details_url]
+            }
+          }
+        }
+
+        if (details.urlClassification.thirdParty.length > 0) {
+          for (let url_class = 0; url_class < details.urlClassification.thirdParty.length; i++) {
+            if (!(a in urlclassification)) {
+              urlclassification[a] = { "firstParty": {}, "thirdParty": {} };
+            }
+            if (details.urlClassification.thirdParty[url_class] in urlclassification[a]['thirdParty']) {
+              if (!(urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]].includes(short_details_url))) {
+                urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]].push(short_details_url);
+              }
+            }
+            else {
+              urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]] = [short_details_url]
+            }
+          }
+        }
+      }
+    },
+    {
+      urls: ["*://*/*"]
+    }
+  );
 }
+
 
 function disableListeners() {
   chrome.webNavigation.onCommitted.removeListener(onCommittedCallback);
