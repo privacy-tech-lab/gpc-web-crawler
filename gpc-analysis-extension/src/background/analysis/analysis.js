@@ -263,10 +263,6 @@ async function fetchUSPStringData() {
     location: uspapiData.location,
   };
 }
-// async function fetchGPPStringData() {
-//   const gppData = await fetchGPPData();
-//   return gppData
-// }
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset(domain) {
   analysis_userend[domain]["domain"] = domain;
@@ -309,11 +305,11 @@ function post_to_debug(domain, a, b) {
  * (3) Attach DOM property to page after reload
  */
 async function runAnalysis() {
-  post_to_debug(firstPartyDomain, Date.now(), "runAnalysis-fetching");
+  post_to_debug(firstPartyDomain, "line 308", "runAnalysis-fetching");
   const uspapiData = await fetchUSPStringData();
-  post_to_debug(firstPartyDomain, "line 336", "runAnalysis-uspsFetched");
+  post_to_debug(firstPartyDomain, "line 310", "runAnalysis-uspsFetched");
   const gppData = await fetchGPPData();
-  post_to_debug(firstPartyDomain, "line 336", "runAnalysis-gppFetched");
+  post_to_debug(firstPartyDomain, "line 312", "runAnalysis-gppFetched");
 
   let url = new URL(uspapiData.location);
   let domain = parseURL(url);
@@ -327,8 +323,6 @@ async function runAnalysis() {
   url = new URL(gppData.location); // when we remove USPAPI, we can uncomment this
   domain = parseURL(url);
   if (gppData.data !== "GPP_FAILED") {
-    post_to_debug(firstPartyDomain, gppData.data, "GPP DATA");
-
     if (gppData.data.gppVersion == '1.0') {
       // getGPPData is where the GPP String is
       const getGPPData = await fetch_getGPPData();
@@ -336,6 +330,7 @@ async function runAnalysis() {
       logData(domain, "GPP", getGPPData.data);
     } else {
       // the GPP String is just inside gppData.data
+      post_to_debug(firstPartyDomain, getGPPData.data, "GPP-DATA-v1.1");
       logData(domain, "GPP", gppData.data);
     }
   }
@@ -344,18 +339,18 @@ async function runAnalysis() {
   addGPCHeaders();
   await new Promise((resolve) => setTimeout(resolve, 2500)); //new
   chrome.tabs.reload();
-  post_to_debug(firstPartyDomain, Date.now(), "runAnalysis-end");
+  post_to_debug(firstPartyDomain, "line 342", "runAnalysis-end");
 }
 
 /**
  * Disables analysis collection
  */
 async function haltAnalysis() {
-  post_to_debug(firstPartyDomain, Date.now(), "haltAnalysis-begin");
+  post_to_debug(firstPartyDomain, "line 349", "haltAnalysis-begin");
   const uspapiData = await fetchUSPStringData();
-  post_to_debug(firstPartyDomain, "line 358", "haltAnalysis-uspsFetched");
+  post_to_debug(firstPartyDomain, "line 351", "haltAnalysis-uspsFetched");
   const gppData = await fetchGPPData();
-  post_to_debug(firstPartyDomain, "line 336", "haltAnalysis-gppFetched");
+  post_to_debug(firstPartyDomain, "line 353", "haltAnalysis-gppFetched");
 
   let url = new URL(uspapiData.location);
   let domain = parseURL(url);
@@ -381,10 +376,8 @@ async function haltAnalysis() {
       logData(domain, "GPP", gppData.data);
     }
   }
-
   await new Promise((resolve) => setTimeout(resolve, 1000)); //new
-
-  post_to_debug(firstPartyDomain, Date.now(), "haltAnalysis-end");
+  post_to_debug(firstPartyDomain, "line 380", "haltAnalysis-end");
 }
 
 /**
@@ -629,7 +622,6 @@ function logData(domain, command, data) {
     if (gpcStatusKey == "AFTER_GPC") {
       analysis_userend[domain]["gpp_after_gpc"] = data["gppString"];
     }
-
   }
 
   if (command === "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING") {
@@ -709,7 +701,7 @@ async function runAnalysisonce(location) {
         send_sql_and_reset(domain); //send global var sql_data to db via post request
       }
       else {
-        post_to_debug(domain, analysis_userend[domain], "SSAR: SOMETHING WENT WRONG");
+        post_to_debug(domain, analysis_userend[domain], "SQL POSTING: SOMETHING WENT WRONG");
       }
 
     } else {
@@ -736,8 +728,7 @@ async function runAnalysisonce(location) {
       });
     }
     afterUSPStringFetched();
-    post_to_debug(domain, "line 692", "runAnalysisOnce-done");
-
+    post_to_debug(domain, "line 732", "runAnalysisOnce-done");
     await storage.set(stores.settings, false, "ANALYSIS_STARTED");
   }
 }
@@ -747,7 +738,7 @@ async function runAnalysisonce(location) {
  */
 function onMessageHandler(message, sender, sendResponse) {
   if (message.msg === "SITE_LOADED") {
-    post_to_debug(firstPartyDomain, "SITE_LOADED", message.location);
+    post_to_debug(firstPartyDomain, "SITE_LOADED", Date.now());
     runAnalysisonce(message.location);
   }
 }
