@@ -330,7 +330,7 @@ async function runAnalysis() {
       logData(domain, "GPP", getGPPData.data);
     } else {
       // the GPP String is just inside gppData.data
-      post_to_debug(firstPartyDomain, getGPPData.data, "GPP-DATA-v1.1");
+      post_to_debug(firstPartyDomain, gppData.data, "GPP-DATA-v1.1");
       logData(domain, "GPP", gppData.data);
     }
   }
@@ -668,7 +668,7 @@ function onCommittedCallback(details) {
 
 // Used for crawling
 async function runAnalysisonce(location) {
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 7000)); //give it 7s to get ready after DOM content has loaded
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
   let domain = parseURL(url);

@@ -116,7 +116,8 @@ async function getWellknown(url) {
   /* (2) Injects scripts */
 
   window.addEventListener(
-    "load",
+    // "load",
+    "DOMContentLoaded",
     function () {
       injectScript(runAnalysisProperty);
       chrome.runtime.sendMessage({
