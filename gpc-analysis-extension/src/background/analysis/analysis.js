@@ -57,6 +57,7 @@ var urlsWithUSPString = [];
 var firstPartyDomain = "";
 var changingSitesOnAnalysis = false;
 var debugging_version = true; // assume that the debugging table exists
+var run_halt_counter = {}
 /******************************************************************************/
 /******************************************************************************/
 /**********                       # Functions                        **********/
@@ -207,13 +208,52 @@ function fetchUSPAPIData() {
   });
 }
 
+function fetchGPPData() {
+  return new Promise((resolve, reject) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        { msg: "GPP_FETCH_REQUEST" },
+        function (response) {
+          function onResponseHandler(message, sender, sendResponse) {
+            chrome.runtime.onMessage.removeListener(onResponseHandler);
+            if (message.msg == "GPP_TO_BACKGROUND_FROM_FETCH_REQUEST") {
+              resolve(message);
+            }
+          }
+          chrome.runtime.onMessage.addListener(onResponseHandler);
+        }
+      );
+    });
+  });
+}
+
+function fetch_getGPPData() {
+  return new Promise((resolve, reject) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        { msg: "getGPPData_FETCH_REQUEST" },
+        function (response) {
+          function onResponseHandler(message, sender, sendResponse) {
+            chrome.runtime.onMessage.removeListener(onResponseHandler);
+            if (message.msg == "getGPPData_TO_BACKGROUND_FROM_FETCH_REQUEST") {
+              resolve(message);
+            }
+          }
+          chrome.runtime.onMessage.addListener(onResponseHandler);
+        }
+      );
+    });
+  });
+}
+
 /**
  * Manually fetches all US Privacy data in both the USPAPI if it exists
  * and also US Privacy cookies if they exist.
  * @returns Object - Contains USP cookies, USPAPI data, and the location
  */
 async function fetchUSPStringData() {
-  // let uspCookiePhrasings = [...uspCookiePhrasingList];
   const uspapiData = await fetchUSPAPIData();
   const uspCookies = await fetchUSPCookies(); // returns array of all cookies, irrespective of order
 
@@ -223,7 +263,6 @@ async function fetchUSPStringData() {
     location: uspapiData.location,
   };
 }
-
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset(domain) {
   analysis_userend[domain]["domain"] = domain;
@@ -266,23 +305,12 @@ function post_to_debug(domain, a, b) {
  * (3) Attach DOM property to page after reload
  */
 async function runAnalysis() {
-  let domain_ra;
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    post_to_debug(firstPartyDomain, "line 322", "query tab runAnalysis");
-    let tab = tabs[0];
-    let url = new URL(tab.url);
-    let parsed = psl.parse(url.hostname);
-    let domain = parsed.domain;
-    firstPartyDomain = domain; // Saves first party domain to global scope
-
-    domain_ra = domain;
-  });
-
-  await new Promise((resolve) => setTimeout(resolve, 500)); //new
-
-  post_to_debug(firstPartyDomain, "line 334", "runAnalysis-fetching");
+  post_to_debug(firstPartyDomain, "line 308", "runAnalysis-fetching");
   const uspapiData = await fetchUSPStringData();
-  post_to_debug(firstPartyDomain, "line 336", "runAnalysis-uspsFetched");
+  post_to_debug(firstPartyDomain, "line 310", "runAnalysis-uspsFetched");
+  const gppData = await fetchGPPData();
+  post_to_debug(firstPartyDomain, "line 312", "runAnalysis-gppFetched");
+
   let url = new URL(uspapiData.location);
   let domain = parseURL(url);
   if (uspapiData.data !== "USPAPI_FAILED") {
@@ -291,21 +319,39 @@ async function runAnalysis() {
   if (uspapiData.cookies) {
     logData(domain, "COOKIES", uspapiData.cookies);
   }
+
+  url = new URL(gppData.location); // when we remove USPAPI, we can uncomment this
+  domain = parseURL(url);
+  if (gppData.data !== "GPP_FAILED") {
+    if (gppData.data.gppVersion == '1.0') {
+      // getGPPData is where the GPP String is
+      const getGPPData = await fetch_getGPPData();
+      post_to_debug(firstPartyDomain, getGPPData.data, "GPP-DATA-v1");
+      logData(domain, "GPP", getGPPData.data);
+    } else {
+      // the GPP String is just inside gppData.data
+      post_to_debug(firstPartyDomain, gppData.data, "GPP-DATA-v1.1");
+      logData(domain, "GPP", gppData.data);
+    }
+  }
+
   changingSitesOnAnalysis = true; // Analysis=ON flag
   addGPCHeaders();
-  await new Promise((resolve) => setTimeout(resolve, 500)); //new
+  await new Promise((resolve) => setTimeout(resolve, 2500)); //new
   chrome.tabs.reload();
-  post_to_debug(domain_ra, "line 348", "runAnalysis-end");
+  post_to_debug(firstPartyDomain, "line 342", "runAnalysis-end");
 }
 
 /**
  * Disables analysis collection
  */
 async function haltAnalysis() {
-  post_to_debug(firstPartyDomain, "line 355", "haltAnalysis-begin");
-
+  post_to_debug(firstPartyDomain, "line 349", "haltAnalysis-begin");
   const uspapiData = await fetchUSPStringData();
-  post_to_debug(firstPartyDomain, "line 358", "haltAnalysis-uspsFetched");
+  post_to_debug(firstPartyDomain, "line 351", "haltAnalysis-uspsFetched");
+  const gppData = await fetchGPPData();
+  post_to_debug(firstPartyDomain, "line 353", "haltAnalysis-gppFetched");
+
   let url = new URL(uspapiData.location);
   let domain = parseURL(url);
   if (uspapiData.data !== "USPAPI_FAILED") {
@@ -314,9 +360,24 @@ async function haltAnalysis() {
   if (uspapiData.cookies) {
     logData(domain, "COOKIES", uspapiData.cookies);
   }
-  await new Promise((resolve) => setTimeout(resolve, 1000)); //new
 
-  post_to_debug(firstPartyDomain, "line 370", "haltAnalysis-end");
+  url = new URL(gppData.location); // when we remove USPAPI, we can uncomment this
+  domain = parseURL(url);
+  if (gppData.data !== "GPP_FAILED") {
+    post_to_debug(firstPartyDomain, gppData.data, "GPP DATA");
+
+    if (gppData.data.gppVersion == '1.0') {
+      // getGPPData is where the GPP String is
+      const getGPPData = await fetch_getGPPData();
+      post_to_debug(firstPartyDomain, getGPPData.data, "GPP-DATA-v1");
+      logData(domain, "GPP", getGPPData.data);
+    } else {
+      // the GPP String is just inside gppData.data
+      logData(domain, "GPP", gppData.data);
+    }
+  }
+  await new Promise((resolve) => setTimeout(resolve, 1000)); //new
+  post_to_debug(firstPartyDomain, "line 380", "haltAnalysis-end");
 }
 
 /**
@@ -411,6 +472,8 @@ var analysisUserendSkeleton = () => {
     usp_cookies_after_gpc: null,
     OptanonConsent_before_gpc: null,
     OptanonConsent_after_gpc: null,
+    gpp_before_gpc: null,
+    gpp_after_gpc: null,
   };
 };
 
@@ -426,6 +489,7 @@ var analysisDataSkeletonFirstParties = () => {
       USPAPI: [],
       USPAPI_LOCATOR: {},
       THIRD_PARTIES: {},
+      GPP: [],
     },
     AFTER_GPC: {
       COOKIES: [],
@@ -437,6 +501,7 @@ var analysisDataSkeletonFirstParties = () => {
       USPAPI: [],
       USPAPI_LOCATOR: {},
       THIRD_PARTIES: {},
+      GPP: [],
     },
     SENT_GPC: null,
   };
@@ -531,7 +596,6 @@ function logData(domain, command, data) {
         }
       }
     }
-    post_to_debug(domain, "cookies logged", "");
   }
 
   if (command === "USPAPI") {
@@ -544,6 +608,19 @@ function logData(domain, command, data) {
     }
     if (gpcStatusKey == "AFTER_GPC") {
       analysis_userend[domain]["uspapi_after_gpc"] = data["uspString"];
+    }
+  }
+
+  if (command === "GPP") {
+    analysis[domain][callIndex][gpcStatusKey]["GPP"] = [];
+    analysis[domain][callIndex][gpcStatusKey]["GPP"].push(data);
+
+    // Detailed case for summary object
+    if (gpcStatusKey == "BEFORE_GPC") {
+      analysis_userend[domain]["gpp_before_gpc"] = data["gppString"];
+    }
+    if (gpcStatusKey == "AFTER_GPC") {
+      analysis_userend[domain]["gpp_after_gpc"] = data["gppString"];
     }
   }
 
@@ -591,25 +668,46 @@ function onCommittedCallback(details) {
 
 // Used for crawling
 async function runAnalysisonce(location) {
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 7000)); //give it 7s to get ready after DOM content has loaded
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
   let domain = parseURL(url);
+  firstPartyDomain = domain;
+
+  if (run_halt_counter[domain] == null) {
+    run_halt_counter[domain] = [0, 0]; // [count of run Analysis, count of halt analysis]
+  }
+
   let analysis_domains = await storage.getAllKeys(stores.analysis);
   if (!analysis_domains.includes(domain) && analysis_started === false) {
-    post_to_debug(domain, "line 659", "runAnalysisOnce-running");
-    runAnalysis();
-    await storage.set(stores.settings, true, "ANALYSIS_STARTED");
+    if (run_halt_counter[domain][0] < run_halt_counter[domain][1] + 1) { // prevent from running 2x
+      run_halt_counter[domain][0] += 1;
+      post_to_debug(firstPartyDomain, run_halt_counter[domain], "runAnalysisOnce-running");
+      runAnalysis();
+      await storage.set(stores.settings, true, "ANALYSIS_STARTED");
+    }
+    else { post_to_debug(domain, "tried to run 2x", run_halt_counter[domain]); }
+
   }
 
   if (analysis_started === true) {
-    post_to_debug(domain, "line 666", "runAnalysisOnce-halting");
-    haltAnalysis();
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    if (run_halt_counter[domain][1] < run_halt_counter[domain][0]) {
+      run_halt_counter[domain][1] += 1;
+      post_to_debug(domain, run_halt_counter[domain], "runAnalysisOnce-halting");
+      haltAnalysis();
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    post_to_debug(domain, analysis_userend[domain], "");
-    send_sql_and_reset(domain); //send global var sql_data to db via post request
+      if (analysis_userend[domain] != null) {
+        send_sql_and_reset(domain); //send global var sql_data to db via post request
+      }
+      else {
+        post_to_debug(domain, analysis_userend[domain], "SQL POSTING: SOMETHING WENT WRONG");
+      }
 
+    } else {
+      post_to_debug(domain, "tried to run halt 2x", run_halt_counter[domain]);
+    }
+    // always reset vars/set analysis started to false so that it won't get stuck.
     //resetting vars
     function afterUSPStringFetched() {
       changingSitesOnAnalysis = false;
@@ -625,13 +723,12 @@ async function runAnalysisonce(location) {
             tabId: tab.id,
             path: "../../assets/face-icons/icon128-face-circle.png",
           },
-          () => {}
+          () => { }
         );
       });
     }
     afterUSPStringFetched();
-    post_to_debug(domain, "line 692", "runAnalysisOnce-done");
-
+    post_to_debug(domain, "line 732", "runAnalysisOnce-done");
     await storage.set(stores.settings, false, "ANALYSIS_STARTED");
   }
 }
