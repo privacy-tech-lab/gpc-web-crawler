@@ -65,7 +65,9 @@ Components:
 
 - #### Crawler Script:
   The flow of the crawler script is described in the diagram below.
-  ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/32abede1-7cc8-4259-8047-2f823986518d)
+  
+  ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/090244bb-e6ca-4e95-bcbf-1ce99892753a)
+
 
   This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error.
 
@@ -80,22 +82,23 @@ Components:
 - #### OptMeowt Analysis Extension:
   The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser by the crawler script. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request. The analysis performed by the OptMeowt analysis extension investigates the GPC compliance of a given site using a 4-step approach:
   1. The extension checks whether the site is subject to the CCPA by searching for a DNS link.
-  2. The extension checks the value of [US Privacy string](https://github.com/InteractiveAdvertisingBureau/USPrivacy/tree/master) and OneTrust’s OptanonConsent cookie, if either of these exist.
+  2. The extension checks the value of the [US Privacy string](https://github.com/InteractiveAdvertisingBureau/USPrivacy/tree/master), OneTrust’s OptanonConsent cookie, and the [GPP string](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/Consent%20String%20Specification.md), if any of these exist.
   3. The extension sends a GPC signal to the site.
-  4. The extension rechecks the value of the US Privacy string and OptanonConsent cookie.
+  4. The extension rechecks the value of the US Privacy string, OptanonConsent cookie, and GPP string.
  
   The information collected during this process is used to determine whether the site respects GPC. Note that legal obligations to respect GPC differ by geographic location. In order for a site to be GPC compliant, the following statements should be true after the GPC signal was sent for each string or cookie that the site implemented:
   1. the third character of the US Privacy string is a Y
-  2. the value of the OptanonConsent cookie is `isGpcEnabled=1` 
+  2. the value of the OptanonConsent cookie is `isGpcEnabled=1`
+  3. the opt out columns in the GPP string's relevant [US section](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/tree/main/Sections) (i.e. SaleOptOut, TargetedAdvertisingOptOut, SharingOptOut) have a value of 1. Note that the columns and opt out requirements vary by state.
 
 - #### Node.js Rest API:
   We use the Rest API to make GET, PUT, and POST requests to the SQL database. The Rest API is also local and is run in a separate terminal from the crawler.
 
 - #### SQL Database:
   The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
-  | id | site_id | domain | dns_link | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-
+  | id | site_id | domain | dns_link | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+ 
   The first few columns primarily pertain to identifying the site and verifying that the OptMeowt Analysis extension is working properly.
 
   - id: autoincrement primary key to identify the database entry
@@ -107,11 +110,13 @@ Components:
   The remaining columns pertain to the opt out status of a user, which is indicated by the value of the US Privacy String. The US Privacy String can be implemented on a site via (1) the client-side JavaScript USPAPI, which returns the US Privacy String value when called, or (2) an HTTP cookie that stores its value. The OptMeowt analysis extension checks each site for both implementations of the US Privacy String by calling the USPAPI and checking all cookies.
 
   - uspapi_before_gpc: return value of calling the USPAPI before a GPC opt out signal was sent
-  - uspapi_after_gpc: return value of calling the USPAPI after a GPC opt out signal were sent
+  - uspapi_after_gpc: return value of calling the USPAPI after a GPC opt out signal was sent
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie before a GPC opt out signal was sent
   - usp_cookies_after_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
   - OptanonConsent_before_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie before a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”.
   - OptanonConsent_after_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie after a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”.
+  - gpp_before_gpc: the value of the GPP string before a GPC opt out signal was sent (obtained via the [CMPAPI for GPP](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/CMP%20API%20Specification.md))
+  - gpp_after_gpc: the value of the GPP string after a GPC opt out signal was sent (obtained via the [CMPAPI for GPP](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/CMP%20API%20Specification.md))
 
 ## 4. Limitations/Known Issues
 
