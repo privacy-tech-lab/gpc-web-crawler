@@ -38,7 +38,6 @@ import { stores, storage } from "./../storage.js";
 import {
   uspPhrasing,
   uspCookiePhrasingList,
-  doNotSellPhrasing,
 } from "../../data/regex.js";
 import psl from "psl";
 import { headers } from "../../data/headers.js";
@@ -98,8 +97,7 @@ function setAnalysisIcon(tabID) {
 /**
  * Though the name says just GPC headers are added here, we also:
  * (1) Check the current stopped URL for a us_privacy string
- * (2) Pass the incoming stream to a filter to look for a Do Not Sell Link
- * (3) Attatch the GPC headers
+ * (2) Attatch the GPC headers
  * NOTE: We attach the DOM property in another listener upon finishing reloading
  * @param {Object} details
  * @returns Object
@@ -107,7 +105,6 @@ function setAnalysisIcon(tabID) {
 function addGPCHeadersCallback(details) {
   setAnalysisIcon(details.tabId); // Show analysis icon
   checkForUSPString(details.url); // Dump all URLs that contain a us_privacy string
-  webRequestResponseFiltering(details); // Filter for Do Not Sell link
 
   for (let signal in headers) {
     // add GPC headers
@@ -229,7 +226,7 @@ async function fetchUSPStringData() {
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset(domain) {
   analysis_userend[domain]["domain"] = domain;
-  analysis_userend[domain]["urlClassification"] = JSON.stringify(urlclassification[domain]);
+  analysis_userend[domain]["urlClassification"] = JSON.stringify(urlclassification[domain]); //add urlClassification info
   axios
     .post("http://localhost:8080/analysis", analysis_userend[domain], {
       headers: {
@@ -360,53 +357,8 @@ function parseURL(url) {
   return psl.parse(urlObj.hostname).domain;
 }
 
-/**
- * Processes caught responses via webRequest filtering as they come in
- * Parses all incoming responses for Do Not Sell links
- * @param {Object, String}
- */
-function handleResponseChunk(details, str) {
-  if (doNotSellPhrasing.test(str)) {
-    let match = str.match(doNotSellPhrasing);
-    let url = new URL(details.url);
-    let domain = parseURL(url);
-    logData(domain, "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING", match);
-  }
-}
-
-/**
- * Checks for do not sell links as responses come in
- * @param {*} details
- */
-function webRequestResponseFiltering(details) {
-  let filter = browser.webRequest.filterResponseData(details.requestId);
-  let decoder = new TextDecoder("utf-8");
-  let encoder = new TextEncoder();
-
-  let data = [];
-  filter.ondata = (event) => {
-    filter.write(event.data); // Write immediately, we don't want to change the response
-    const decodedChunk = decoder.decode(event.data, { stream: true });
-    data.push(decodedChunk);
-  };
-
-  filter.onstop = (event) => {
-    filter.close();
-    const str = data.toString();
-    handleResponseChunk(details, str);
-  };
-
-  filter.onerror = (event) => {
-    console.error(filter.error);
-  };
-}
-
-// Tentative idea:
-// Make every item in here only one thing so you can easily
-// convert to a spreadsheet for saving as a .csv file
 var analysisUserendSkeleton = () => {
   return {
-    dns_link: null,
     sent_gpc: false,
     uspapi_before_gpc: null,
     uspapi_after_gpc: null,
@@ -421,9 +373,6 @@ var analysisDataSkeletonFirstParties = () => {
   return {
     BEFORE_GPC: {
       COOKIES: [],
-      DO_NOT_SELL_LINK: [],
-      DO_NOT_SELL_LINK_EXISTS: null,
-      DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING: [],
       HEADERS: {},
       URLS: {},
       USPAPI: [],
@@ -432,9 +381,6 @@ var analysisDataSkeletonFirstParties = () => {
     },
     AFTER_GPC: {
       COOKIES: [],
-      DO_NOT_SELL_LINK: [],
-      DO_NOT_SELL_LINK_EXISTS: null,
-      DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING: [],
       HEADERS: {},
       URLS: {},
       USPAPI: [],
@@ -548,17 +494,6 @@ function logData(domain, command, data) {
     if (gpcStatusKey == "AFTER_GPC") {
       analysis_userend[domain]["uspapi_after_gpc"] = data["uspString"];
     }
-  }
-
-  if (command === "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING") {
-    analysis[domain][callIndex][gpcStatusKey][
-      "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING"
-    ] = [];
-    analysis[domain][callIndex][gpcStatusKey][
-      "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING"
-    ].push(data);
-    analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK_EXISTS"] = true;
-    analysis_userend[domain]["dns_link"] = true;
   }
   storage.set(stores.analysis, analysis_userend[domain], domain);
 }
