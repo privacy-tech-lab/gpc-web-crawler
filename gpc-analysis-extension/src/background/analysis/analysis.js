@@ -678,34 +678,43 @@ function enableListeners() {
           }
         } //if there's more than one match, take the first
         else { short_details_url = details.url.slice(0, 50) } // if there aren't any matches, take up to the first 50 characters
+        var url_classes_we_want = ['fingerprinting', 'tracking_ad', 'tracking_social', 'any_basic_tracking', 'any_social_tracking'];
+
         if (details.urlClassification.firstParty.length > 0) {
           for (let url_class = 0; url_class < details.urlClassification.firstParty.length; i++) {
-            if (!(a in urlclassification)) {
+            if (!(a in urlclassification)) { // if this domain doesn't have data, init the domain
               urlclassification[a] = { "firstParty": {}, "thirdParty": {} };
             }
-            if (details.urlClassification.firstParty[url_class] in urlclassification[a]['firstParty']) {
+            if (details.urlClassification.firstParty[url_class] in urlclassification[a]['firstParty']) { // if the tracking type exists already
               if (!(urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]].includes(short_details_url))) {
                 urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]].push(short_details_url);
               }
             }
-            else {
-              urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]] = [short_details_url]
+            else { // if this tracking type hasn't been seen yet
+              // the only details.urlClassification.firstParty[url_class] values we care about are in classes_we_want. ignore all others
+              if (url_classes_we_want.includes(details.urlClassification.firstParty[url_class])) {
+                urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]] = [short_details_url]
+              }
             }
           }
         }
 
         if (details.urlClassification.thirdParty.length > 0) {
           for (let url_class = 0; url_class < details.urlClassification.thirdParty.length; i++) {
-            if (!(a in urlclassification)) {
+            if (!(a in urlclassification)) { // if this domain doesn't have data, init the domain
               urlclassification[a] = { "firstParty": {}, "thirdParty": {} };
             }
-            if (details.urlClassification.thirdParty[url_class] in urlclassification[a]['thirdParty']) {
+            // if (url_classes_we_want.includes(details.urlClassification.thirdParty[url_class])) {
+            if (details.urlClassification.thirdParty[url_class] in urlclassification[a]['thirdParty']) { // if the tracking type exists already
               if (!(urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]].includes(short_details_url))) {
                 urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]].push(short_details_url);
               }
             }
-            else {
-              urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]] = [short_details_url]
+            else { // if this tracking type hasn't been seen yet
+              // the only details.urlClassification.thirdParty[url_class] values we care about are in url_classes_we_want. ignore all others
+              if (url_classes_we_want.includes(details.urlClassification.thirdParty[url_class])) {
+                urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]] = [short_details_url]
+              }
             }
           }
         }

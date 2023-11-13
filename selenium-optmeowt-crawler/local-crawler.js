@@ -62,7 +62,11 @@ async function put_site_id(data) {
 }
 
 async function check_update_DB(site, site_id) {
-  site_str = site.replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
+  st = site.replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
+  st = st.replace("https://", ""); // removes https:// if www. isn't in the link
+  // dealing with sites that have additional paths (only keep the part before the path)
+  split = st.split('/');
+  site_str = split[0];
   // https://www.npmjs.com/package//axios?activeTab=readme --axios with async
   //   console.log(site_str);
   var added = false;
