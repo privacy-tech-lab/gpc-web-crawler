@@ -38,7 +38,6 @@ import { stores, storage } from "./../storage.js";
 import {
   uspPhrasing,
   uspCookiePhrasingList,
-  doNotSellPhrasing,
 } from "../../data/regex.js";
 import psl from "psl";
 import { headers } from "../../data/headers.js";
@@ -57,7 +56,9 @@ var urlsWithUSPString = [];
 var firstPartyDomain = "";
 var changingSitesOnAnalysis = false;
 var debugging_version = true; // assume that the debugging table exists
+var urlclassification = { "firstParty": {}, "thirdParty": {} };
 var run_halt_counter = {}
+
 /******************************************************************************/
 /******************************************************************************/
 /**********                       # Functions                        **********/
@@ -97,8 +98,7 @@ function setAnalysisIcon(tabID) {
 /**
  * Though the name says just GPC headers are added here, we also:
  * (1) Check the current stopped URL for a us_privacy string
- * (2) Pass the incoming stream to a filter to look for a Do Not Sell Link
- * (3) Attatch the GPC headers
+ * (2) Attatch the GPC headers
  * NOTE: We attach the DOM property in another listener upon finishing reloading
  * @param {Object} details
  * @returns Object
@@ -106,7 +106,6 @@ function setAnalysisIcon(tabID) {
 function addGPCHeadersCallback(details) {
   setAnalysisIcon(details.tabId); // Show analysis icon
   checkForUSPString(details.url); // Dump all URLs that contain a us_privacy string
-  webRequestResponseFiltering(details); // Filter for Do Not Sell link
 
   for (let signal in headers) {
     // add GPC headers
@@ -266,6 +265,7 @@ async function fetchUSPStringData() {
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset(domain) {
   analysis_userend[domain]["domain"] = domain;
+  analysis_userend[domain]["urlClassification"] = JSON.stringify(urlclassification[domain]); //add urlClassification info
   axios
     .post("http://localhost:8080/analysis", analysis_userend[domain], {
       headers: {
@@ -418,53 +418,8 @@ function parseURL(url) {
   return psl.parse(urlObj.hostname).domain;
 }
 
-/**
- * Processes caught responses via webRequest filtering as they come in
- * Parses all incoming responses for Do Not Sell links
- * @param {Object, String}
- */
-function handleResponseChunk(details, str) {
-  if (doNotSellPhrasing.test(str)) {
-    let match = str.match(doNotSellPhrasing);
-    let url = new URL(details.url);
-    let domain = parseURL(url);
-    logData(domain, "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING", match);
-  }
-}
-
-/**
- * Checks for do not sell links as responses come in
- * @param {*} details
- */
-function webRequestResponseFiltering(details) {
-  let filter = browser.webRequest.filterResponseData(details.requestId);
-  let decoder = new TextDecoder("utf-8");
-  let encoder = new TextEncoder();
-
-  let data = [];
-  filter.ondata = (event) => {
-    filter.write(event.data); // Write immediately, we don't want to change the response
-    const decodedChunk = decoder.decode(event.data, { stream: true });
-    data.push(decodedChunk);
-  };
-
-  filter.onstop = (event) => {
-    filter.close();
-    const str = data.toString();
-    handleResponseChunk(details, str);
-  };
-
-  filter.onerror = (event) => {
-    console.error(filter.error);
-  };
-}
-
-// Tentative idea:
-// Make every item in here only one thing so you can easily
-// convert to a spreadsheet for saving as a .csv file
 var analysisUserendSkeleton = () => {
   return {
-    dns_link: null,
     sent_gpc: false,
     uspapi_before_gpc: null,
     uspapi_after_gpc: null,
@@ -481,9 +436,6 @@ var analysisDataSkeletonFirstParties = () => {
   return {
     BEFORE_GPC: {
       COOKIES: [],
-      DO_NOT_SELL_LINK: [],
-      DO_NOT_SELL_LINK_EXISTS: null,
-      DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING: [],
       HEADERS: {},
       URLS: {},
       USPAPI: [],
@@ -493,9 +445,6 @@ var analysisDataSkeletonFirstParties = () => {
     },
     AFTER_GPC: {
       COOKIES: [],
-      DO_NOT_SELL_LINK: [],
-      DO_NOT_SELL_LINK_EXISTS: null,
-      DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING: [],
       HEADERS: {},
       URLS: {},
       USPAPI: [],
@@ -624,16 +573,6 @@ function logData(domain, command, data) {
     }
   }
 
-  if (command === "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING") {
-    analysis[domain][callIndex][gpcStatusKey][
-      "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING"
-    ] = [];
-    analysis[domain][callIndex][gpcStatusKey][
-      "DO_NOT_SELL_LINK_WEB_REQUEST_FILTERING"
-    ].push(data);
-    analysis[domain][callIndex][gpcStatusKey]["DO_NOT_SELL_LINK_EXISTS"] = true;
-    analysis_userend[domain]["dns_link"] = true;
-  }
   storage.set(stores.analysis, analysis_userend[domain], domain);
 }
 
@@ -754,7 +693,72 @@ function enableListeners() {
     disableCSPFilter,
     ["blocking", "responseHeaders"]
   );
+  chrome.webRequest.onHeadersReceived.addListener(
+    // listener that listens for web requests and filters for requests that have 1st/3rd parties that are on disconnect list ()
+    function (details) {
+      var match = details.documentUrl.match(/moz-extension:\/\//); // returns array if matched, else returns null
+      if (!match) {
+        let url = new URL(details.documentUrl);
+        let a = parseURL(url);
+        let short_details_url = details.url.match(/https:\/\/([^\/]+)/g); //match with regex to get the domain
+        if (short_details_url.length > 0) {
+          short_details_url = short_details_url[0] //to decrease characters, get rid of https://www. or just https:// 
+          if (short_details_url.includes("https://www.")) {
+            short_details_url = short_details_url.replace('https://www.', '')
+          }
+          else if (short_details_url.includes("https://")) {
+            short_details_url = short_details_url.replace('https://', '')
+          }
+        } //if there's more than one match, take the first
+        else { short_details_url = details.url.slice(0, 50) } // if there aren't any matches, take up to the first 50 characters
+        var url_classes_we_want = ['fingerprinting', 'tracking_ad', 'tracking_social', 'any_basic_tracking', 'any_social_tracking'];
+
+        if (details.urlClassification.firstParty.length > 0) {
+          for (let url_class = 0; url_class < details.urlClassification.firstParty.length; i++) {
+            if (!(a in urlclassification)) { // if this domain doesn't have data, init the domain
+              urlclassification[a] = { "firstParty": {}, "thirdParty": {} };
+            }
+            if (details.urlClassification.firstParty[url_class] in urlclassification[a]['firstParty']) { // if the tracking type exists already
+              if (!(urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]].includes(short_details_url))) {
+                urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]].push(short_details_url);
+              }
+            }
+            else { // if this tracking type hasn't been seen yet
+              // the only details.urlClassification.firstParty[url_class] values we care about are in classes_we_want. ignore all others
+              if (url_classes_we_want.includes(details.urlClassification.firstParty[url_class])) {
+                urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]] = [short_details_url]
+              }
+            }
+          }
+        }
+
+        if (details.urlClassification.thirdParty.length > 0) {
+          for (let url_class = 0; url_class < details.urlClassification.thirdParty.length; i++) {
+            if (!(a in urlclassification)) { // if this domain doesn't have data, init the domain
+              urlclassification[a] = { "firstParty": {}, "thirdParty": {} };
+            }
+            // if (url_classes_we_want.includes(details.urlClassification.thirdParty[url_class])) {
+            if (details.urlClassification.thirdParty[url_class] in urlclassification[a]['thirdParty']) { // if the tracking type exists already
+              if (!(urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]].includes(short_details_url))) {
+                urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]].push(short_details_url);
+              }
+            }
+            else { // if this tracking type hasn't been seen yet
+              // the only details.urlClassification.thirdParty[url_class] values we care about are in url_classes_we_want. ignore all others
+              if (url_classes_we_want.includes(details.urlClassification.thirdParty[url_class])) {
+                urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]] = [short_details_url]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      urls: ["*://*/*"]
+    }
+  );
 }
+
 
 function disableListeners() {
   chrome.webNavigation.onCommitted.removeListener(onCommittedCallback);
