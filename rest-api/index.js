@@ -65,12 +65,15 @@ async function rest(table) {
     var usp_cookies_after_gpc = req.body.usp_cookies_after_gpc;
     var OptanonConsent_before_gpc = req.body.OptanonConsent_before_gpc;
     var OptanonConsent_after_gpc = req.body.OptanonConsent_after_gpc;
+    var gpp_before_gpc = req.body.gpp_before_gpc;
+    var gpp_after_gpc = req.body.gpp_after_gpc;
     var urlClassification = req.body.urlClassification;
 
     console.log("posting", domain, "to analysis...");
     connection.query(
       // "INSERT INTO ?? (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc) VALUES (?,?,?,?,?,?,?)",
-      "INSERT INTO ?? (domain, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc, OptanonConsent_before_gpc, OptanonConsent_after_gpc, urlClassification) VALUES (?,?,?,?,?,?,?,?,?)",
+      "INSERT INTO ?? (domain, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc, OptanonConsent_before_gpc, OptanonConsent_after_gpc, gpp_before_gpc, gpp_after_gpc, urlClassification) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+
       [
         table_name,
         domain,
@@ -81,6 +84,8 @@ async function rest(table) {
         usp_cookies_after_gpc,
         OptanonConsent_before_gpc,
         OptanonConsent_after_gpc,
+        gpp_before_gpc,
+        gpp_after_gpc,
         urlClassification,
       ],
       (error, results, fields) => {
