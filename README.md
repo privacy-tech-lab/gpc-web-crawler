@@ -68,7 +68,8 @@ Components:
 
   The flow of the crawler script is described in the diagram below.
 
-  ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/090244bb-e6ca-4e95-bcbf-1ce99892753a)
+![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/c343fcd1-58ef-4798-a225-10c4223819cf)
+
 
   This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error.
 
@@ -84,7 +85,7 @@ Components:
 
   The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser by the crawler script. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request. The analysis performed by the OptMeowt analysis extension investigates the GPC compliance of a given site using a 4-step approach:
 
-  1. The extension checks whether the site is subject to the CCPA by searching for a DNS link.
+  1. The extension checks whether the site is subject to the CCPA by looking at [Firefox's urlClassification object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification). Requests returned by this object are based on the Disconnect list, as described [here](https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop).
   2. The extension checks the value of the [US Privacy string](https://github.com/InteractiveAdvertisingBureau/USPrivacy/tree/master), OneTrust’s OptanonConsent cookie, and the [GPP string](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/Consent%20String%20Specification.md), if any of these exist.
   3. The extension sends a GPC signal to the site.
   4. The extension rechecks the value of the US Privacy string, OptanonConsent cookie, and GPP string.
@@ -102,7 +103,7 @@ Components:
 - #### SQL Database:
 
   The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
-  | id | site_id | domain | dns_link | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc |
+  | id | site_id | domain | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc | urlClassification | 
   | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
   The first few columns primarily pertain to identifying the site and verifying that the OptMeowt Analysis extension is working properly.
@@ -110,10 +111,9 @@ Components:
   - id: autoincrement primary key to identify the database entry
   - site_id: the id of the domain in the csv file that lists the sites to crawl. This is used for processing purposes (i.e. to identify domains that redirect to another domain) and is set by the crawler script.
   - domain: the domain name of the site
-  - dns_link: a binary indictor of whether the site has a Do Not Sell link
   - sent_gpc: a binary indicator of whether the OptMeowt Analysis extension sent a GPC opt out signal to the site
 
-  The remaining columns pertain to the opt out status of a user, which is indicated by the value of the US Privacy String. The US Privacy String can be implemented on a site via (1) the client-side JavaScript USPAPI, which returns the US Privacy String value when called, or (2) an HTTP cookie that stores its value. The OptMeowt analysis extension checks each site for both implementations of the US Privacy String by calling the USPAPI and checking all cookies.
+  The remaining columns pertain to the opt out status of a user, which is indicated by the value of the US Privacy String, OptanonConsent cookie, and GPP string. The US Privacy String can be implemented on a site via (1) the client-side JavaScript USPAPI, which returns the US Privacy String value when called, or (2) an HTTP cookie that stores its value. The OptMeowt analysis extension checks each site for both implementations of the US Privacy String by calling the USPAPI and checking all cookies. The GPP string's value is obtained via the [CMPAPI for GPP](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/CMP%20API%20Specification.md).
 
   - uspapi_before_gpc: return value of calling the USPAPI before a GPC opt out signal was sent
   - uspapi_after_gpc: return value of calling the USPAPI after a GPC opt out signal was sent
@@ -121,8 +121,9 @@ Components:
   - usp_cookies_after_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
   - OptanonConsent_before_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie before a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”.
   - OptanonConsent_after_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie after a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”.
-  - gpp_before_gpc: the value of the GPP string before a GPC opt out signal was sent (obtained via the [CMPAPI for GPP](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/CMP%20API%20Specification.md))
-  - gpp_after_gpc: the value of the GPP string after a GPC opt out signal was sent (obtained via the [CMPAPI for GPP](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/CMP%20API%20Specification.md))
+  - gpp_before_gpc: the value of the GPP string before a GPC opt out signal was sent 
+  - gpp_after_gpc: the value of the GPP string after a GPC opt out signal was sent
+  - urlClassification: the return value of [Firefox's urlClassificaton object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification), sorted by category and filtered for the following categories: `fingerprinting`, `tracking_ad`, `tracking_social`, `any_basic_tracking`, `any_social_tracking`.
 
 ## 4. Limitations/Known Issues
 
