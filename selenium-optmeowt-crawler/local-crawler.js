@@ -35,6 +35,7 @@ async function setup() {
   await new Promise((resolve) => setTimeout(resolve, 3000));
   options = new firefox.Options()
     .setBinary(firefox.Channel.NIGHTLY)
+    .setBinary('/Applications/Firefox\ Nightly.app/Contents/MacOS/firefox')
     .setPreference("xpinstall.signatures.required", false)
     .addExtensions("./myextension.xpi");
 
@@ -118,7 +119,7 @@ async function visit_site(sites, site_id) {
   try {
     await driver.get(sites[site_id]);
     // console.log(Date.now()); to compare to site loading time in debug table
-    await new Promise((resolve) => setTimeout(resolve, 22000));
+    await new Promise((resolve) => setTimeout(resolve, 25000));
     // check if access is denied
     // if so, throw an error so it gets tagged as a human check site
     var title = await driver.getTitle();

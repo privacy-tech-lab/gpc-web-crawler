@@ -510,10 +510,11 @@ function logData(domain, command, data) {
           var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
           if (match) {
             analysis_userend[domain]["OptanonConsent_before_gpc"] = match[0]; // [1] would return only the capture group
-          } else {
-            // if cookie is found but gpc enabled tag doesn't exist
-            analysis_userend[domain]["OptanonConsent_before_gpc"] = "no_gpc";
           }
+          // else {
+          //   // if cookie is found but gpc enabled tag doesn't exist
+          //   analysis_userend[domain]["OptanonConsent_before_gpc"] = "no_gpc";
+          // }
         } else {
           // other cookies would be US privacy
           if (data[i]["value"]) {
@@ -532,10 +533,11 @@ function logData(domain, command, data) {
           var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
           if (match) {
             analysis_userend[domain]["OptanonConsent_after_gpc"] = match[0]; // [1] would return only the capture group
-          } else {
-            // if cookie is found but gpc enabled tag doesn't exist
-            analysis_userend[domain]["OptanonConsent_after_gpc"] = "no_gpc";
           }
+          // else {
+          //   // if cookie is found but gpc enabled tag doesn't exist
+          //   analysis_userend[domain]["OptanonConsent_after_gpc"] = "no_gpc";
+          // }
         } else {
           // other cookies would be us privacy
           if (data[i]["value"]) {
@@ -607,68 +609,90 @@ function onCommittedCallback(details) {
 
 // Used for crawling
 async function runAnalysisonce(location) {
-  await new Promise((resolve) => setTimeout(resolve, 7000)); //give it 7s to get ready after DOM content has loaded
+  await new Promise((resolve) => setTimeout(resolve, 3000)); //give it 7s to get ready after DOM content has loaded
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
   let domain = parseURL(url);
   firstPartyDomain = domain;
-
+  //   chrome.tabs.reload();
   if (run_halt_counter[domain] == null) {
     run_halt_counter[domain] = [0, 0]; // [count of run Analysis, count of halt analysis]
   }
+  // maybe add something where if counter is null but analysis started = true, switch analysis started to false
 
   let analysis_domains = await storage.getAllKeys(stores.analysis);
   if (!analysis_domains.includes(domain) && analysis_started === false) {
-    if (run_halt_counter[domain][0] < run_halt_counter[domain][1] + 1) { // prevent from running 2x
+    if (run_halt_counter[domain][0] < run_halt_counter[domain][1] + 1) { // after first load, we want to reload
+      run_halt_counter[domain][0] += 1;
+      post_to_debug(domain, "RELOADING analysis = false", run_halt_counter[domain]);
+      chrome.tabs.reload();
+    }
+    else if ((run_halt_counter[domain][0] < run_halt_counter[domain][1] + 2)) { // after 2nd load, run analysis
       run_halt_counter[domain][0] += 1;
       post_to_debug(firstPartyDomain, run_halt_counter[domain], "runAnalysisOnce-running");
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       runAnalysis();
       await storage.set(stores.settings, true, "ANALYSIS_STARTED");
+
     }
-    else { post_to_debug(domain, "tried to run 2x", run_halt_counter[domain]); }
+    else { post_to_debug(domain, "tried to run 3x", run_halt_counter[domain]); }
 
   }
 
   if (analysis_started === true) {
-    if (run_halt_counter[domain][1] < run_halt_counter[domain][0]) {
+    if (run_halt_counter[domain][1] < run_halt_counter[domain][0] - 1) { // after first load, reload
       run_halt_counter[domain][1] += 1;
-      post_to_debug(domain, run_halt_counter[domain], "runAnalysisOnce-halting");
-      haltAnalysis();
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      post_to_debug(domain, "RELOADING analysis = true", run_halt_counter[domain]);
+      chrome.tabs.reload();
 
-      if (analysis_userend[domain] != null) {
-        send_sql_and_reset(domain); //send global var sql_data to db via post request
+    }
+    else {
+
+      if (run_halt_counter[domain][1] < run_halt_counter[domain][0]) { // second load -> halt analysis
+        run_halt_counter[domain][1] += 1;
+        post_to_debug(domain, run_halt_counter[domain], "runAnalysisOnce-halting");
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        haltAnalysis();
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        if (analysis_userend[domain] != null) {
+          send_sql_and_reset(domain); //send global var sql_data to db via post request
+        }
+        else {
+          post_to_debug(domain, analysis_userend[domain], "SQL POSTING: SOMETHING WENT WRONG");
+        }
       }
       else {
-        post_to_debug(domain, analysis_userend[domain], "SQL POSTING: SOMETHING WENT WRONG");
+        post_to_debug(domain, "tried to run halt 3x", run_halt_counter[domain]);
       }
 
-    } else {
-      post_to_debug(domain, "tried to run halt 2x", run_halt_counter[domain]);
-    }
-    // always reset vars/set analysis started to false so that it won't get stuck.
-    //resetting vars
-    function afterUSPStringFetched() {
-      changingSitesOnAnalysis = false;
-      firstPartyDomain = "";
-      updateAnalysisCounter();
-      removeGPCSignals();
+      // always reset vars/set analysis started to false so that it won't get stuck.
+      //resetting vars
+      function afterUSPStringFetched() {
+        changingSitesOnAnalysis = false;
+        firstPartyDomain = "";
+        updateAnalysisCounter();
+        removeGPCSignals();
 
-      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        let tab = tabs[0];
-        // Change popup icon
-        chrome.browserAction.setIcon(
-          {
-            tabId: tab.id,
-            path: "../../assets/face-icons/icon128-face-circle.png",
-          },
-          () => { }
-        );
-      });
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+          let tab = tabs[0];
+          // Change popup icon
+          chrome.browserAction.setIcon(
+            {
+              tabId: tab.id,
+              path: "../../assets/face-icons/icon128-face-circle.png",
+            },
+            () => { }
+          );
+        });
+      }
+      afterUSPStringFetched();
+      post_to_debug(domain, "line 682", "runAnalysisOnce-done");
+      await storage.set(stores.settings, false, "ANALYSIS_STARTED");
+
     }
-    afterUSPStringFetched();
-    post_to_debug(domain, "line 732", "runAnalysisOnce-done");
-    await storage.set(stores.settings, false, "ANALYSIS_STARTED");
+
+
   }
 }
 
