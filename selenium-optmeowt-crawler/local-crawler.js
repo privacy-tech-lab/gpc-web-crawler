@@ -35,6 +35,7 @@ async function setup() {
   await new Promise((resolve) => setTimeout(resolve, 3000));
   options = new firefox.Options()
     .setBinary(firefox.Channel.NIGHTLY)
+    // .setBinary('/Applications/Firefox\ Nightly.app/Contents/MacOS/firefox')
     .setPreference("xpinstall.signatures.required", false)
     .addExtensions("./myextension.xpi");
 
@@ -51,7 +52,7 @@ async function setup() {
   // set timeout so that if a page doesn't load in 30 s, it times out
   await driver
     .manage()
-    .setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 });
+    .setTimeouts({ implicit: 0, pageLoad: 35000, script: 30000 });
   console.log("built");
   // await driver.manage().window().maximize();
   await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -119,6 +120,7 @@ async function visit_site(sites, site_id) {
     await driver.get(sites[site_id]);
     // console.log(Date.now()); to compare to site loading time in debug table
     await new Promise((resolve) => setTimeout(resolve, 22000));
+    //await new Promise((resolve) => setTimeout(resolve, 80000)); //for ground truth collection
     // check if access is denied
     // if so, throw an error so it gets tagged as a human check site
     var title = await driver.getTitle();
@@ -134,7 +136,9 @@ async function visit_site(sites, site_id) {
       (title.match(/site/i) && title.match(/temporarily unavailable/i)) ||
       (title.match(/site/i) && title.match(/temporarily down/i)) ||
       title.match(/403 forbidden/i) ||
-      title.match(/pardon our interruption/i)
+      title.match(/pardon our interruption/i) ||
+      title.match(/robot or human/i) ||
+      title.match(/are you a robot/i)
     ) {
       throw new HumanCheckError("Human Check");
     }
