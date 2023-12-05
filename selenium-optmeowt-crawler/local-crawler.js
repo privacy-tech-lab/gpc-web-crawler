@@ -138,7 +138,8 @@ async function visit_site(sites, site_id) {
       title.match(/403 forbidden/i) ||
       title.match(/pardon our interruption/i) ||
       title.match(/robot or human/i) ||
-      title.match(/are you a robot/i)
+      title.match(/are you a robot/i) ||
+      title.match(/block -/i) // yeti's website
     ) {
       throw new HumanCheckError("Human Check");
     }
