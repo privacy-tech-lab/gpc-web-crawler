@@ -338,6 +338,7 @@ async function runAnalysis() {
   changingSitesOnAnalysis = true; // Analysis=ON flag
   addGPCHeaders();
   await new Promise((resolve) => setTimeout(resolve, 2500)); //new
+  // await new Promise((resolve) => setTimeout(resolve, 3000)); //for ground truth collection
   chrome.tabs.reload();
   post_to_debug(firstPartyDomain, "line 342", "runAnalysis-end");
 }
@@ -608,6 +609,8 @@ function onCommittedCallback(details) {
 // Used for crawling
 async function runAnalysisonce(location) {
   await new Promise((resolve) => setTimeout(resolve, 7000)); //give it 7s to get ready after DOM content has loaded
+  await new Promise((resolve) => setTimeout(resolve, 35000)); // for ground truth
+
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
   let domain = parseURL(url);
