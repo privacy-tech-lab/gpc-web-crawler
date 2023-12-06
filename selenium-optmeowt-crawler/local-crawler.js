@@ -35,7 +35,7 @@ async function setup() {
   await new Promise((resolve) => setTimeout(resolve, 3000));
   options = new firefox.Options()
     .setBinary(firefox.Channel.NIGHTLY)
-    // .setBinary('/Applications/Firefox\ Nightly.app/Contents/MacOS/firefox')
+    .setBinary('/Applications/Firefox\ Nightly.app/Contents/MacOS/firefox')
     .setPreference("xpinstall.signatures.required", false)
     .addExtensions("./myextension.xpi");
 
@@ -166,7 +166,7 @@ async function visit_site(sites, site_id) {
     var err_data = JSON.stringify(err_obj);
 
     // writing the JSON string content to a file
-    fs.writeFile("error-logging.json", err_data, (error) => {
+    fs.writeFile("./error-logging/error-logging.json", err_data, (error) => {
       // throwing the error
       // in case of a writing problem
       if (error) {
@@ -186,6 +186,19 @@ async function visit_site(sites, site_id) {
         console.log(e.name + ': ' + e.message + "-- driver should already have quit ");
       }
       else {
+        // take a screenshot of the page so we can better understand what was going on
+        try {
+          driver.takeScreenshot().then(function (data) {
+            var base64Data = data.replace(/^data:image\/png;base64,/, "")
+            var st = sites[site_id].replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
+            st = st.replace("https://", ""); // removes https:// if www. isn't in the link
+            var filename = './error-logging/' + st + ".png"
+            fs.writeFile(filename, base64Data, 'base64', function (err) {
+              if (err) console.log(err);
+            });
+          });
+        }
+        catch (screenshot_err) { console.log('screenshot failed') }
         driver.quit();
       }
       console.log("------restarting driver------");
