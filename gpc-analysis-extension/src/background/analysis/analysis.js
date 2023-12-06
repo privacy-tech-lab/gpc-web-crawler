@@ -609,7 +609,7 @@ function onCommittedCallback(details) {
 // Used for crawling
 async function runAnalysisonce(location) {
   await new Promise((resolve) => setTimeout(resolve, 7000)); //give it 7s to get ready after DOM content has loaded
-  await new Promise((resolve) => setTimeout(resolve, 35000)); // for ground truth
+  // await new Promise((resolve) => setTimeout(resolve, 35000)); // for ground truth
 
   let analysis_started = await storage.get(stores.settings, "ANALYSIS_STARTED");
   let url = new URL(location);
