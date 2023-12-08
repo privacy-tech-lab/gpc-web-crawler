@@ -56,8 +56,9 @@ var urlsWithUSPString = [];
 var firstPartyDomain = "";
 var changingSitesOnAnalysis = false;
 var debugging_version = true; // assume that the debugging table exists
-var urlclassification = { "firstParty": {}, "thirdParty": {} };
-var run_halt_counter = {}
+var urlclassification = {};
+var run_halt_counter = {};
+var last_committed_url = "";
 
 /******************************************************************************/
 /******************************************************************************/
@@ -596,6 +597,8 @@ function onCommittedCallback(details) {
   if (validTransition) {
     let url = new URL(details.url);
     let domain = parseURL(url);
+    last_committed_url = domain;
+    post_to_debug('last_committed_url', last_committed_url);
     if (changingSitesOnAnalysis) {
       // add SENDING GPC TO FILE
       // Turn off changing sites on analysis
@@ -654,6 +657,7 @@ async function runAnalysisonce(location) {
     function afterUSPStringFetched() {
       changingSitesOnAnalysis = false;
       firstPartyDomain = "";
+      last_committed_url = "";
       updateAnalysisCounter();
       removeGPCSignals();
 
@@ -700,9 +704,9 @@ function enableListeners() {
     // listener that listens for web requests and filters for requests that have 1st/3rd parties that are on disconnect list ()
     function (details) {
       var match = details.documentUrl.match(/moz-extension:\/\//); // returns array if matched, else returns null
-      if (!match) {
-        let url = new URL(details.documentUrl);
-        let a = parseURL(url);
+      if (!match && last_committed_url != "") {
+        // let url = new URL(details.documentUrl);
+        // let a = parseURL(url);
         let short_details_url = details.url.match(/https:\/\/([^\/]+)/g); //match with regex to get the domain
         if (short_details_url.length > 0) {
           short_details_url = short_details_url[0] //to decrease characters, get rid of https://www. or just https:// 
@@ -716,20 +720,22 @@ function enableListeners() {
         else { short_details_url = details.url.slice(0, 50) } // if there aren't any matches, take up to the first 50 characters
         var url_classes_we_want = ['fingerprinting', 'tracking_ad', 'tracking_social', 'any_basic_tracking', 'any_social_tracking'];
 
+
+        if (!(last_committed_url in urlclassification)) { // if this domain doesn't have data, init the domain
+          post_to_debug('init urlclass for:', last_committed_url)
+          urlclassification[last_committed_url] = { "firstParty": {}, "thirdParty": {} };
+        }
         if (details.urlClassification.firstParty.length > 0) {
           for (let url_class = 0; url_class < details.urlClassification.firstParty.length; i++) {
-            if (!(a in urlclassification)) { // if this domain doesn't have data, init the domain
-              urlclassification[a] = { "firstParty": {}, "thirdParty": {} };
-            }
-            if (details.urlClassification.firstParty[url_class] in urlclassification[a]['firstParty']) { // if the tracking type exists already
-              if (!(urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]].includes(short_details_url))) {
-                urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]].push(short_details_url);
+            if (details.urlClassification.firstParty[url_class] in urlclassification[last_committed_url]['firstParty']) { // if the tracking type exists already
+              if (!(urlclassification[last_committed_url]["firstParty"][details.urlClassification.firstParty[url_class]].includes(short_details_url))) {
+                urlclassification[last_committed_url]["firstParty"][details.urlClassification.firstParty[url_class]].push(short_details_url);
               }
             }
             else { // if this tracking type hasn't been seen yet
               // the only details.urlClassification.firstParty[url_class] values we care about are in classes_we_want. ignore all others
               if (url_classes_we_want.includes(details.urlClassification.firstParty[url_class])) {
-                urlclassification[a]["firstParty"][details.urlClassification.firstParty[url_class]] = [short_details_url]
+                urlclassification[last_committed_url]["firstParty"][details.urlClassification.firstParty[url_class]] = [short_details_url]
               }
             }
           }
@@ -737,19 +743,16 @@ function enableListeners() {
 
         if (details.urlClassification.thirdParty.length > 0) {
           for (let url_class = 0; url_class < details.urlClassification.thirdParty.length; i++) {
-            if (!(a in urlclassification)) { // if this domain doesn't have data, init the domain
-              urlclassification[a] = { "firstParty": {}, "thirdParty": {} };
-            }
             // if (url_classes_we_want.includes(details.urlClassification.thirdParty[url_class])) {
-            if (details.urlClassification.thirdParty[url_class] in urlclassification[a]['thirdParty']) { // if the tracking type exists already
-              if (!(urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]].includes(short_details_url))) {
-                urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]].push(short_details_url);
+            if (details.urlClassification.thirdParty[url_class] in urlclassification[last_committed_url]['thirdParty']) { // if the tracking type exists already
+              if (!(urlclassification[last_committed_url]["thirdParty"][details.urlClassification.thirdParty[url_class]].includes(short_details_url))) {
+                urlclassification[last_committed_url]["thirdParty"][details.urlClassification.thirdParty[url_class]].push(short_details_url);
               }
             }
             else { // if this tracking type hasn't been seen yet
               // the only details.urlClassification.thirdParty[url_class] values we care about are in url_classes_we_want. ignore all others
               if (url_classes_we_want.includes(details.urlClassification.thirdParty[url_class])) {
-                urlclassification[a]["thirdParty"][details.urlClassification.thirdParty[url_class]] = [short_details_url]
+                urlclassification[last_committed_url]["thirdParty"][details.urlClassification.thirdParty[url_class]] = [short_details_url]
               }
             }
           }
