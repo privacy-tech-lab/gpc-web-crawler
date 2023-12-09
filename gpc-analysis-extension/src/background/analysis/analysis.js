@@ -266,7 +266,7 @@ async function fetchUSPStringData() {
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset(domain) {
   analysis_userend[domain]["domain"] = domain;
-  analysis_userend[domain]["urlClassification"] = JSON.stringify(urlclassification[domain]); //add urlClassification info
+  analysis_userend[domain]["urlClassification"] = JSON.stringify(urlclassification[domain]).slice(0, 5000); //add urlClassification info, cap it at 5000 chars 
   axios
     .post("http://localhost:8080/analysis", analysis_userend[domain], {
       headers: {
@@ -314,7 +314,7 @@ async function runAnalysis() {
 
   let url = new URL(uspapiData.location);
   let domain = parseURL(url);
-  if (uspapiData.data !== "USPAPI_FAILED") {
+  if (uspapiData.data !== "USPAPI_FAILED" && uspapiData.data !== null) { //check for null return val for sites like cbs12.com
     logData(domain, "USPAPI", uspapiData.data);
   }
   if (uspapiData.cookies) {
@@ -323,7 +323,7 @@ async function runAnalysis() {
 
   url = new URL(gppData.location); // when we remove USPAPI, we can uncomment this
   domain = parseURL(url);
-  if (gppData.data !== "GPP_FAILED") {
+  if (gppData.data !== "GPP_FAILED" && gppData.data !== null) {
     if (gppData.data.gppVersion == '1.0') {
       // getGPPData is where the GPP String is
       const getGPPData = await fetch_getGPPData();
@@ -337,6 +337,7 @@ async function runAnalysis() {
   }
 
   changingSitesOnAnalysis = true; // Analysis=ON flag
+  post_to_debug(firstPartyDomain, "line 342", "runAnalysis-addingHeaders");
   addGPCHeaders();
   await new Promise((resolve) => setTimeout(resolve, 2500)); //new
   // await new Promise((resolve) => setTimeout(resolve, 3000)); //for ground truth collection
