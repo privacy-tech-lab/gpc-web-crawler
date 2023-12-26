@@ -652,6 +652,7 @@ async function runAnalysisonce(location) {
 
     } else {
       post_to_debug(domain, "tried to run halt 2x", run_halt_counter[domain]);
+      await new Promise((resolve) => setTimeout(resolve, 1500)); // give it a bit more time to finish the first halt
     }
     // always reset vars/set analysis started to false so that it won't get stuck.
     //resetting vars
