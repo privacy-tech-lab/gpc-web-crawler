@@ -35,6 +35,7 @@ async function setup() {
   await new Promise((resolve) => setTimeout(resolve, 3000));
   options = new firefox.Options()
     .setBinary(firefox.Channel.NIGHTLY)
+    .setBinary('/Applications/Firefox\ Nightly.app/Contents/MacOS/firefox')
     .setPreference("xpinstall.signatures.required", false)
     .addExtensions("./myextension.xpi");
 
@@ -51,7 +52,7 @@ async function setup() {
   // set timeout so that if a page doesn't load in 30 s, it times out
   await driver
     .manage()
-    .setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 });
+    .setTimeouts({ implicit: 0, pageLoad: 35000, script: 30000 });
   console.log("built");
   // await driver.manage().window().maximize();
   await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -119,6 +120,8 @@ async function visit_site(sites, site_id) {
     await driver.get(sites[site_id]);
     // console.log(Date.now()); to compare to site loading time in debug table
     await new Promise((resolve) => setTimeout(resolve, 22000));
+    // await new Promise((resolve) => setTimeout(resolve, 80000)); // for ground truth collection
+
     // check if access is denied
     // if so, throw an error so it gets tagged as a human check site
     var title = await driver.getTitle();
@@ -134,7 +137,11 @@ async function visit_site(sites, site_id) {
       (title.match(/site/i) && title.match(/temporarily unavailable/i)) ||
       (title.match(/site/i) && title.match(/temporarily down/i)) ||
       title.match(/403 forbidden/i) ||
-      title.match(/pardon our interruption/i)
+      title.match(/pardon our interruption/i) ||
+      title.match(/robot or human/i) ||
+      title.match(/are you a robot/i) ||
+      title.match(/block -/i)
+
     ) {
       throw new HumanCheckError("Human Check");
     }
@@ -159,7 +166,7 @@ async function visit_site(sites, site_id) {
     var err_data = JSON.stringify(err_obj);
 
     // writing the JSON string content to a file
-    fs.writeFile("error-logging.json", err_data, (error) => {
+    fs.writeFile("./error-logging/error-logging.json", err_data, (error) => {
       // throwing the error
       // in case of a writing problem
       if (error) {
@@ -179,6 +186,19 @@ async function visit_site(sites, site_id) {
         console.log(e.name + ': ' + e.message + "-- driver should already have quit ");
       }
       else {
+        // take a screenshot of the page so we can better understand what was going on
+        try {
+          driver.takeScreenshot().then(function (data) {
+            var base64Data = data.replace(/^data:image\/png;base64,/, "")
+            var st = sites[site_id].replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
+            st = st.replace("https://", ""); // removes https:// if www. isn't in the link
+            var filename = './error-logging/' + st + ".png"
+            fs.writeFile(filename, base64Data, 'base64', function (err) {
+              if (err) console.log(err);
+            });
+          });
+        }
+        catch (screenshot_err) { console.log('screenshot failed') }
         driver.quit();
       }
       console.log("------restarting driver------");
