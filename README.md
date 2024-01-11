@@ -44,19 +44,21 @@ cd selenium-optmeowt-crawler
 
 5. Open sites.csv and enter the links you want to analyze in the first column. (Some examples included in the file)
 
-6. Install the dependencies by running:
+6. Ensure Firefox Nightly is installed on your computer using this [link](https://www.mozilla.org/en-US/firefox/channel/desktop/).
+
+7. Install the dependencies by running:
 
 ```console
 npm install
 ```
 
-7. To start the crawler, run:
+8. To start the crawler, run:
 
 ```console
 node local-crawler.js
 ```
 
-8. To check the analysis results, open a browser and navigate to http://localhost:8080/analysis.
+9. To check the analysis results, open a browser and navigate to http://localhost:8080/analysis.
 
 ## 3. Architecture
 
