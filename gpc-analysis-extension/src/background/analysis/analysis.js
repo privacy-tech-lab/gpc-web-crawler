@@ -575,19 +575,14 @@ function logData(domain, command, data) {
       analysis_userend[domain]["gpp_after_gpc"] = data["gppString"];
     }
   }
-  post_to_debug(domain, "line 578 - outside", command);
   if(command == "WELLKNOWN") {
-    post_to_debug(domain, "line 580 - inside first if statement", " ");
     if(data == null){
       analysis_userend[domain]["wellknown"] = data;
-      post_to_debug(domain, "line 582", data);
     }
     else{
       analysis_userend[domain]["wellknown"] = JSON.stringify(data);
-      post_to_debug(domain, "line 586", data);
     }
   }
-  post_to_debug(domain, "line 590 - after if statement", data);
 
   storage.set(stores.analysis, analysis_userend[domain], domain);
 }
@@ -703,8 +698,7 @@ function onMessageHandler(message, sender, sendResponse) { // Add code to look f
     runAnalysisonce(message.location);
   }
   if(message.msg == "CONTENT_SCRIPT_WELLKNOWN") {
-    post_to_debug(firstPartyDomain, "Line 704", message.data);
-    logData(firstPartyDomian,"WELLKNOWN", message.data);
+    logData(firstPartyDomain,"WELLKNOWN", message.data);
   }
 }
 
