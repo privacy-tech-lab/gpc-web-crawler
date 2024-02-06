@@ -140,7 +140,8 @@ async function visit_site(sites, site_id) {
       title.match(/pardon our interruption/i) ||
       title.match(/robot or human/i) ||
       title.match(/are you a robot/i) ||
-      title.match(/block -/i)
+      title.match(/block -/i) ||
+      title.match(/Human Verification/i)
 
     ) {
       throw new HumanCheckError("Human Check");
