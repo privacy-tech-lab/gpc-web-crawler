@@ -281,9 +281,15 @@ function post_to_debug(domain, a, b) {
   if (debugging_version == true) {
     var debug_data_post = {
       domain: domain,
-      a: JSON.stringify(a).slice(0, 4000),
-      b: JSON.stringify(b).slice(0, 4000), // make sure these aren't too long for the sql table
+      a: JSON.stringify(a),//.slice(0, 4000),
+      b: JSON.stringify(b) //.slice(0, 4000),
     };
+    if (debug_data_post['a'] != null) {
+      debug_data_post['a'] = debug_data_post['a'].slice(0, 4000);  // make sure these aren't too long for the sql table
+    }
+    if (debug_data_post['b'] != null) {
+      debug_data_post['b'] = debug_data_post['b'].slice(0, 4000);
+    }
     axios
       .post("http://localhost:8080/debug", debug_data_post, {
         headers: {
