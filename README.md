@@ -69,19 +69,19 @@ Components:
 - #### Crawler Script:
 
   The flow of the crawler script is described in the diagram below.
+  
+![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/c2f81c9c-ce60-4e98-ad50-77f2e5ab421c)
 
-![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/c343fcd1-58ef-4798-a225-10c4223819cf)
+This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error.
 
+Types of Errors that may be logged:
 
-  This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error.
-
-  Types of Errors that may be logged:
-
-  1. TimeoutError: A Selenium error that is thrown when either the page has not loaded in 30 seconds or the page has not responded for 30 seconds. Timeouts are set in driver.setTimeouts.
-  2. HumanCheckError: A custom error that is thrown when the site has a title that we have observed means our VPN IP address is blocked or there is a human check on that site. See [Limitations/Known Issues](https://github.com/privacy-tech-lab/gpc-web-crawler#4-limitationsknown-issues) for more details.
-  3. InsecureCertificateError: A Selenium error that indicates that the site will not be loaded, as it has an insecure certificate.
-  4. WebDriverError: A Selenium error that indicates that the WebDriver has failed to execute some part of the script.
-  5. WebDriverError: Reached Error Page: This indicates that an error page has been reached when Selenium tried to load the site.
+1. TimeoutError: A Selenium error that is thrown when either the page has not loaded in 30 seconds or the page has not responded for 30 seconds. Timeouts are set in driver.setTimeouts.
+2. HumanCheckError: A custom error that is thrown when the site has a title that we have observed means our VPN IP address is blocked or there is a human check on that site. See [Limitations/Known Issues](https://github.com/privacy-tech-lab/gpc-web-crawler#4-limitationsknown-issues) for more details.
+3. InsecureCertificateError: A Selenium error that indicates that the site will not be loaded, as it has an insecure certificate.
+4. WebDriverError: A Selenium error that indicates that the WebDriver has failed to execute some part of the script.
+5. WebDriverError: Reached Error Page: This indicates that an error page has been reached when Selenium tried to load the site.
+6. UnexpectedAlertOpenError: This indicates that a popup on the site disrupted Selenium's ability to analyze the site (such as a mandatory login)
 
 - #### OptMeowt Analysis Extension:
 
@@ -105,8 +105,8 @@ Components:
 - #### SQL Database:
 
   The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
-  | id | site_id | domain | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc | urlClassification | 
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | id | site_id | domain | sent_gpc | wellknown | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc | urlClassification |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
   The first few columns primarily pertain to identifying the site and verifying that the OptMeowt Analysis extension is working properly.
 
@@ -117,13 +117,14 @@ Components:
 
   The remaining columns pertain to the opt out status of a user, which is indicated by the value of the US Privacy String, OptanonConsent cookie, and GPP string. The US Privacy String can be implemented on a site via (1) the client-side JavaScript USPAPI, which returns the US Privacy String value when called, or (2) an HTTP cookie that stores its value. The OptMeowt analysis extension checks each site for both implementations of the US Privacy String by calling the USPAPI and checking all cookies. The GPP string's value is obtained via the [CMPAPI for GPP](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/CMP%20API%20Specification.md).
 
+  - wellknown: return value of fetching \<site url>/.well-known/gpc.json using [the Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch). If there is json data, the value will be that data; if not, it will be null.
   - uspapi_before_gpc: return value of calling the USPAPI before a GPC opt out signal was sent
   - uspapi_after_gpc: return value of calling the USPAPI after a GPC opt out signal was sent
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie before a GPC opt out signal was sent
   - usp_cookies_after_gpc: the value of the US Privacy String in an HTTP cookie after a GPC opt out signal was sent
   - OptanonConsent_before_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie before a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”.
   - OptanonConsent_after_gpc: the isGpcEnabled string from One Trust’s OptanonConsent cookie after a GPC opt out signal was sent. The user is opted out if isGpcEnabled=1, and the user is not opted out if isGpcEnabled=0. If the cookie is present but does not have an isGpcEnabled string, we return “no_gpc”.
-  - gpp_before_gpc: the value of the GPP string before a GPC opt out signal was sent 
+  - gpp_before_gpc: the value of the GPP string before a GPC opt out signal was sent
   - gpp_after_gpc: the value of the GPP string after a GPC opt out signal was sent
   - urlClassification: the return value of [Firefox's urlClassificaton object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification), sorted by category and filtered for the following categories: `fingerprinting`, `tracking_ad`, `tracking_social`, `any_basic_tracking`, `any_social_tracking`.
 

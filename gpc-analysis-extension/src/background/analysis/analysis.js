@@ -281,9 +281,15 @@ function post_to_debug(domain, a, b) {
   if (debugging_version == true) {
     var debug_data_post = {
       domain: domain,
-      a: JSON.stringify(a),
-      b: JSON.stringify(b),
+      a: JSON.stringify(a),//.slice(0, 4000),
+      b: JSON.stringify(b) //.slice(0, 4000),
     };
+    if (debug_data_post['a'] != null) {
+      debug_data_post['a'] = debug_data_post['a'].slice(0, 4000);  // make sure these aren't too long for the sql table
+    }
+    if (debug_data_post['b'] != null) {
+      debug_data_post['b'] = debug_data_post['b'].slice(0, 4000);
+    }
     axios
       .post("http://localhost:8080/debug", debug_data_post, {
         headers: {
@@ -575,11 +581,11 @@ function logData(domain, command, data) {
       analysis_userend[domain]["gpp_after_gpc"] = data["gppString"];
     }
   }
-  if(command == "WELLKNOWN") {
-    if(data == null){
+  if (command == "WELLKNOWN") {
+    if (data == null) {
       analysis_userend[domain]["wellknown"] = data;
     }
-    else{
+    else {
       analysis_userend[domain]["wellknown"] = JSON.stringify(data);
     }
   }
@@ -697,8 +703,8 @@ function onMessageHandler(message, sender, sendResponse) { // Add code to look f
     post_to_debug(firstPartyDomain, "SITE_LOADED", Date.now());
     runAnalysisonce(message.location);
   }
-  if(message.msg == "CONTENT_SCRIPT_WELLKNOWN") {
-    logData(firstPartyDomain,"WELLKNOWN", message.data);
+  if (message.msg == "CONTENT_SCRIPT_WELLKNOWN") {
+    logData(firstPartyDomain, "WELLKNOWN", message.data);
   }
 }
 
