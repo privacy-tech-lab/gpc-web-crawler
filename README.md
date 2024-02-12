@@ -69,8 +69,8 @@ Components:
 - #### Crawler Script:
 
   The flow of the crawler script is described in the diagram below.
-
-![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/c343fcd1-58ef-4798-a225-10c4223819cf)
+  
+![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/c2f81c9c-ce60-4e98-ad50-77f2e5ab421c)
 
 This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error.
 
