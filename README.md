@@ -70,11 +70,11 @@ Components:
 
   The flow of the crawler script is described in the diagram below.
   
-![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/786854fc-f50d-416d-9315-f2dfa9d952d1)
+![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/6d2d955d-270e-4e91-a7b8-441a70b1e617)
 
 This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error.
 
-Types of Errors that may be logged:
+#### Types of Errors that may be logged:
 
 1. TimeoutError: A Selenium error that is thrown when either the page has not loaded in 30 seconds or the page has not responded for 30 seconds. Timeouts are set in driver.setTimeouts.
 2. HumanCheckError: A custom error that is thrown when the site has a title that we have observed means our VPN IP address is blocked or there is a human check on that site. See [Limitations/Known Issues](https://github.com/privacy-tech-lab/gpc-web-crawler#4-limitationsknown-issues) for more details.
@@ -105,8 +105,8 @@ Types of Errors that may be logged:
 - #### SQL Database:
 
   The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
-  | id | site_id | domain | sent_gpc | wellknown | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc | urlClassification |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | id | site_id | domain | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc | urlClassification |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
   The first few columns primarily pertain to identifying the site and verifying that the OptMeowt Analysis extension is working properly.
 
@@ -117,7 +117,6 @@ Types of Errors that may be logged:
 
   The remaining columns pertain to the opt out status of a user, which is indicated by the value of the US Privacy String, OptanonConsent cookie, and GPP string. The US Privacy String can be implemented on a site via (1) the client-side JavaScript USPAPI, which returns the US Privacy String value when called, or (2) an HTTP cookie that stores its value. The OptMeowt analysis extension checks each site for both implementations of the US Privacy String by calling the USPAPI and checking all cookies. The GPP string's value is obtained via the [CMPAPI for GPP](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/CMP%20API%20Specification.md).
 
-  - wellknown: return value of fetching \<site url>/.well-known/gpc.json using [the Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch). If there is json data, the value will be that data; if not, it will be null.
   - uspapi_before_gpc: return value of calling the USPAPI before a GPC opt out signal was sent
   - uspapi_after_gpc: return value of calling the USPAPI after a GPC opt out signal was sent
   - usp_cookies_before_gpc: the value of the US Privacy String in an HTTP cookie before a GPC opt out signal was sent
@@ -127,6 +126,10 @@ Types of Errors that may be logged:
   - gpp_before_gpc: the value of the GPP string before a GPC opt out signal was sent
   - gpp_after_gpc: the value of the GPP string after a GPC opt out signal was sent
   - urlClassification: the return value of [Firefox's urlClassificaton object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification), sorted by category and filtered for the following categories: `fingerprinting`, `tracking_ad`, `tracking_social`, `any_basic_tracking`, `any_social_tracking`.
+
+- #### .well-known/gpc.json Python Script:
+We collect .well-known/gpc.json data after the whole crawl finishes with a separate Python script. Start the script using `python3 well-known-collection.py`. This script should be run using a California VPN after all eight crawl batches are completed. Running this script requires 3 input files: `full-crawl-set.csv`, which is in the repo, `redo-original-sites.csv`, and `redo-sites.csv`. The second two files are not found in the repo and should be created for that crawl
+using [step 5](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/For-lab-members-performing-crawls:#saving-crawl-data-when-crawling-our-8-batch-dataset). As explained in `well-known-collection.py`, the output is a csv called `well-known-data.csv` with 3 columns: Site URL, request status, json data as well as an error json file called `well-known-errors.json` that logs all the errors. To run this script on a csv file of sites without accounting for redo sites, comment all lines between line 27 and line 40 except for line line 34.
 
 ## 4. Limitations/Known Issues
 
