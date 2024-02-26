@@ -59,7 +59,6 @@ async function rest(table) {
   app.post("/" + table, jsonParser, (req, res) => {
     var domain = req.body.domain;
     var sent_gpc = req.body.sent_gpc;
-    var wellknown = req.body.wellknown; // Add well-known column
     var uspapi_before_gpc = req.body.uspapi_before_gpc;
     var uspapi_after_gpc = req.body.uspapi_after_gpc;
     var usp_cookies_before_gpc = req.body.usp_cookies_before_gpc;
@@ -73,13 +72,12 @@ async function rest(table) {
     console.log("posting", domain, "to analysis...");
     connection.query(
       // "INSERT INTO ?? (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc) VALUES (?,?,?,?,?,?,?)",
-      "INSERT INTO ?? (domain, sent_gpc, wellknown, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc, OptanonConsent_before_gpc, OptanonConsent_after_gpc, gpp_before_gpc, gpp_after_gpc, urlClassification) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+      "INSERT INTO ?? (domain, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc, OptanonConsent_before_gpc, OptanonConsent_after_gpc, gpp_before_gpc, gpp_after_gpc, urlClassification) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
 
       [
         table_name,
         domain,
         sent_gpc,
-        wellknown,
         uspapi_before_gpc,
         uspapi_after_gpc,
         usp_cookies_before_gpc,
