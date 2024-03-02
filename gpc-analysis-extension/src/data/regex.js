@@ -16,4 +16,6 @@ export const uspCookiePhrasingList = [
   "us-privacy",
   "usprivacy",
   "OptanonConsent",
+  "OneTrustWPCCPAGoogleOutput",
+  "OTGPPConsent",
 ];

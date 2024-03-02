@@ -68,11 +68,16 @@ async function rest(table) {
     var gpp_before_gpc = req.body.gpp_before_gpc;
     var gpp_after_gpc = req.body.gpp_after_gpc;
     var urlClassification = req.body.urlClassification;
+    var OneTrustWPCCPAGoogleOptOut_before_gpc = req.body.OneTrustWPCCPAGoogleOptOut_before_gpc;
+    var OneTrustWPCCPAGoogleOptOut_after_gpc = req.body.OneTrustWPCCPAGoogleOptOut_after_gpc;
+    var OTGPPConsent_before_gpc = req.body.OTGPPConsent_before_gpc;
+    var OTGPPConsent_after_gpc = req.body.OTGPPConsent_after_gpc;
+
 
     console.log("posting", domain, "to analysis...");
     connection.query(
       // "INSERT INTO ?? (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc) VALUES (?,?,?,?,?,?,?)",
-      "INSERT INTO ?? (domain, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc, OptanonConsent_before_gpc, OptanonConsent_after_gpc, gpp_before_gpc, gpp_after_gpc, urlClassification) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+      "INSERT INTO ?? (domain, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc, OptanonConsent_before_gpc, OptanonConsent_after_gpc, gpp_before_gpc, gpp_after_gpc, urlClassification, OneTrustWPCCPAGoogleOptOut_before_gpc, OneTrustWPCCPAGoogleOptOut_after_gpc, OTGPPConsent_before_gpc, OTGPPConsent_after_gpc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 
       [
         table_name,
@@ -87,6 +92,10 @@ async function rest(table) {
         gpp_before_gpc,
         gpp_after_gpc,
         urlClassification,
+        OneTrustWPCCPAGoogleOptOut_before_gpc,
+        OneTrustWPCCPAGoogleOptOut_after_gpc,
+        OTGPPConsent_before_gpc,
+        OTGPPConsent_after_gpc,
       ],
       (error, results, fields) => {
         if (error) throw error;
