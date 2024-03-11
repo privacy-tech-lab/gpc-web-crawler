@@ -59,6 +59,8 @@ node local-crawler.js
 ```
 
 9. To check the analysis results, open a browser and navigate to http://localhost:8080/analysis.
+    
+10. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
 
 ## 3. Architecture
 
