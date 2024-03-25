@@ -514,6 +514,8 @@ function logData(domain, command, data) {
     if (gpcStatusKey == "BEFORE_GPC") {
       analysis_userend[domain]["usp_cookies_before_gpc"] = null;
       analysis_userend[domain]["OptanonConsent_before_gpc"] = null;
+      analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_before_gpc"] = null;
+      analysis_userend[domain]["OTGPPConsent_before_gpc"] = null;
       for (let i in data) {
         if (data[i]["name"] == "OptanonConsent") {
           var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
@@ -523,6 +525,22 @@ function logData(domain, command, data) {
             // if cookie is found but gpc enabled tag doesn't exist
             analysis_userend[domain]["OptanonConsent_before_gpc"] = "no_gpc";
           }
+        } else if (data[i]["name"] == "OneTrustWPCCPAGoogleOptOut") {
+          var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
+          if (match) {
+            analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_before_gpc"] = match[0]; // [1] would return only the capture group
+          } else {
+            // if cookie is found but gpc enabled tag doesn't exist
+            analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_before_gpc"] = "no_gpc";
+          }
+        } else if (data[i]["name"] == "OTGPPConsent") {
+          var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
+          if (match) {
+            analysis_userend[domain]["OTGPPConsent_before_gpc"] = match[0]; // [1] would return only the capture group
+          } else {
+            // if cookie is found but gpc enabled tag doesn't exist
+            analysis_userend[domain]["OTGPPConsent_before_gpc"] = "no_gpc";
+          } 
         } else {
           // other cookies would be US privacy
           if (data[i]["value"]) {
@@ -536,6 +554,8 @@ function logData(domain, command, data) {
     if (gpcStatusKey == "AFTER_GPC") {
       analysis_userend[domain]["usp_cookies_after_gpc"] = null;
       analysis_userend[domain]["OptanonConsent_after_gpc"] = null;
+      analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_after_gpc"]= null;
+      analysis_userend[domain]["OTGPPConsent_after_gpc"]= null;
       for (let i in data) {
         if (data[i]["name"] == "OptanonConsent") {
           var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
@@ -545,6 +565,22 @@ function logData(domain, command, data) {
             // if cookie is found but gpc enabled tag doesn't exist
             analysis_userend[domain]["OptanonConsent_after_gpc"] = "no_gpc";
           }
+        } else if (data[i]["name"] == "OneTrustWPCCPAGoogleOptOut") {
+            var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
+            if (match) {
+              analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_after_gpc"] = match[0]; // [1] would return only the capture group
+            } else {
+              // if cookie is found but gpc enabled tag doesn't exist
+              analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_after_gpc"] = "no_gpc";
+            }
+          } else if (data[i]["name"] == "OTGPPConsent") {
+            var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
+            if (match) {
+              analysis_userend[domain]["OTGPPConsent_after_gpc"] = match[0]; // [1] would return only the capture group
+            } else {
+              // if cookie is found but gpc enabled tag doesn't exist
+              analysis_userend[domain]["OTGPPConsent_after_gpc"] = "no_gpc";
+            } 
         } else {
           // other cookies would be us privacy
           if (data[i]["value"]) {
@@ -581,6 +617,8 @@ function logData(domain, command, data) {
       analysis_userend[domain]["gpp_after_gpc"] = data["gppString"];
     }
   }
+
+
   storage.set(stores.analysis, analysis_userend[domain], domain);
 }
 
