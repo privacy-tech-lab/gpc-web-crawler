@@ -438,6 +438,10 @@ var analysisUserendSkeleton = () => {
     OptanonConsent_after_gpc: null,
     gpp_before_gpc: null,
     gpp_after_gpc: null,
+    OneTrustWPCCPAGoogleOptOut_before_gpc: null,
+    OneTrustWPCCPAGoogleOptOut_after_gpc: null,
+    OTGPPConsent_before_gpc: null,
+    OTGPPConsent_after_gpc: null
   };
 };
 
@@ -516,6 +520,7 @@ function logData(domain, command, data) {
       analysis_userend[domain]["OptanonConsent_before_gpc"] = null;
       analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_before_gpc"] = null;
       analysis_userend[domain]["OTGPPConsent_before_gpc"] = null;
+
       for (let i in data) {
         if (data[i]["name"] == "OptanonConsent") {
           var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
@@ -525,27 +530,26 @@ function logData(domain, command, data) {
             // if cookie is found but gpc enabled tag doesn't exist
             analysis_userend[domain]["OptanonConsent_before_gpc"] = "no_gpc";
           }
-        } else if (data[i]["name"] == "OneTrustWPCCPAGoogleOptOut") {
-          var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
-          if (match) {
-            analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_before_gpc"] = match[0]; // [1] would return only the capture group
-          } else {
-            // if cookie is found but gpc enabled tag doesn't exist
-            analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_before_gpc"] = "no_gpc";
-          }
-        } else if (data[i]["name"] == "OTGPPConsent") {
-          var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
-          if (match) {
-            analysis_userend[domain]["OTGPPConsent_before_gpc"] = match[0]; // [1] would return only the capture group
-          } else {
-            // if cookie is found but gpc enabled tag doesn't exist
-            analysis_userend[domain]["OTGPPConsent_before_gpc"] = "no_gpc";
-          } 
-        } else {
-          // other cookies would be US privacy
-          if (data[i]["value"]) {
-            analysis_userend[domain]["usp_cookies_before_gpc"] =
-              data[i]["value"];
+        }
+        else {
+          if (data[i]["value"]) { // these cookies may be null, so check if there's a value
+            if (data[i]["name"] == "OTGPPConsent") { // the cookie data is a gpp string
+              analysis_userend[domain]["OTGPPConsent_before_gpc"] =
+                data[i]["value"];
+            }
+            else if (data[i]["name"] == "OneTrustWPCCPAGoogleOptOut") { // this has values of either true or false, but the values come in as strings
+              if (data[i]["value"] == "true") {
+                analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_before_gpc"] = true;
+              }
+              else if (data[i]["value"] == "false") {
+                analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_before_gpc"] = false;
+              }
+            }
+            // other cookies would be US privacy
+            else {
+              analysis_userend[domain]["usp_cookies_before_gpc"] =
+                data[i]["value"];
+            }
           }
         }
       }
@@ -554,9 +558,12 @@ function logData(domain, command, data) {
     if (gpcStatusKey == "AFTER_GPC") {
       analysis_userend[domain]["usp_cookies_after_gpc"] = null;
       analysis_userend[domain]["OptanonConsent_after_gpc"] = null;
-      analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_after_gpc"]= null;
-      analysis_userend[domain]["OTGPPConsent_after_gpc"]= null;
+      analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_after_gpc"] = null;
+      analysis_userend[domain]["OTGPPConsent_after_gpc"] = null;
+
+
       for (let i in data) {
+        post_to_debug(firstPartyDomain, data[i]["name"], "processing cookies");
         if (data[i]["name"] == "OptanonConsent") {
           var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
           if (match) {
@@ -565,27 +572,27 @@ function logData(domain, command, data) {
             // if cookie is found but gpc enabled tag doesn't exist
             analysis_userend[domain]["OptanonConsent_after_gpc"] = "no_gpc";
           }
-        } else if (data[i]["name"] == "OneTrustWPCCPAGoogleOptOut") {
-            var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
-            if (match) {
-              analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_after_gpc"] = match[0]; // [1] would return only the capture group
-            } else {
-              // if cookie is found but gpc enabled tag doesn't exist
-              analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_after_gpc"] = "no_gpc";
-            }
-          } else if (data[i]["name"] == "OTGPPConsent") {
-            var match = data[i]["value"].match(/isGpcEnabled=([10])/); // returns array if matched, else returns null
-            if (match) {
-              analysis_userend[domain]["OTGPPConsent_after_gpc"] = match[0]; // [1] would return only the capture group
-            } else {
-              // if cookie is found but gpc enabled tag doesn't exist
-              analysis_userend[domain]["OTGPPConsent_after_gpc"] = "no_gpc";
-            } 
-        } else {
-          // other cookies would be us privacy
+        }
+        else {
           if (data[i]["value"]) {
-            analysis_userend[domain]["usp_cookies_after_gpc"] =
-              data[i]["value"];
+            if (data[i]["name"] == "OTGPPConsent") { // the cookie data is a gpp string
+              analysis_userend[domain]["OTGPPConsent_after_gpc"] =
+                data[i]["value"];
+            }
+            else if (data[i]["name"] == "OneTrustWPCCPAGoogleOptOut") { // this has values of either true or false, but the values come in as strings
+              if (data[i]["value"] == "true") {
+                analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_after_gpc"] = true;
+              }
+              else if (data[i]["value"] == "false") {
+                analysis_userend[domain]["OneTrustWPCCPAGoogleOptOut_after_gpc"] = false;
+              }
+            }
+            // other cookies would be US privacy
+            else {
+              analysis_userend[domain]["usp_cookies_after_gpc"] =
+                data[i]["value"];
+            }
+
           }
         }
       }
@@ -617,7 +624,6 @@ function logData(domain, command, data) {
       analysis_userend[domain]["gpp_after_gpc"] = data["gppString"];
     }
   }
-
 
   storage.set(stores.analysis, analysis_userend[domain], domain);
 }
