@@ -68,7 +68,7 @@ node local-crawler.js
 
 Components:
 
-- #### Crawler Script:
+- ### Crawler Script:
 
   The flow of the crawler script is described in the diagram below.
   
@@ -85,7 +85,7 @@ This script is stored and executed locally. The crawler also keeps a log of site
 5. WebDriverError: Reached Error Page: This indicates that an error page has been reached when Selenium tried to load the site.
 6. UnexpectedAlertOpenError: This indicates that a popup on the site disrupted Selenium's ability to analyze the site (such as a mandatory login)
 
-- #### OptMeowt Analysis Extension:
+- ### OptMeowt Analysis Extension:
 
   The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser by the crawler script. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request. The analysis performed by the OptMeowt analysis extension investigates the GPC compliance of a given site using a 4-step approach:
 
@@ -100,11 +100,11 @@ This script is stored and executed locally. The crawler also keeps a log of site
   2. the value of the OptanonConsent cookie is `isGpcEnabled=1`
   3. the opt out columns in the GPP string's relevant [US section](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/tree/main/Sections) (i.e. SaleOptOut, TargetedAdvertisingOptOut, SharingOptOut) have a value of 1. Note that the columns and opt out requirements vary by state.
 
-- #### Node.js Rest API:
+- ### Node.js Rest API:
 
   We use the Rest API to make GET, PUT, and POST requests to the SQL database. The Rest API is also local and is run in a separate terminal from the crawler.
 
-- #### SQL Database:
+- ### SQL Database:
 
   The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
   | id | site_id | domain | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc | urlClassification |
@@ -129,7 +129,27 @@ This script is stored and executed locally. The crawler also keeps a log of site
   - gpp_after_gpc: the value of the GPP string after a GPC opt out signal was sent
   - urlClassification: the return value of [Firefox's urlClassificaton object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification), sorted by category and filtered for the following categories: `fingerprinting`, `tracking_ad`, `tracking_social`, `any_basic_tracking`, `any_social_tracking`.
 
-- #### .well-known/gpc.json Python Script:
+## 4. Limitations/Known Issues
+
+Since we are using Selenium and a VPN to visit the sites we analyze, there are some limitations to the sites we can analyze.
+There are 2 main types of sites that we cannot analyze due to our methodology:
+
+1. Sites where the VPN’s IP address is blocked.
+
+A site titled “Access Denied” that says we don’t have permission to access the site on this server is loaded instead of the real site.
+
+2. Sites that have some kind of human check.
+
+Some sites can detect that we are using automation tools (i.e. Selenium) and do not let us access the real site. Instead, we’re redirected to a page with some kind of captcha or puzzle. We do not try to bypass any human checks.
+
+Since the data collected from both of these types of sites will be incorrect, we list them under HumanCheckError in error-logging.json. We have observed a few different site titles that indicate we have reached a site in one of these categories. Most of the titles occur for multiple sites, with the most common being “Just a Moment…” on a captcha from Cloudflare. We detect when our crawler visits one of these sites by matching the site title of the loaded site with a set of regular expressions that match with the known titles. Clearly, we will miss some sites in this category if we have not seen it and added the title to the set of regular expressions. We are updating the regular expressions as we see more sites like this. For more information, see [issue #51](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/51).
+
+
+## 5. Other Resources
+- ### Python Library for GPP String Decoding:
+  GPP strings must be decoded. The IAB provides a JavaScript library [here](https://www.npmjs.com/package/@iabgpp/cmpapi) and an [interactive html decoder](https://iabgpp.com/#) to do this. To integrate decoding with our colab notebooks, we rewrote the library in Python. The library can be found [here](https://drive.google.com/drive/folders/1b542jvVWm4ny9h_12fplL_VRvBfEVxFX?usp=sharing).
+
+- ### .well-known/gpc.json Python Script:
 We collect .well-known/gpc.json data after the whole crawl finishes with a separate Python script. Start the script using `python3 well-known-collection.py`. This script should be run using a California VPN after all eight crawl batches are completed. Running this script requires 3 input files: `full-crawl-set.csv`, which is in the repo, `redo-original-sites.csv`, and `redo-sites.csv`. The second two files are not found in the repo and should be created for that crawl
 using [step 5](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/For-lab-members-performing-crawls:#saving-crawl-data-when-crawling-our-8-batch-dataset). As explained in `well-known-collection.py`, the output is a csv called `well-known-data.csv` with 3 columns: Site URL, request status, json data as well as an error json file called `well-known-errors.json` that logs all the errors. To run this script on a csv file of sites without accounting for redo sites, comment all lines between line 27 and line 40 except for line line 34.
 
@@ -158,23 +178,7 @@ Important code documentation:
   - "errors[sites_df[site_idx] = str(e)" -> store errors with original links
   - "with open("well-known-errors.json", "w") as outfile: json.dump(errors, outfile)" -> convert and write JSON object as containing errors to file
 
-
-## 4. Limitations/Known Issues
-
-Since we are using Selenium and a VPN to visit the sites we analyze, there are some limitations to the sites we can analyze.
-There are 2 main types of sites that we cannot analyze due to our methodology:
-
-1. Sites where the VPN’s IP address is blocked.
-
-A site titled “Access Denied” that says we don’t have permission to access the site on this server is loaded instead of the real site.
-
-2. Sites that have some kind of human check.
-
-Some sites can detect that we are using automation tools (i.e. Selenium) and do not let us access the real site. Instead, we’re redirected to a page with some kind of captcha or puzzle. We do not try to bypass any human checks.
-
-Since the data collected from both of these types of sites will be incorrect, we list them under HumanCheckError in error-logging.json. We have observed a few different site titles that indicate we have reached a site in one of these categories. Most of the titles occur for multiple sites, with the most common being “Just a Moment…” on a captcha from Cloudflare. We detect when our crawler visits one of these sites by matching the site title of the loaded site with a set of regular expressions that match with the known titles. Clearly, we will miss some sites in this category if we have not seen it and added the title to the set of regular expressions. We are updating the regular expressions as we see more sites like this. For more information, see [issue #51](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/51).
-
-## 5. Thank You!
+## 6. Thank You!
 
 <p align="center"><strong>We would like to thank our financial supporters!</strong></p><br>
 
