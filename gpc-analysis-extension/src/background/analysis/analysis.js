@@ -733,7 +733,7 @@ async function runAnalysisonce(location) {
 /**
  * Message passing listener - for collecting USPAPI call data from the window
  */
-function onMessageHandler(message, sender, sendResponse) { // Add code to look for CONTENT_SCRIPT_WELLKNOWN
+function onMessageHandler(message, sender, sendResponse) {
   if (message.msg === "SITE_LOADED") {
     post_to_debug(firstPartyDomain, "SITE_LOADED", Date.now());
     runAnalysisonce(message.location);
