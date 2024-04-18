@@ -81,19 +81,6 @@ function injectScript(script) {
 /******************************************************************************/
 /******************************************************************************/
 
-async function getWellknown(url) {
-  const response = await fetch(`${url.origin}/.well-known/gpc.json`);
-  let wellknownData;
-  try {
-    wellknownData = await response.json();
-  } catch {
-    wellknownData = null;
-  }
-  chrome.runtime.sendMessage({
-    msg: "CONTENT_SCRIPT_WELLKNOWN",
-    data: wellknownData,
-  });
-}
 
 /**
  * Passes info to background scripts for processing via messages
@@ -128,8 +115,6 @@ async function getWellknown(url) {
     false
   );
 
-  /* (3) Fetches .well-known GPC file */
-  getWellknown(url);
 })();
 
 /******************************************************************************/
