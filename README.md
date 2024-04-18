@@ -72,7 +72,7 @@ Components:
 
   The flow of the crawler script is described in the diagram below.
   
-![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/6d2d955d-270e-4e91-a7b8-441a70b1e617)
+![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/6261650d-1cc3-4a8e-b6e2-da682e4c1251)
 
 This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error.
 
@@ -90,15 +90,16 @@ This script is stored and executed locally. The crawler also keeps a log of site
   The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser by the crawler script. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request. The analysis performed by the OptMeowt analysis extension investigates the GPC compliance of a given site using a 4-step approach:
 
   1. The extension checks whether the site is subject to the CCPA by looking at [Firefox's urlClassification object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification). Requests returned by this object are based on the Disconnect list, as described [here](https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop).
-  2. The extension checks the value of the [US Privacy string](https://github.com/InteractiveAdvertisingBureau/USPrivacy/tree/master), OneTrust’s OptanonConsent cookie, and the [GPP string](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/Consent%20String%20Specification.md), if any of these exist.
+  2. The extension checks the value of the [US Privacy string](https://github.com/InteractiveAdvertisingBureau/USPrivacy/tree/master), the [GPP string](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/Consent%20String%20Specification.md), and OneTrust’s OptanonConsent, OneTrustWPCCPAGoogleOptOut, OTGPPConsent cookies if any of these exist.
   3. The extension sends a GPC signal to the site.
-  4. The extension rechecks the value of the US Privacy string, OptanonConsent cookie, and GPP string.
+  4. The extension rechecks the value of the US Privacy string, OneTrust cookies, and GPP string.
 
   The information collected during this process is used to determine whether the site respects GPC. Note that legal obligations to respect GPC differ by geographic location. In order for a site to be GPC compliant, the following statements should be true after the GPC signal was sent for each string or cookie that the site implemented:
 
-  1. the third character of the US Privacy string is a Y
+  1. the third character of the US Privacy string is a `Y`
   2. the value of the OptanonConsent cookie is `isGpcEnabled=1`
-  3. the opt out columns in the GPP string's relevant [US section](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/tree/main/Sections) (i.e. SaleOptOut, TargetedAdvertisingOptOut, SharingOptOut) have a value of 1. Note that the columns and opt out requirements vary by state.
+  3. the opt out columns in the GPP string's relevant [US section](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/tree/main/Sections) (i.e. `SaleOptOut`, `TargetedAdvertisingOptOut`, `SharingOptOut`) have a value of `1`. Note that the columns and opt out requirements vary by state.
+  4. the value of the OneTrustWPCCPAGoogleOptOut cookie is `true`
 
 - ### Node.js Rest API:
 
@@ -107,8 +108,8 @@ This script is stored and executed locally. The crawler also keeps a log of site
 - ### SQL Database:
 
   The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
-  | id | site_id | domain | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc | urlClassification |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | id | site_id | domain | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc | urlClassification | OneTrustWPCCPAGoogleOptOut_before_gpc | OneTrustWPCCPAGoogleOptOut_after_gpc | OTGPPConsent_before_gpc | OTGPPConsent_after_gpc |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
   The first few columns primarily pertain to identifying the site and verifying that the OptMeowt Analysis extension is working properly.
 
@@ -128,6 +129,10 @@ This script is stored and executed locally. The crawler also keeps a log of site
   - gpp_before_gpc: the value of the GPP string before a GPC opt out signal was sent
   - gpp_after_gpc: the value of the GPP string after a GPC opt out signal was sent
   - urlClassification: the return value of [Firefox's urlClassificaton object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification), sorted by category and filtered for the following categories: `fingerprinting`, `tracking_ad`, `tracking_social`, `any_basic_tracking`, `any_social_tracking`.
+  - OneTrustWPCCPAGoogleOptOut_before_gpc: the value of the OneTrustWPCCPAGoogleOptOut cookie before a GPC signal was sent. This cookie is described by OneTrust [here](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0).
+  - OneTrustWPCCPAGoogleOptOut_after_gpc: the value of the OneTrustWPCCPAGoogleOptOut cookie after a GPC signal was sent. This cookie is described by OneTrust [here](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0).
+  - OTGPPConsent_before_gpc: the value of the OTGPPConsent cookie before a GPC signal was sent. This cookie is described by OneTrust [here](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0).
+  - OTGPPConsent_after_gpc: the value of the OTGPPConsent cookie after a GPC signal was sent. This cookie is described by OneTrust [here](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0).
 
 ## 4. Limitations/Known Issues
 
@@ -143,6 +148,14 @@ A site titled “Access Denied” that says we don’t have permission to access
 Some sites can detect that we are using automation tools (i.e. Selenium) and do not let us access the real site. Instead, we’re redirected to a page with some kind of captcha or puzzle. We do not try to bypass any human checks.
 
 Since the data collected from both of these types of sites will be incorrect, we list them under HumanCheckError in error-logging.json. We have observed a few different site titles that indicate we have reached a site in one of these categories. Most of the titles occur for multiple sites, with the most common being “Just a Moment…” on a captcha from Cloudflare. We detect when our crawler visits one of these sites by matching the site title of the loaded site with a set of regular expressions that match with the known titles. Clearly, we will miss some sites in this category if we have not seen it and added the title to the set of regular expressions. We are updating the regular expressions as we see more sites like this. For more information, see [issue #51](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/51).
+
+3. Sites that block script injection.
+   
+For instance flickr.com, blocks script injection and will not successfully be analyzed. In the debugging table, on the first attempt, the last message will be runAnalysis-fetching, and on the second, the extension logs SQL POSTING: SOMETHING WENT WRONG.
+
+4. Sites that redirect between multiple domains throughout analysis.
+
+For instance https://spothero.com/ and https://parkingpanda.com/ are now one entity but still can use both domains. In the dubugging table, you will see multiple debugging entries under each domain. Because we store analysis data by domain, the data will be incomplete and will not be added to the database.
 
 
 ## 5. Other Resources
