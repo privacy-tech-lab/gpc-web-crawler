@@ -67,6 +67,9 @@ async function rest(table) {
     var OptanonConsent_after_gpc = req.body.OptanonConsent_after_gpc;
     var gpp_before_gpc = req.body.gpp_before_gpc;
     var gpp_after_gpc = req.body.gpp_after_gpc;
+    var gpp_version_before_gpc = req.body.gpp_version_before_gpc;
+    var gpp_version_after_gpc = req.body.gpp_version_after_gpc;
+
     var urlClassification = req.body.urlClassification;
     var OneTrustWPCCPAGoogleOptOut_before_gpc = req.body.OneTrustWPCCPAGoogleOptOut_before_gpc;
     var OneTrustWPCCPAGoogleOptOut_after_gpc = req.body.OneTrustWPCCPAGoogleOptOut_after_gpc;
@@ -91,6 +94,8 @@ async function rest(table) {
         OptanonConsent_after_gpc,
         gpp_before_gpc,
         gpp_after_gpc,
+        gpp_version_before_gpc,
+        gpp_version_after_gpc,
         urlClassification,
         OneTrustWPCCPAGoogleOptOut_before_gpc,
         OneTrustWPCCPAGoogleOptOut_after_gpc,

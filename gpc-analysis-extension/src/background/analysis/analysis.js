@@ -438,10 +438,6 @@ var analysisUserendSkeleton = () => {
     OptanonConsent_after_gpc: null,
     gpp_before_gpc: null,
     gpp_after_gpc: null,
-    OneTrustWPCCPAGoogleOptOut_before_gpc: null,
-    OneTrustWPCCPAGoogleOptOut_after_gpc: null,
-    OTGPPConsent_before_gpc: null,
-    OTGPPConsent_after_gpc: null
   };
 };
 
@@ -624,7 +620,6 @@ function logData(domain, command, data) {
       analysis_userend[domain]["gpp_after_gpc"] = data["gppString"];
     }
   }
-
   storage.set(stores.analysis, analysis_userend[domain], domain);
 }
 
