@@ -620,6 +620,11 @@ function logData(domain, command, data) {
       analysis_userend[domain]["gpp_after_gpc"] = data["gppString"];
     }
   }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 2739b85 (cleaning up changes (issue #110))
   storage.set(stores.analysis, analysis_userend[domain], domain);
 }
 
