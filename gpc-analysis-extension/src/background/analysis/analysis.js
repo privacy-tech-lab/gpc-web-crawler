@@ -340,7 +340,8 @@ async function runAnalysis() {
       post_to_debug(firstPartyDomain, gppData.data, "GPP-DATA-v1.1");
       logData(domain, "GPP", gppData.data);
     }
-    logData(domain, "GPP_version", gppData.data.gppVersion);
+    post_to_debug(firstPartyDomain, gppData.data.gppVersion, "gpp version");
+    logData(domain, "GPP_VERSION", gppData.data.gppVersion);
   }
 
   changingSitesOnAnalysis = true; // Analysis=ON flag
@@ -385,7 +386,8 @@ async function haltAnalysis() {
       // the GPP String is just inside gppData.data
       logData(domain, "GPP", gppData.data);
     }
-    logData(domain, "GPP_version", gppData.data.gppVersion);
+      post_to_debug(firstPartyDomain, gppData.data.gppVersion, "gpp version");
+      logData(domain, "GPP_VERSION", gppData.data.gppVersion);
   }
   await new Promise((resolve) => setTimeout(resolve, 1000)); //new
   post_to_debug(firstPartyDomain, "line 380", "haltAnalysis-end");
@@ -432,6 +434,7 @@ function parseURL(url) {
 var analysisUserendSkeleton = () => {
   return {
     sent_gpc: false,
+    gpp_version: null,
     uspapi_before_gpc: null,
     uspapi_after_gpc: null,
     usp_cookies_before_gpc: null,
@@ -444,8 +447,6 @@ var analysisUserendSkeleton = () => {
     OneTrustWPCCPAGoogleOptOut_after_gpc: null,
     OTGPPConsent_before_gpc: null,
     OTGPPConsent_after_gpc: null,
-    gpp_version_before_gpc: null,
-    gpp_version_after_gpc: null, 
   };
 };
 
@@ -459,7 +460,6 @@ var analysisDataSkeletonFirstParties = () => {
       USPAPI_LOCATOR: {},
       THIRD_PARTIES: {},
       GPP: [],
-      GPP_VERSION: [],
     },
     AFTER_GPC: {
       COOKIES: [],
@@ -469,9 +469,9 @@ var analysisDataSkeletonFirstParties = () => {
       USPAPI_LOCATOR: {},
       THIRD_PARTIES: {},
       GPP: [],
-      GPP_VERSION: [],
     },
     SENT_GPC: null,
+    GPP_VERSION: [],
   };
 };
 
@@ -631,17 +631,8 @@ function logData(domain, command, data) {
     }
   }
 
-  if (command === "GPP_version") {
-    analysis[domain][callIndex][gpcStatusKey]["GPP_version"] = [];
-    analysis[domain][callIndex][gpcStatusKey]["GPP_version"].push(data);
-
-    // Detailed case for summary object
-    if (gpcStatusKey == "BEFORE_GPC") {
-      analysis_userend[domain]["gpp_version_before_gpc"] = data["gpp-version"];
-    }
-    if (gpcStatusKey == "AFTER_GPC") {
-      analysis_userend[domain]["gpp_version_after_gpc"] = data["gpp-version"];
-    }
+  if (command === "GPP_VERSION") {
+      analysis_userend[domain]["gpp_version"] = data;
   }
 
 
