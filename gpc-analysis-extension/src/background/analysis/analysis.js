@@ -340,6 +340,8 @@ async function runAnalysis() {
       post_to_debug(firstPartyDomain, gppData.data, "GPP-DATA-v1.1");
       logData(domain, "GPP", gppData.data);
     }
+    post_to_debug(firstPartyDomain, gppData.data.gppVersion, "gpp version");
+    logData(domain, "GPP_VERSION", gppData.data.gppVersion);
   }
 
   changingSitesOnAnalysis = true; // Analysis=ON flag
@@ -384,6 +386,8 @@ async function haltAnalysis() {
       // the GPP String is just inside gppData.data
       logData(domain, "GPP", gppData.data);
     }
+      post_to_debug(firstPartyDomain, gppData.data.gppVersion, "gpp version");
+      logData(domain, "GPP_VERSION", gppData.data.gppVersion);
   }
   await new Promise((resolve) => setTimeout(resolve, 1000)); //new
   post_to_debug(firstPartyDomain, "line 380", "haltAnalysis-end");
@@ -430,6 +434,7 @@ function parseURL(url) {
 var analysisUserendSkeleton = () => {
   return {
     sent_gpc: false,
+    gpp_version: null,
     uspapi_before_gpc: null,
     uspapi_after_gpc: null,
     usp_cookies_before_gpc: null,
@@ -438,6 +443,10 @@ var analysisUserendSkeleton = () => {
     OptanonConsent_after_gpc: null,
     gpp_before_gpc: null,
     gpp_after_gpc: null,
+    OneTrustWPCCPAGoogleOptOut_before_gpc: null,
+    OneTrustWPCCPAGoogleOptOut_after_gpc: null,
+    OTGPPConsent_before_gpc: null,
+    OTGPPConsent_after_gpc: null,
   };
 };
 
@@ -462,6 +471,7 @@ var analysisDataSkeletonFirstParties = () => {
       GPP: [],
     },
     SENT_GPC: null,
+    GPP_VERSION: [],
   };
 };
 
@@ -620,11 +630,13 @@ function logData(domain, command, data) {
       analysis_userend[domain]["gpp_after_gpc"] = data["gppString"];
     }
   }
-<<<<<<< HEAD
-=======
+
+  if (command === "GPP_VERSION") {
+      analysis_userend[domain]["gpp_version"] = data;
+  }
 
 
->>>>>>> 2739b85 (cleaning up changes (issue #110))
+
   storage.set(stores.analysis, analysis_userend[domain], domain);
 }
 

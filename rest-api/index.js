@@ -59,6 +59,7 @@ async function rest(table) {
   app.post("/" + table, jsonParser, (req, res) => {
     var domain = req.body.domain;
     var sent_gpc = req.body.sent_gpc;
+    var gpp_version = req.body.gpp_version;
     var uspapi_before_gpc = req.body.uspapi_before_gpc;
     var uspapi_after_gpc = req.body.uspapi_after_gpc;
     var usp_cookies_before_gpc = req.body.usp_cookies_before_gpc;
@@ -67,25 +68,22 @@ async function rest(table) {
     var OptanonConsent_after_gpc = req.body.OptanonConsent_after_gpc;
     var gpp_before_gpc = req.body.gpp_before_gpc;
     var gpp_after_gpc = req.body.gpp_after_gpc;
-    var gpp_version_before_gpc = req.body.gpp_version_before_gpc;
-    var gpp_version_after_gpc = req.body.gpp_version_after_gpc;
-
     var urlClassification = req.body.urlClassification;
     var OneTrustWPCCPAGoogleOptOut_before_gpc = req.body.OneTrustWPCCPAGoogleOptOut_before_gpc;
     var OneTrustWPCCPAGoogleOptOut_after_gpc = req.body.OneTrustWPCCPAGoogleOptOut_after_gpc;
     var OTGPPConsent_before_gpc = req.body.OTGPPConsent_before_gpc;
     var OTGPPConsent_after_gpc = req.body.OTGPPConsent_after_gpc;
 
-
     console.log("posting", domain, "to analysis...");
     connection.query(
       // "INSERT INTO ?? (domain, dns_link, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc) VALUES (?,?,?,?,?,?,?)",
-      "INSERT INTO ?? (domain, sent_gpc, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc, OptanonConsent_before_gpc, OptanonConsent_after_gpc, gpp_before_gpc, gpp_after_gpc, urlClassification, OneTrustWPCCPAGoogleOptOut_before_gpc, OneTrustWPCCPAGoogleOptOut_after_gpc, OTGPPConsent_before_gpc, OTGPPConsent_after_gpc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+      "INSERT INTO ?? (domain, sent_gpc, gpp_version, uspapi_before_gpc, uspapi_after_gpc, usp_cookies_before_gpc, usp_cookies_after_gpc, OptanonConsent_before_gpc, OptanonConsent_after_gpc, gpp_before_gpc, gpp_after_gpc, urlClassification, OneTrustWPCCPAGoogleOptOut_before_gpc, OneTrustWPCCPAGoogleOptOut_after_gpc, OTGPPConsent_before_gpc, OTGPPConsent_after_gpc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 
       [
         table_name,
         domain,
         sent_gpc,
+        gpp_version,
         uspapi_before_gpc,
         uspapi_after_gpc,
         usp_cookies_before_gpc,
@@ -94,8 +92,6 @@ async function rest(table) {
         OptanonConsent_after_gpc,
         gpp_before_gpc,
         gpp_after_gpc,
-        gpp_version_before_gpc,
-        gpp_version_after_gpc,
         urlClassification,
         OneTrustWPCCPAGoogleOptOut_before_gpc,
         OneTrustWPCCPAGoogleOptOut_after_gpc,
