@@ -17,7 +17,7 @@
 
 # GPC Web Crawler
 
-GPC web crawler code. The GPC Web crawler is developed and maintained by the [OptMeowt team](https://github.com/privacy-tech-lab/gpc-optmeowt#optmeowt-).
+GPC web crawler code. The GPC Web crawler is developed and maintained by the [OptMeowt team](https://github.com/privacy-tech-lab/gpc-optmeowt#optmeowt-). In addition to this readme, check out our [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki) as well.
 
 [1. Selenium OptMeowt Crawler](#1-selenium-optmeowt-crawler)  
 [2. Development](#2-development)  
@@ -59,7 +59,6 @@ node local-crawler.js
 ```
 
 9. To check the analysis results, open a browser and navigate to http://localhost:8080/analysis.
-    
 10. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
 
 ## 3. Architecture
@@ -71,7 +70,7 @@ Components:
 - ### Crawler Script:
 
   The flow of the crawler script is described in the diagram below.
-  
+
 ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/6261650d-1cc3-4a8e-b6e2-da682e4c1251)
 
 This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error.
@@ -151,46 +150,53 @@ Some sites can detect that we are using automation tools (i.e. Selenium) and do 
 Since the data collected from both of these types of sites will be incorrect, we list them under HumanCheckError in error-logging.json. We have observed a few different site titles that indicate we have reached a site in one of these categories. Most of the titles occur for multiple sites, with the most common being “Just a Moment…” on a captcha from Cloudflare. We detect when our crawler visits one of these sites by matching the site title of the loaded site with a set of regular expressions that match with the known titles. Clearly, we will miss some sites in this category if we have not seen it and added the title to the set of regular expressions. We are updating the regular expressions as we see more sites like this. For more information, see [issue #51](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/51).
 
 3. Sites that block script injection.
-   
+
 For instance flickr.com, blocks script injection and will not successfully be analyzed. In the debugging table, on the first attempt, the last message will be runAnalysis-fetching, and on the second, the extension logs SQL POSTING: SOMETHING WENT WRONG.
 
 4. Sites that redirect between multiple domains throughout analysis.
 
 For instance https://spothero.com/ and https://parkingpanda.com/ are now one entity but still can use both domains. In the dubugging table, you will see multiple debugging entries under each domain. Because we store analysis data by domain, the data will be incomplete and will not be added to the database.
 
-
 ## 5. Other Resources
+
 - ### Python Library for GPP String Decoding:
+
   GPP strings must be decoded. The IAB provides a JavaScript library [here](https://www.npmjs.com/package/@iabgpp/cmpapi) and an [interactive html decoder](https://iabgpp.com/#) to do this. To integrate decoding with our colab notebooks, we rewrote the library in Python. The library can be found [here](https://drive.google.com/drive/folders/1b542jvVWm4ny9h_12fplL_VRvBfEVxFX?usp=sharing).
 
 - ### .well-known/gpc.json Python Script:
-We collect .well-known/gpc.json data after the whole crawl finishes with a separate Python script. Start the script using `python3 well-known-collection.py`. This script should be run using a California VPN after all eight crawl batches are completed. Running this script requires 3 input files: `full-crawl-set.csv`, which is in the repo, `redo-original-sites.csv`, and `redo-sites.csv`. The second two files are not found in the repo and should be created for that crawl
-using [step 5](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/For-lab-members-performing-crawls:#saving-crawl-data-when-crawling-our-8-batch-dataset). As explained in `well-known-collection.py`, the output is a csv called `well-known-data.csv` with 3 columns: Site URL, request status, json data as well as an error json file called `well-known-errors.json` that logs all the errors. To run this script on a csv file of sites without accounting for redo sites, comment all lines between line 27 and line 40 except for line line 34.
+  We collect .well-known/gpc.json data after the whole crawl finishes with a separate Python script. Start the script using `python3 well-known-collection.py`. This script should be run using a California VPN after all eight crawl batches are completed. Running this script requires 3 input files: `full-crawl-set.csv`, which is in the repo, `redo-original-sites.csv`, and `redo-sites.csv`. The second two files are not found in the repo and should be created for that crawl
+  using [step 5](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/For-lab-members-performing-crawls:#saving-crawl-data-when-crawling-our-8-batch-dataset). As explained in `well-known-collection.py`, the output is a csv called `well-known-data.csv` with 3 columns: Site URL, request status, json data as well as an error json file called `well-known-errors.json` that logs all the errors. To run this script on a csv file of sites without accounting for redo sites, comment all lines between line 27 and line 40 except for line line 34.
 
-Purpose of the well.known Python Script: analyze the full crawl set with the redo sites replaced 
+Purpose of the well.known Python Script: analyze the full crawl set with the redo sites replaced
+
 - uses the full set of sites and the sites that we redone (which replaced the original sites with redo domaints)
 
-Output: 
+Output:
+
 1. If successful, a csv with 3 columns: Site URL, request status, json data
 2. If not, an error json file: logs all the errors(printing the reason & 500 chars of the request text)
-    Examples of an error: 
-      - "Expecting value: line 1 column 1(char 0)": the status was 200(of sites exists and loaded) but didn't find a json
-      - Reason: sites send al incorrect links to a generic error page instead of not serving the page
+   Examples of an error:
+   - "Expecting value: line 1 column 1(char 0)": the status was 200(of sites exists and loaded) but didn't find a json
+   - Reason: sites send al incorrect links to a generic error page instead of not serving the page
 
-Code rundown: 
+Code rundown:
+
 1. First, the file read in the full site set, redo original sites and redo sites
-  - sites_df.index(redo_original_sites[idx]): get the index of the site we want to change
-  - sites_list[x] = redo_new_sites[idx]: replace the site with the new site
-2. r = requests.get(sites_df[site_idx] + '/.well-known/gpc.json', timeout=35): The code run with a timeout of 35 seconds (to stay consistent with crawler timeouts)
-  (i)  checks if there will be a json data, then logging all 3 columns (*site, status, and json data*)
-  (ii) if there is no json data, it will just log the *status and site*
-  (iii) if r.json is not json data(), the "Expecting value: line 1 column 1 (char 0)", mean that the status .." error will appear in the error logging and the error will log site and status
-  (iv) if the request.get doesn't finish in 35 seconds, it will store errors and only log *site*
 
-Important code documentation: 
-  - "file1.write(sites_df[site_idx] + "," + str(r.status_code) + ',"' + str(r.json()) + '"\n')" : writing data to a file with 3 columns (site, status and json data)
-  - "errors[sites_df[site_idx] = str(e)" -> store errors with original links
-  - "with open("well-known-errors.json", "w") as outfile: json.dump(errors, outfile)" -> convert and write JSON object as containing errors to file
+- sites_df.index(redo_original_sites[idx]): get the index of the site we want to change
+- sites_list[x] = redo_new_sites[idx]: replace the site with the new site
+
+2. r = requests.get(sites*df[site_idx] + '/.well-known/gpc.json', timeout=35): The code run with a timeout of 35 seconds (to stay consistent with crawler timeouts)
+   (i) checks if there will be a json data, then logging all 3 columns (\_site, status, and json data*)
+   (ii) if there is no json data, it will just log the _status and site_
+   (iii) if r.json is not json data(), the "Expecting value: line 1 column 1 (char 0)", mean that the status .." error will appear in the error logging and the error will log site and status
+   (iv) if the request.get doesn't finish in 35 seconds, it will store errors and only log _site_
+
+Important code documentation:
+
+- "file1.write(sites_df[site_idx] + "," + str(r.status_code) + ',"' + str(r.json()) + '"\n')" : writing data to a file with 3 columns (site, status and json data)
+- "errors[sites_df[site_idx] = str(e)" -> store errors with original links
+- "with open("well-known-errors.json", "w") as outfile: json.dump(errors, outfile)" -> convert and write JSON object as containing errors to file
 
 ## 6. Thank You!
 
