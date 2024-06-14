@@ -22,7 +22,11 @@ GPC web crawler code. The GPC Web crawler is developed and maintained by the [Op
 [1. Selenium OptMeowt Crawler](#1-selenium-optmeowt-crawler)  
 [2. Development](#2-development)  
 [3. Architecture](#3-architecture)  
-[4. Thank You!](#4-thank-you)
+[4. Components](#4-components)  
+[5. Limitations/Known Issues](#5-limitationsknown-issues)  
+[6. Other Resources](#6-other-resources)   
+[7. Thank You](#7-thank-you)
+
 
 ## 1. Selenium OptMeowt Crawler
 
@@ -65,7 +69,7 @@ node local-crawler.js
 
 ![crawler-architecture](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/71088392-1542-45d6-ae87-ffedf5339bca)
 
-Components:
+## 4. Components
 
 - ### Crawler Script:
 
@@ -75,14 +79,13 @@ Components:
 
 This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in a file called error-logging.json and updates this file after each error.
 
-#### Types of Errors that may be logged:
-
-1. TimeoutError: A Selenium error that is thrown when either the page has not loaded in 30 seconds or the page has not responded for 30 seconds. Timeouts are set in driver.setTimeouts.
-2. HumanCheckError: A custom error that is thrown when the site has a title that we have observed means our VPN IP address is blocked or there is a human check on that site. See [Limitations/Known Issues](https://github.com/privacy-tech-lab/gpc-web-crawler#4-limitationsknown-issues) for more details.
-3. InsecureCertificateError: A Selenium error that indicates that the site will not be loaded, as it has an insecure certificate.
-4. WebDriverError: A Selenium error that indicates that the WebDriver has failed to execute some part of the script.
-5. WebDriverError: Reached Error Page: This indicates that an error page has been reached when Selenium tried to load the site.
-6. UnexpectedAlertOpenError: This indicates that a popup on the site disrupted Selenium's ability to analyze the site (such as a mandatory login)
+  #### Types of Errors that may be logged:
+  1. TimeoutError: A Selenium error that is thrown when either the page has not loaded in 30 seconds or the page has not responded for 30 seconds. Timeouts are set in driver.setTimeouts.
+  2. HumanCheckError: A custom error that is thrown when the site has a title that we have observed means our VPN IP address is blocked or there is a human check on that site. See [Limitations/Known Issues](https://github.com/privacy-tech-lab/gpc-web-crawler#4-limitationsknown-issues) for more details.
+  3. InsecureCertificateError: A Selenium error that indicates that the site will not be loaded, as it has an insecure certificate.
+  4. WebDriverError: A Selenium error that indicates that the WebDriver has failed to execute some part of the script.
+  5. WebDriverError: Reached Error Page: This indicates that an error page has been reached when Selenium tried to load the site.
+  6. UnexpectedAlertOpenError: This indicates that a popup on the site disrupted Selenium's ability to analyze the site (such as a mandatory login)
 
 - ### OptMeowt Analysis Extension:
 
@@ -134,7 +137,7 @@ This script is stored and executed locally. The crawler also keeps a log of site
   - OTGPPConsent_before_gpc: the value of the OTGPPConsent cookie before a GPC signal was sent. This cookie is described by OneTrust [here](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0).
   - OTGPPConsent_after_gpc: the value of the OTGPPConsent cookie after a GPC signal was sent. This cookie is described by OneTrust [here](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0).
 
-## 4. Limitations/Known Issues
+## 5. Limitations/Known Issues
 
 Since we are using Selenium and a VPN to visit the sites we analyze, there are some limitations to the sites we can analyze.
 There are 2 main types of sites that we cannot analyze due to our methodology:
@@ -157,7 +160,7 @@ For instance flickr.com, blocks script injection and will not successfully be an
 
 For instance https://spothero.com/ and https://parkingpanda.com/ are now one entity but still can use both domains. In the dubugging table, you will see multiple debugging entries under each domain. Because we store analysis data by domain, the data will be incomplete and will not be added to the database.
 
-## 5. Other Resources
+## 6. Other Resources
 
 - ### Python Library for GPP String Decoding:
 
@@ -166,39 +169,33 @@ For instance https://spothero.com/ and https://parkingpanda.com/ are now one ent
 - ### .well-known/gpc.json Python Script:
   We collect .well-known/gpc.json data after the whole crawl finishes with a separate Python script. Start the script using `python3 well-known-collection.py`. This script should be run using a California VPN after all eight crawl batches are completed. Running this script requires 3 input files: `full-crawl-set.csv`, which is in the repo, `redo-original-sites.csv`, and `redo-sites.csv`. The second two files are not found in the repo and should be created for that crawl
   using [step 5](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/For-lab-members-performing-crawls:#saving-crawl-data-when-crawling-our-8-batch-dataset). As explained in `well-known-collection.py`, the output is a csv called `well-known-data.csv` with 3 columns: Site URL, request status, json data as well as an error json file called `well-known-errors.json` that logs all the errors. To run this script on a csv file of sites without accounting for redo sites, comment all lines between line 27 and line 40 except for line line 34.
+    #### Purpose of the well.known Python Script: analyze the full crawl set with the redo sites replaced by using the full set of sites and the sites that we redone (which replaced the original sites with redo domains)
+  
+    #### Output:
+    1. If successful, a csv with 3 columns: Site URL, request status, json data
+    2. If not, an error json file: logs all the errors(printing the reason & 500 chars of the request text)
+       Examples of an error:
+       - "Expecting value: line 1 column 1(char 0)": the status was 200(of sites exists and loaded) but didn't find a json
+       - Reason: sites send al incorrect links to a generic error page instead of not serving the page
 
-Purpose of the well.known Python Script: analyze the full crawl set with the redo sites replaced
+    #### Code rundown:
 
-- uses the full set of sites and the sites that we redone (which replaced the original sites with redo domaints)
-
-Output:
-
-1. If successful, a csv with 3 columns: Site URL, request status, json data
-2. If not, an error json file: logs all the errors(printing the reason & 500 chars of the request text)
-   Examples of an error:
-   - "Expecting value: line 1 column 1(char 0)": the status was 200(of sites exists and loaded) but didn't find a json
-   - Reason: sites send al incorrect links to a generic error page instead of not serving the page
-
-Code rundown:
-
-1. First, the file read in the full site set, redo original sites and redo sites
-
-- sites_df.index(redo_original_sites[idx]): get the index of the site we want to change
-- sites_list[x] = redo_new_sites[idx]: replace the site with the new site
-
-2. r = requests.get(sites*df[site_idx] + '/.well-known/gpc.json', timeout=35): The code run with a timeout of 35 seconds (to stay consistent with crawler timeouts)
+    1. First, the file read in the full site set, redo original sites and redo sites
+       - sites_df.index(redo_original_sites[idx]): get the index of the site we want to change
+       - sites_list[x] = redo_new_sites[idx]: replace the site with the new site
+         
+    2. r = requests.get(sites*df[site_idx] + '/.well-known/gpc.json', timeout=35): The code run with a timeout of 35 seconds (to stay consistent with crawler timeouts)
    (i) checks if there will be a json data, then logging all 3 columns (\_site, status, and json data*)
    (ii) if there is no json data, it will just log the _status and site_
    (iii) if r.json is not json data(), the "Expecting value: line 1 column 1 (char 0)", mean that the status .." error will appear in the error logging and the error will log site and status
    (iv) if the request.get doesn't finish in 35 seconds, it will store errors and only log _site_
 
-Important code documentation:
+  _Important code documentation:_
+  - "file1.write(sites_df[site_idx] + "," + str(r.status_code) + ',"' + str(r.json()) + '"\n')" : writing data to a file with 3 columns (site, status and json data)
+  - "errors[sites_df[site_idx] = str(e)" -> store errors with original links
+  - "with open("well-known-errors.json", "w") as outfile: json.dump(errors, outfile)" -> convert and write JSON object as containing errors to file
 
-- "file1.write(sites_df[site_idx] + "," + str(r.status_code) + ',"' + str(r.json()) + '"\n')" : writing data to a file with 3 columns (site, status and json data)
-- "errors[sites_df[site_idx] = str(e)" -> store errors with original links
-- "with open("well-known-errors.json", "w") as outfile: json.dump(errors, outfile)" -> convert and write JSON object as containing errors to file
-
-## 6. Thank You!
+## 7. Thank You!
 
 <p align="center"><strong>We would like to thank our financial supporters!</strong></p><br>
 
