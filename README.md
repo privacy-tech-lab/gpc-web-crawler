@@ -75,7 +75,7 @@ Here is an overview of the GPC Web Crawler architecture:
 
 The GPC Web Crawler consists of various components:
 
-### Crawler Script
+### 4.1 Crawler Script
 
 The flow of the crawler script is described in the diagram below.
 
@@ -92,7 +92,7 @@ This script is stored and executed locally. The crawler also keeps a log of site
 5. WebDriverError: Reached Error Page: This indicates that an error page has been reached when Selenium tried to load the site.
 6. UnexpectedAlertOpenError: This indicates that a popup on the site disrupted Selenium's ability to analyze the site (such as a mandatory login).
 
-### OptMeowt Analysis Extension
+### 4.2 OptMeowt Analysis Extension
 
 The OptMeowt Analysis extension is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser by the crawler script. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the Cloud SQL database via a POST request. The analysis performed by the OptMeowt analysis extension investigates the GPC compliance of a given site using a 4-step approach:
 
@@ -108,11 +108,11 @@ The information collected during this process is used to determine whether the s
 3. the opt out columns in the GPP string's relevant [US section](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/tree/main/Sections) (i.e. `SaleOptOut`, `TargetedAdvertisingOptOut`, `SharingOptOut`) have a value of `1`; Note that the columns and opt out requirements vary by state
 4. the value of the OneTrustWPCCPAGoogleOptOut cookie is `true`
 
-### Node.js Rest API
+### 4.3 Node.js Rest API
 
 We use the Rest API to make GET, PUT, and POST requests to the SQL database. The Rest API is also local and is run in a separate terminal from the crawler.
 
-### SQL Database
+### 4.4 SQL Database
 
 The SQL database is a local database that stores analysis data. Instructions to set up an SQL database can be found in the [wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
 | id | site_id | domain | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc | gpp_version |urlClassification | OneTrustWPCCPAGoogleOptOut_before_gpc | OneTrustWPCCPAGoogleOptOut_after_gpc | OTGPPConsent_before_gpc | OTGPPConsent_after_gpc |
@@ -167,11 +167,11 @@ There are 2 main types of sites that we cannot analyze due to our methodology:
 
 ## 6. Other Resources
 
-### Python Library for GPP String Decoding
+### 6.1 Python Library for GPP String Decoding
 
 GPP strings must be decoded. The IAB provides a JavaScript library [here](https://www.npmjs.com/package/@iabgpp/cmpapi) and an [interactive html decoder](https://iabgpp.com/#) to do this. To integrate decoding with our colab notebooks, we rewrote the library in Python. The library can be found [here](https://drive.google.com/drive/folders/1b542jvVWm4ny9h_12fplL_VRvBfEVxFX?usp=sharing).
 
-### .well-known/gpc.json Python Script
+### 6.2 .well-known/gpc.json Python Script
 
 We collect .well-known/gpc.json data after the whole crawl finishes with a separate Python script. Start the script using `python3 well-known-collection.py`. This script should be run using a California VPN after all eight crawl batches are completed. Running this script requires 3 input files: `full-crawl-set.csv`, which is in the repo, `redo-original-sites.csv`, and `redo-sites.csv`. The second two files are not found in the repo and should be created for that crawl using [step 5](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/For-lab-members-performing-crawls:#saving-crawl-data-when-crawling-our-8-batch-dataset). As explained in `well-known-collection.py`, the output is a csv called `well-known-data.csv` with 3 columns: Site URL, request status, json data as well as an error json file called `well-known-errors.json` that logs all the errors. To run this script on a csv file of sites without accounting for redo sites, comment all lines between line 27 and line 40 except for line line 34.
 
