@@ -174,10 +174,11 @@ GPP strings must be decoded. The IAB provides a JavaScript library [here](https:
 ### 6.2 .well-known/gpc.json Python Script
 
 We collect .well-known/gpc.json data after the whole crawl finishes with a separate Python script.
-Steps: 
-1. This script should be run using a California VPN after all eight crawl batches are completed.
-2. Ensure the lock screen setting is as for the usual crawl 
-3. Start the script using `python3 well-known-collection.py`. 
+Steps:
+  1. This script should be run using a California VPN after all eight crawl batches are completed.
+  2. Ensure the lock screen setting is as for the usual crawl 
+  3. Start the script using `python3 well-known-collection.py`.
+
 Running this script requires 3 input files: `full-crawl-set.csv`, which is in the repo, `redo-original-sites.csv`, and `redo-sites.csv`. The second two files are not found in the repo and should be created for that crawl using [step 5](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/For-lab-members-performing-crawls:#saving-crawl-data-when-crawling-our-8-batch-dataset). As explained in `well-known-collection.py`, the output is a csv called `well-known-data.csv` with 3 columns: Site URL, request status, json data as well as an error json file called `well-known-errors.json` that logs all the errors. To run this script on a csv file of sites without accounting for redo sites, comment all lines between line 27 and line 40 except for line line 34.
 
 #### Purpose of the well.known Python Script
