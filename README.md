@@ -19,7 +19,7 @@
 
 The GPC Web crawler is developed and maintained by the [OptMeowt team](https://github.com/privacy-tech-lab/gpc-optmeowt#optmeowt-). In addition to this readme, check out our [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki).
 
-[1. Research Publications](#1-research-publications)
+[1. Research Publications](#1-research-publications)  
 [2. Introduction](#2-introduction)  
 [3. Development](#3-development)  
 [4. Architecture](#4-architecture)  
