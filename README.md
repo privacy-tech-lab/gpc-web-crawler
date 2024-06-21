@@ -38,7 +38,7 @@ The GPC Web Crawler analyzes websites compliance with [Global Privacy Control (G
 
 ## 3. Development
 
-Get started with the GPC Web Crawler as follows:
+You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBook. Get started as follows:
 
 0. If you want to test sites' compliance with a particular law, for example, the California Consumer Privacy Act (CCPA), make sure to crawl the sites from a computer in the respective geographical location. If you are located in a different location, you can use a VPN. We perform our crawls for the CCPA using [Mullvad VPN](https://mullvad.net/en) set to Los Angeles, California.
 
