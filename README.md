@@ -24,7 +24,7 @@ The GPC Web crawler is developed and maintained by the [OptMeowt team](https://g
 [3. Architecture](#3-architecture)  
 [4. Components](#4-components)  
 [5. Limitations/Known Issues](#5-limitationsknown-issues)  
-[6. Other Resources](#6-other-resources)
+[6. Other Resources](#6-other-resources)  
 [7. Thank You!](#7-thank-you!)
 
 ## 1. Introduction
