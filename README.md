@@ -19,19 +19,24 @@
 
 The GPC Web crawler is developed and maintained by the [OptMeowt team](https://github.com/privacy-tech-lab/gpc-optmeowt#optmeowt-). In addition to this readme, check out our [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki).
 
-[1. Introduction](#1-introduction)  
-[2. Development](#2-development)  
-[3. Architecture](#3-architecture)  
-[4. Components](#4-components)  
-[5. Limitations/Known Issues](#5-limitationsknown-issues)  
-[6. Other Resources](#6-other-resources)  
-[7. Thank You!](#7-thank-you)
+[1. Research Publications](#1-research-publications)
+[2. Introduction](#2-introduction)  
+[3. Development](#3-development)  
+[4. Architecture](#4-architecture)  
+[5. Components](#5-components)  
+[6. Limitations/Known Issues](#6-limitationsknown-issues)  
+[7. Other Resources](#7-other-resources)  
+[8. Thank You!](#8-thank-you)
 
-## 1. Introduction
+## 1. Research Publications
+
+You can find a list of our research publications in the [OptMeowt Analysis extension repo](https://github.com/privacy-tech-lab/gpc-optmeowt?tab=readme-ov-file#1-research-publications).
+
+## 2. Introduction
 
 The GPC Web Crawler analyzes websites compliance with [Global Privacy Control (GPC)](https://globalprivacycontrol.org/) at scale. GPC is a browser signal that people can use to exercise their rights to opt out from web tracking. The GPC Web Crawler is based on [Selenium](https://www.selenium.dev/) and the [OptMeowt Analysis extension](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/gpc-analysis-extension).
 
-## 2. Development
+## 3. Development
 
 Get started with the GPC Web Crawler as follows:
 
@@ -73,17 +78,17 @@ Get started with the GPC Web Crawler as follows:
 
 **Note**: When you perform a crawl, for one reason or another, some sites may fail to analyze. We always perform a second crawl for the sites that failed the first time (i.e., the redo sites).
 
-## 3. Architecture
+## 4. Architecture
 
 Here is an overview of the GPC Web Crawler architecture:
 
 ![crawler-architecture](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/71088392-1542-45d6-ae87-ffedf5339bca)
 
-## 4. Components
+## 5. Components
 
 The GPC Web Crawler consists of various components:
 
-### 4.1 Crawler Script
+### 5.1 Crawler Script
 
 The flow of the crawler script is described in the diagram below.
 
@@ -100,7 +105,7 @@ This script is stored and executed locally. The crawler also keeps a log of site
 5. `WebDriverError: Reached Error Page`: This error indicates that an error page has been reached when Selenium tried to load the site.
 6. `UnexpectedAlertOpenError`: This error indicates that a popup on the site disrupted Selenium's ability to analyze the site (such as a mandatory login).
 
-### 4.2 OptMeowt Analysis Extension
+### 5.2 OptMeowt Analysis Extension
 
 The [OptMeowt Analysis extension](https://github.com/privacy-tech-lab/gpc-optmeowt) is [packaged as an xpi file](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Pack-Extension-in-XPI-Format) and installed on a Firefox Nightly browser by the crawler script. When a site loads, the OptMeowt Analysis extension automatically analyzes the site and sends the analysis data to the local SQL database via a POST request. The analysis performed by the OptMeowt Analysis extension investigates the GPC compliance of a given site using a 4-step approach:
 
@@ -113,14 +118,14 @@ The information collected during this process is used to determine whether the s
 
 1. the third character of the US Privacy string is a `Y`
 2. the value of the OptanonConsent cookie is `isGpcEnabled=1`
-3. the opt out columns in the GPP string's relevant [US section](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/tree/main/Sections) (i.e. `SaleOptOut`, `TargetedAdvertisingOptOut`, `SharingOptOut`) have a value of `1`; Note that the columns and opt out requirements vary by state
+3. the opt out columns in the GPP string's relevant [US section](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/tree/main/Sections) (i.e., `SaleOptOut`, `TargetedAdvertisingOptOut`, `SharingOptOut`) have a value of `1`; Note that the columns and opt out requirements vary by state
 4. the value of the OneTrustWPCCPAGoogleOptOut cookie is `true`
 
-### 4.3 Node.js REST API
+### 5.3 Node.js REST API
 
 We use the REST API to make GET, PUT, and POST requests to the SQL database. The REST API is also local and is run in a separate terminal from the crawler. Instructions for the REST API can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-REST-API).
 
-### 4.4 SQL Database
+### 5.4 SQL Database
 
 The SQL database is a local database that stores analysis data. Instructions to set up the SQL database can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database). The columns of our database tables are below:
 | id | site_id | domain | sent_gpc | uspapi_before_gpc | uspapi_after_gpc | usp_cookies_before_gpc | usp_cookies_after_gpc | OptanonConsent_before_gpc | OptanonConsent_after_gpc | gpp_before_gpc | gpp_after_gpc | gpp_version |urlClassification | OneTrustWPCCPAGoogleOptOut_before_gpc | OneTrustWPCCPAGoogleOptOut_after_gpc | OTGPPConsent_before_gpc | OTGPPConsent_after_gpc |
@@ -150,7 +155,7 @@ The remaining columns pertain to the opt out status of a user, i.e., the OptMeow
 - `OTGPPConsent_before_gpc`: the value of the OTGPPConsent cookie before a GPC signal is sent. This cookie is [described by OneTrust](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0). Additional information is available in [issue #94](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/94)
 - `OTGPPConsent_after_gpc`: the value of the OTGPPConsent cookie after a GPC signal was sent. This cookie is [described by OneTrust](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0). Additional information is available in [issue #94](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/94)
 
-## 5. Limitations/Known Issues
+## 6. Limitations/Known Issues
 
 Since we are using Selenium and a VPN to visit the sites we analyze, there are some limitations to the sites we can analyze.
 There are two main types of sites that we cannot analyze due to our methodology:
@@ -173,13 +178,13 @@ There are two main types of sites that we cannot analyze due to our methodology:
 
    For instance, <https://spothero.com/> and <https://parkingpanda.com/> are now one entity but still can use both domains. In the debugging table, you will see multiple debugging entries under each domain. Because we store analysis data by domain, the data will be incomplete and will not be added to the database.
 
-## 6. Other Resources
+## 7. Other Resources
 
-### 6.1 Python Library for GPP String Decoding
+### 7.1 Python Library for GPP String Decoding
 
 GPP strings must be decoded. The IAB provides a [JavaScript library](https://www.npmjs.com/package/@iabgpp/cmpapi) and an [interactive html decoder](https://iabgpp.com/#) to do so. To integrate decoding with our colab notebooks for data analysis, we rewrote the library in Python. The library can be found on [our Google Drive](https://drive.google.com/drive/folders/1b542jvVWm4ny9h_12fplL_VRvBfEVxFX?usp=sharing).
 
-### 6.2 .well-known/gpc.json Python Script
+### 7.2 .well-known/gpc.json Python Script
 
 We collect [.well-known/gpc.json](https://privacycg.github.io/gpc-spec/#gpc-support-resource) data after the whole crawl finishes with a separate Python script, `selenium-optmeowt-crawler/well-known-collection.py`.
 
@@ -224,7 +229,7 @@ Analyze the full crawl set with the redo sites replaced, i.e., using the full se
   - "errors[sites_df[site_idx]] = str(e)" -> store errors with original links
   - "with open("well-known-errors.json", "w") as outfile: json.dump(errors, outfile)" -> convert and write JSON object as containing errors to file
 
-## 7. Thank You!
+## 8. Thank You!
 
 <p align="center"><strong>We would like to thank our supporters!</strong></p><br>
 
