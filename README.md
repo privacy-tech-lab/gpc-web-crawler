@@ -209,9 +209,14 @@ Analyze the full crawl set with the redo sites replaced, i.e., using the full se
   1. If successful, a csv with three columns will be created: Site URL, request status, json data
   2. If not successful, an error json file will be created: logs all the errors, including the reason for the error and 500 characters of the request text
      Examples of an error:
-     - "Expecting value: line 1 column 1 (char 0)": the status code was 200 (site exists and loaded) but did not find a json
-     - Reason: site sent all incorrect links to a generic error page instead of not serving the page, which would have been a 404 status code
-
+     - "Expecting value: line 1 column 1 (char 0)": the status code was 200 (site exists and loaded) or 202 (the request is acceppted and but incomplete processing) did not find a json (output: Site_URL, 200, None or Site_URL, 202, None)
+     - Reason: site sent all incorrect links to a generic error page instead of not serving the page, which would have been a 404 status code.
+       
+- Status Code (HTTP Response)
+     - In general, we expect a 404 response code (Not Found) when a site does not have a .well-known/gpc.json (output: Site_URL, 404, None)
+     - Other possible status codes signalling that the well-known data is not found include but not limited to: 403 (Forbidden: the server understands the request but refuses to authorize it), 500 (Internal Server Error: the server encountered an unexpected condition that prevented it from fulfilling the request), 406 (Not Acceptable: the server cannot produce a response matching the list of acceptable values define), 429 (Too Many Requests)
+ 
+      
 - `well-known-collection.py` Code Rundown
 
   1. First, the file reads in the full site set, i.e., original sites and redo sites
