@@ -200,24 +200,24 @@ Here are the steps for doing so:
 
 Running this script requires three input files: `selenium-optmeowt-crawler/full-crawl-set.csv`, which is in the repo, `redo-original-sites.csv`, and `redo-sites.csv`. The second two files are not found in the repo and should be created for that crawl based on the [instructions in our Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#saving-crawl-data-when-crawling-our-8-batch-dataset). As explained in `selenium-optmeowt-crawler/well-known-collection.py`, the output is a csv called `well-known-data.csv` with three columns: Site URL, request status, json data as well as an error json file called `well-known-errors.json` that logs all errors. To run this script on a csv file of sites without accounting for redo sites, comment all lines between line 27 and line 40 except for line 34.
 
-#### Details of the well.known Analysis
+#### Details of the .well-known Analysis
 
 Analyze the full crawl set with the redo sites replaced, i.e., using the full set of sites and the sites that we have redone (which replaced the original sites with redo sites).
 
 - Output
 
   1. If successful, a csv with three columns will be created: Site URL, request status, json data
-  2. If not successful, an error json file will be created: logs all the errors, including the reason for the error and 500 characters of the request text
+  2. If not successful, an error json file will be created: logs all errors, including the reason for an error and 500 characters of the request text
+
      Examples of an error:
-     - "Expecting value: line 1 column 1 (char 0)": the status code was 200 (site exists and loaded) or 202 (the request is acceppted and but incomplete processing) did not find a json (output: Site_URL, 200, None or Site_URL, 202, None)
-     - Reason: site sent all incorrect links to a generic error page instead of not serving the page, which would have been a 404 status code.
-       
-- Status Code (HTTP Response)
-     - In general, we expect a 404 response code (Not Found) when a site does not have a .well-known/gpc.json (output: Site_URL, 404, None)
-     - Other possible status codes signalling that the well-known data is not found include but not limited to: 403 (Forbidden: the server understands the request but refuses to authorize it), 500 (Internal Server Error: the server encountered an unexpected condition that prevented it from fulfilling the request), 406 (Not Acceptable: the server cannot produce a response matching the list of acceptable values define), 429 (Too Many Requests)
- 
-      
-- `well-known-collection.py` Code Rundown
+
+     - "Expecting value: line 1 column 1 (char 0)": the status code was 200 (site exists and loaded) or 202 (the request is accepted but incomplete processing) but did not find a json (output: Site_URL, 200, None or Site_URL, 202, None)
+     - Reason: site sent all incorrect URLs to a generic error page instead of not serving the page, which would have been a 404 status code
+
+- Status Codes (HTTP Responses)
+  - In general, we expect a 404 status code (Not Found) when a site does not have a .well-known/gpc.json (output: Site_URL, 404, None)
+  - Other possible status codes signaling that the .well-known data is not found include but are not limited to: 403 (Forbidden: the server understands the request but refuses to authorize it), 500 (Internal Server Error: the server encountered an unexpected condition that prevented it from fulfilling the request), 406 (Not Acceptable: the server cannot produce a response matching the list of acceptable values define), 429 (Too Many Requests)
+- `.well-known-collection.py` Code Rundown
 
   1. First, the file reads in the full site set, i.e., original sites and redo sites
      - sites_df.index(redo_original_sites[idx]): get the index of the site we want to change
