@@ -9,7 +9,7 @@ var total_begin = Date.now(); //start logging time
 var err_obj = new Object();
 // Loads sites to crawl
 const sites = [];
-fs.createReadStream("sites1.csv")
+fs.createReadStream("sites.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
     sites.push(row[0]);
@@ -35,16 +35,16 @@ async function setup() {
   await new Promise((resolve) => setTimeout(resolve, 3000));
   options = new firefox.Options()
     .setBinary(firefox.Channel.NIGHTLY)
-    .setBinary('/Applications/Firefox\ Nightly.app/Contents/MacOS/firefox')
+    .setBinary("/Applications/Firefox Nightly.app/Contents/MacOS/firefox")
     .setPreference("xpinstall.signatures.required", false)
     .addExtensions("./myextension.xpi");
 
   options.addArguments("--headful");
-  options.addArguments("disable-infobars")
-  options.addArguments('--no-sandbox')
-  options.addArguments('--disable-application-cache')
-  options.addArguments('--disable-gpu')
-  options.addArguments("--disable-dev-shm-usage")
+  options.addArguments("disable-infobars");
+  options.addArguments("--no-sandbox");
+  options.addArguments("--disable-application-cache");
+  options.addArguments("--disable-gpu");
+  options.addArguments("--disable-dev-shm-usage");
   driver = new Builder()
     .forBrowser("firefox")
     .setFirefoxOptions(options)
@@ -71,7 +71,7 @@ async function check_update_DB(site, site_id) {
   st = site.replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
   st = st.replace("https://", ""); // removes https:// if www. isn't in the link
   // dealing with sites that have additional paths (only keep the part before the path)
-  split = st.split('/');
+  split = st.split("/");
   site_str = split[0];
   // https://www.npmjs.com/package//axios?activeTab=readme --axios with async
   //   console.log(site_str);
@@ -142,7 +142,6 @@ async function visit_site(sites, site_id) {
       title.match(/are you a robot/i) ||
       title.match(/block -/i) ||
       title.match(/Human Verification/i)
-
     ) {
       throw new HumanCheckError("Human Check");
     }
@@ -182,24 +181,25 @@ async function visit_site(sites, site_id) {
 
     // if it's just a human check site, we don't need to restart
     if (e.name != "HumanCheckError") {
-
       if (e.message.match(/Failed to decode response from marionette/i)) {
-        console.log(e.name + ': ' + e.message + "-- driver should already have quit ");
-      }
-      else {
+        console.log(
+          e.name + ": " + e.message + "-- driver should already have quit "
+        );
+      } else {
         // take a screenshot of the page so we can better understand what was going on
         try {
           driver.takeScreenshot().then(function (data) {
-            var base64Data = data.replace(/^data:image\/png;base64,/, "")
+            var base64Data = data.replace(/^data:image\/png;base64,/, "");
             var st = sites[site_id].replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
             st = st.replace("https://", ""); // removes https:// if www. isn't in the link
-            var filename = './error-logging/' + st + ".png"
-            fs.writeFile(filename, base64Data, 'base64', function (err) {
+            var filename = "./error-logging/" + st + ".png";
+            fs.writeFile(filename, base64Data, "base64", function (err) {
               if (err) console.log(err);
             });
           });
+        } catch (screenshot_err) {
+          console.log("screenshot failed");
         }
-        catch (screenshot_err) { console.log('screenshot failed') }
         driver.quit();
       }
       console.log("------restarting driver------");

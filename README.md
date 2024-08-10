@@ -34,7 +34,7 @@ You can find a list of our research publications in the [OptMeowt Analysis exten
 
 ## 2. Introduction
 
-The GPC Web Crawler analyzes websites compliance with [Global Privacy Control (GPC)](https://globalprivacycontrol.org/) at scale. GPC is a browser signal that people can use to exercise their rights to opt out from web tracking. The GPC Web Crawler is based on [Selenium](https://www.selenium.dev/) and the [OptMeowt Analysis extension](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/gpc-analysis-extension).
+The GPC Web Crawler analyzes websites compliance with [Global Privacy Control (GPC)](https://globalprivacycontrol.org/) at scale. GPC is a privacy preference signal that people can use to exercise their rights to opt out from web tracking. The GPC Web Crawler is based on [Selenium](https://www.selenium.dev/) and the [OptMeowt Analysis extension](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/gpc-analysis-extension).
 
 ## 3. Development
 
@@ -56,15 +56,15 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
 5. Open sites.csv and enter the URLs of the sites you want to analyze in the first column. Some examples are included in the file.
 
-6. Ensure Firefox Nightly is installed on your computer per the [official Firefox documentation](https://www.mozilla.org/en-US/firefox/channel/desktop/).
+6. Ensure Firefox Nightly is installed on your computer per the [official Firefox documentation](https://www.mozilla.org/en-US/firefox/channel/desktop/). Depending on where you install it, you may need to change the location of your Firefox Nightly installation in the [crawler](https://github.com/privacy-tech-lab/gpc-web-crawler/blob/main/selenium-optmeowt-crawler/local-crawler.js).
 
-7. Install the dependencies by running:
+7. Install the crawler's dependencies by running from within the [crawler directory](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/selenium-optmeowt-crawler):
 
    ```console
    npm install
    ```
 
-8. To start the crawler, run:
+8. To start the crawler, run from within the crawler directory:
 
    ```console
    node local-crawler.js
@@ -72,7 +72,7 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
    If you receive the error `WebDriverError: Process unexpectedly closed with status 0`, update Firefox Nightly to the latest version.
 
-9. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>.
+9. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would ned to adjust the URL or your configuration accordingly.
 
 10. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
 
