@@ -17,14 +17,14 @@
 
 # GPC Web Crawler
 
-The GPC Web crawler is developed and maintained by the [OptMeowt team](https://github.com/privacy-tech-lab/gpc-optmeowt#optmeowt-). In addition to this readme, check out our [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki).
+The GPC Web Crawler is developed and maintained by the [OptMeowt team](https://github.com/privacy-tech-lab/gpc-optmeowt#optmeowt-). In addition to this readme, check out our [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki).
 
 [1. Research Publications](#1-research-publications)  
 [2. Introduction](#2-introduction)  
 [3. Development](#3-development)  
 [4. Architecture](#4-architecture)  
 [5. Components](#5-components)  
-[6. Limitations/Known Issues](#6-limitationsknown-issues)  
+[6. Limitations/Known Issues/Bug Fixes](#6-limitationsknown-issuesbug-fixes)  
 [7. Other Resources](#7-other-resources)  
 [8. Thank You!](#8-thank-you)
 
@@ -94,7 +94,7 @@ The flow of the crawler script is described in the diagram below.
 
 ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/6261650d-1cc3-4a8e-b6e2-da682e4c1251)
 
-This script is stored and executed locally. The crawler also keeps a log of sites that cause errors. It stores these logs in the `error-logging.json` file and updates this file after each error.
+This script is stored and executed locally. The Crawler also keeps a log of sites that cause errors. It stores these logs in the `error-logging.json` file and updates this file after each error.
 
 #### Types of Errors that May Be Logged
 
@@ -155,10 +155,12 @@ The remaining columns pertain to the opt out status of a user, i.e., the OptMeow
 - `OTGPPConsent_before_gpc`: the value of the OTGPPConsent cookie before a GPC signal is sent. This cookie is [described by OneTrust](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0). Additional information is available in [issue #94](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/94)
 - `OTGPPConsent_after_gpc`: the value of the OTGPPConsent cookie after a GPC signal was sent. This cookie is [described by OneTrust](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0). Additional information is available in [issue #94](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/94)
 
-## 6. Limitations/Known Issues
+## 6. Limitations/Known Issues/Bug Fixes
+
+### 6.1 Sites that Cannot Be Analyzed
 
 Since we are using Selenium and a VPN to visit the sites we analyze, there are some limitations to the sites we can analyze.
-There are two main types of sites that we cannot analyze due to our methodology:
+There are some types of sites that we cannot analyze due to our methodology:
 
 1. Sites where the VPN's IP address is blocked.
 
@@ -168,7 +170,7 @@ There are two main types of sites that we cannot analyze due to our methodology:
 
    Some sites can detect that we are using automation tools (i.e., Selenium) and do not let us access the real site. Instead, we are redirected to a page with some kind of captcha or puzzle. We do not try to bypass any human checks.
 
-   Since the data collected from both of these types of sites (i.e., (1) sites that block our VPN's IP address and (2) sites that have some kind of human check) will be incorrect and occur because our automation was detected, we list them under `HumanCheckError` in the `error-logging.json` file. We have observed a few different site titles that indicate we have reached a site in one of these categories. Most of the titles occur for multiple sites, with the most common being "Just a Moment…" on a captcha from Cloudflare. We detect when our crawler visits one of these sites by matching the site title of the loaded site with a set of regular expressions that match with the known titles. Clearly, we will miss some sites in this category if we have not seen it and added the title to the set of regular expressions. We are updating the regular expressions as we see more sites like this. For more information, see [issue #51](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/51).
+   Since the data collected from both of these types of sites (i.e., (1) sites that block our VPN's IP address and (2) sites that have some kind of human check) will be incorrect and occur because our automation was detected, we list them under `HumanCheckError` in the `error-logging.json` file. We have observed a few different site titles that indicate we have reached a site in one of these categories. Most of the titles occur for multiple sites, with the most common being "Just a Moment…" on a captcha from Cloudflare. We detect when our Crawler visits one of these sites by matching the site title of the loaded site with a set of regular expressions that match with the known titles. Clearly, we will miss some sites in this category if we have not seen it and added the title to the set of regular expressions. We are updating the regular expressions as we see more sites like this. For more information, see [issue #51](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/51).
 
 3. Sites that block script injection.
 
@@ -177,6 +179,10 @@ There are two main types of sites that we cannot analyze due to our methodology:
 4. Sites that redirect between multiple domains throughout analysis.
 
    For instance, <https://spothero.com/> and <https://parkingpanda.com/> are now one entity but still can use both domains. In the debugging table, you will see multiple debugging entries under each domain. Because we store analysis data by domain, the data will be incomplete and will not be added to the database.
+
+### 6.2 Important Bug Fixes
+
+1. At some point the Crawler kept returning an empty result for [Firefox's urlClassification object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification). @eakubilo [fixed this tricky bug](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/122#issuecomment-2332655459).
 
 ## 7. Other Resources
 
@@ -222,7 +228,7 @@ Analyze the full crawl set with the redo sites replaced, i.e., using the full se
   1. First, the file reads in the full site set, i.e., original sites and redo sites
      - sites_df.index(redo_original_sites[idx]): get the index of the site we want to change
      - sites_list[x] = redo_new_sites[idx]: replace the site with the new site
-  2. r = requests.get(sites\*df[site_idx] + '/.well-known/gpc.json', timeout=35): The code runs with a timeout of 35 seconds (to stay consistent with crawler timeouts)  
+  2. r = requests.get(sites\*df[site_idx] + '/.well-known/gpc.json', timeout=35): The code runs with a timeout of 35 seconds (to stay consistent with Crawler timeouts)  
      (i) checks if there will be json data, then logging all three columns (Site URL, request status, json data)  
      (ii) if there is no json data, it will just log the **status and site**  
      (iii) if r.json is not json data(), the "Expecting value: line 1 column 1 (char 0)", means that the status .." error will appear in the error logging and the error will log site and status  
