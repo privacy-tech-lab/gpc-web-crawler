@@ -37,6 +37,7 @@ async function setup() {
     .setBinary(firefox.Channel.NIGHTLY)
     .setBinary("/Applications/Firefox Nightly.app/Contents/MacOS/firefox")
     .setPreference("xpinstall.signatures.required", false)
+    .setPreference("services.settings.server", "https://firefox.settings.services.mozilla.com/v1")
     .addExtensions("./myextension.xpi");
 
   options.addArguments("--headful");
