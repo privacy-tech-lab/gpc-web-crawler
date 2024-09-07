@@ -82,7 +82,7 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
 Here is an overview of the GPC Web Crawler architecture:
 
-![crawler-architecture](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/71088392-1542-45d6-ae87-ffedf5339bca)
+![crawler-architecture](crawler-architecture.png)
 
 ## 5. Components
 
