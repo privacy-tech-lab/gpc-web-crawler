@@ -84,6 +84,8 @@ Here is an overview of the GPC Web Crawler architecture:
 
 ![crawler-architecture](crawler-architecture.png)
 
+The editable version of this image is in the [Google Drive](https://docs.google.com/presentation/d/1lngYynWwW2UdKyUY5vKhfJ413DSvlGgU/edit?usp=sharing&ouid=112157414060543752223&rtpof=true&sd=true).
+
 ## 5. Components
 
 The GPC Web Crawler consists of various components:
