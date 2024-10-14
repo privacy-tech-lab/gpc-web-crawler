@@ -22,6 +22,5 @@ docker run -d --name crawl_test --privileged \
 	-v "$(pwd)":/srv/analysis \
 	-p 8080:8080 \
 	crawl_test || true
-docker exec -it crawl_test /srv/analysis/scripts/build-extension.sh
 docker exec -it crawl_test /srv/analysis/scripts/rest-api.sh
 docker exec -it crawl_test /srv/analysis/scripts/run-crawl.sh
