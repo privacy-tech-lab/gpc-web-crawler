@@ -1,9 +1,12 @@
 # Base image with systemd support
-FROM jrei/systemd-debian
+FROM consol/debian-xfce-vnc
+ENV REFRESHED_AT 2022-10-12
 
-# Set environment variables to prevent interactive prompts during package installations
-ENV TERM=linux \
-    DEBIAN_FRONTEND=noninteractive
+# Switch to root user to install additional software
+USER 0
+
+#Set shell to bash
+SHELL ["/bin/bash", "-c"]
 
 # Get repositories and keys for Node.js and MySQL, then install core utilities
 RUN apt-get update && \
@@ -31,15 +34,32 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv-keys B7B3B788A8D37
 
 # Update package lists and install necessary packages, replacing firefox with firefox-esr and mysql-server with mariadb-server
 RUN apt-get update && \
-    apt-get -y install apache2 firefox-esr mariadb-server nodejs zip && \
+    apt-get -y install apache2 firefox-nightly mariadb-server nodejs zip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/mysql.deb
 
+RUN dpkg -L firefox-nightly
 # Manually install Geckodriver for Selenium
 RUN npm install -g geckodriver
 
+# Manually install selenium-webdriver
+RUN npm install -g selenium-webdriver
+
+
+#update apt
+RUN apt-get update
+
+#install python venv
+RUN apt-get -y install python3.11-venv
+
+#create virtual environment
+RUN python3 -m venv .venv
+
+#use virtual environment
+RUN source .venv/bin/activate
+
 # Install Selenium using pip3
-RUN pip3 install selenium
+RUN .venv/bin/pip3 install selenium
 
 # Expose the required ports for Apache and MySQL
 EXPOSE 80 3306
@@ -48,3 +68,5 @@ EXPOSE 80 3306
 CMD ["sleep", "infinity"]
 
 
+## switch back to default user
+USER 1000
