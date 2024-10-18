@@ -1,7 +1,11 @@
 # Base image with systemd support
 FROM consol/debian-xfce-vnc
 ENV REFRESHED_AT 2022-10-12
-
+ENV DB_CONNECTION=mysql
+ENV DB_HOST=localhost
+ENV DB_DATABASE=analysis
+ENV DB_USERNAME=root
+ENV DB_PASSWORD=toor
 # Switch to root user to install additional software
 USER 0
 
@@ -66,6 +70,15 @@ EXPOSE 80 3306
 
 # Keep the container running indefinitely to facilitate testing
 CMD ["sleep", "infinity"]
+
+# Install netcat (or nc) for network checks
+RUN apt-get update && apt-get install -y netcat-openbsd
+
+# Install supervisored for managing multiple processes.
+RUN apt-get update && apt-get install -y supervisor
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+CMD ["/usr/bin/supervisord"]
 
 
 ## switch back to default user

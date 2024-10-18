@@ -59,7 +59,7 @@ npm install
 
 # Start the REST API using Node.js directly instead of systemd
 # This step replaces `systemctl` usage since Docker containers typically don't use systemd
-nohup node index.js debug > restapi.log 2>&1 &
+node index.js debug
 
 set +x
 echo '--------------------------------------------------'

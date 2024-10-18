@@ -22,7 +22,6 @@ docker run -d --name crawl_test --privileged \
 	-v "$(pwd)":/srv/analysis \
 	-p 5901:5901 \
 	-p 6901:6901 \
+	-p 8080:8080 \
 	--user 0 \
 	crawl_test || true
-docker exec -it crawl_test /srv/analysis/scripts/rest-api.sh
-docker exec -it crawl_test /srv/analysis/scripts/run-crawl.sh
