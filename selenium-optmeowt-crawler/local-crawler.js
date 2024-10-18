@@ -2,6 +2,7 @@ const { Builder } = require("selenium-webdriver");
 const firefox = require("selenium-webdriver/firefox");
 
 const fs = require("fs");
+const path = require("path");
 const { parse } = require("csv-parse");
 const axios = require("axios");
 
@@ -192,8 +193,9 @@ async function visit_site(sites, site_id) {
             var base64Data = data.replace(/^data:image\/png;base64,/, "");
             var st = sites[site_id].replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
             st = st.replace("https://", ""); // removes https:// if www. isn't in the link
-            var filename = "./error-logging/" + st + ".png";
-            fs.writeFile(filename, base64Data, "base64", function (err) {
+            st = st.replace(/\/$/, '') // removes trailing / from filename
+            var fullfilename = path.join("./error-logging/", st + ".png"); //creates full file name
+            fs.writeFile(fullfilename, base64Data, "base64", function (err) {
               if (err) console.log(err);
             });
           });

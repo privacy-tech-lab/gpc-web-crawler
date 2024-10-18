@@ -45,14 +45,6 @@ CREATE TABLE IF NOT EXISTS debug (
 );
 SQLCOMMANDS
 
-# Create a .env file with database credentials for the REST API
-cat << 'ENVFILE' > .env
-DB_CONNECTION=mysql  # Keep this as `mysql`, because MariaDB uses the same driver
-DB_HOST=localhost
-DB_DATABASE=analysis
-DB_USERNAME=root
-DB_PASSWORD=toor
-ENVFILE
 
 # Install dependencies for the REST API using npm
 npm install

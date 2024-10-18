@@ -165,8 +165,7 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-
+/selenium-optmeowt-crawler/error-logging/*
 # Dependency directories
 node_modules/
 jspm_packages/
