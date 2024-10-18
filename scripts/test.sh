@@ -15,7 +15,7 @@ set -e
 set -x
 
 #clean logs
-rm -r ./logs
+rm -r ./logs || true
 mkdir -p ./logs
 
 docker stop crawl_test || true
