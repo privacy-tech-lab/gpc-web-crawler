@@ -58,13 +58,13 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
     sh scripts/run_container.sh
     ```
 
+    - If you instead want to run the crawler on your local machine, follow the instructions in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-the-crawler-on-your-local-machine).
 
 7. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would ned to adjust the URL or your configuration accordingly.
 
 8. To watch the crawler operate on the Desktop environment, open a browser and navigate to <http://localhost:6901/vnc.html>. Click the button that says "connect" in the center of the screen. When prompted for a password, enter `vncpassword`.
 
 9. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
-
 
 **Note**: When you perform a crawl, for one reason or another, some sites may fail to analyze. We always perform a second crawl for the sites that failed the first time (i.e., the redo sites).
 
