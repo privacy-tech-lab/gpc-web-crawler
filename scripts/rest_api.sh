@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /srv/analysis/rest-api
+cd /srv/analysis/rest_api
 echo "Running $0 in `pwd`"
 
 set -e
@@ -51,7 +51,7 @@ npm install
 
 # Start the REST API using Node.js directly instead of systemd
 # This step replaces `systemctl` usage since Docker containers typically don't use systemd
-node index.js debug
+node index.js
 
 set +x
 echo '--------------------------------------------------'
