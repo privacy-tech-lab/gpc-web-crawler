@@ -42,39 +42,29 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
 0. If you want to test sites' compliance with a particular law, for example, the California Consumer Privacy Act (CCPA), make sure to crawl the sites from a computer in the respective geographical location. If you are located in a different location, you can use a VPN. We perform our crawls for the CCPA using [Mullvad VPN](https://mullvad.net/en) set to Los Angeles, California.
 
-1. Clone this repo locally or download a zipped copy and unzip it.
+1. Sign in to [Docker](https://www.docker.com/get-started/), or create a Docker account if you do not already have one.
 
-2. Set up a local SQL database by following the instructions in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Setting-Up-Local-SQL-Database).
+2. Download docker by following the instructions in the [official Docker documentation](https://docs.docker.com/get-started/get-docker/)
 
-3. Run the REST API by following the instructions in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-REST-API).
+3. Authenticate to Docker Hub by following the instructions in the [official Docker Documentation](https://docs.docker.com/reference/cli/docker/login/#authenticate-to-docker-hub-with-web-based-login).
 
-4. With the REST API running, open a new terminal, and navigate to the root directory of selenium-optmeowt-crawler in terminal by running:
-
-   ```console
-   cd selenium-optmeowt-crawler
-   ```
+4. Clone this repo locally or download a zipped copy and unzip it.
 
 5. Open sites.csv and enter the URLs of the sites you want to analyze in the first column. Some examples are included in the file.
 
-6. Ensure Firefox Nightly is installed on your computer per the [official Firefox documentation](https://www.mozilla.org/en-US/firefox/channel/desktop/). Depending on where you install it, you may need to change the location of your Firefox Nightly installation in the [crawler](https://github.com/privacy-tech-lab/gpc-web-crawler/blob/main/selenium-optmeowt-crawler/local-crawler.js). Navigate to line 38 and change change the value following `.setBinary` to Nightly's executable path on your machine. 
+6. In the root directory of the repo, the crawler can be started on the Docker image by running:
 
-7. Install the crawler's dependencies by running from within the [crawler directory](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/selenium-optmeowt-crawler):
+    ```console
+    sh scripts/run_container.sh
+    ```
 
-   ```console
-   npm install
-   ```
 
-8. To start the crawler, run from within the crawler directory:
+7. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would ned to adjust the URL or your configuration accordingly.
 
-   ```console
-   node local-crawler.js
-   ```
+8. To watch the crawler operate on the Desktop environment, open a browser and navigate to <http://localhost:6901/vnc.html>. Click the button that says "connect" in the center of the screen. When prompted for a password, enter `vncpassword`.
 
-   If you receive the error `WebDriverError: Process unexpectedly closed with status 0`, update Firefox Nightly to the latest version.
+9. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
 
-9. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would ned to adjust the URL or your configuration accordingly.
-
-10. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
 
 **Note**: When you perform a crawl, for one reason or another, some sites may fail to analyze. We always perform a second crawl for the sites that failed the first time (i.e., the redo sites).
 
@@ -84,7 +74,7 @@ Here is an overview of the GPC Web Crawler architecture:
 
 ![crawler-architecture](crawler-architecture.png)
 
-The editable version of this image is in the [Google Drive](https://docs.google.com/presentation/d/1lngYynWwW2UdKyUY5vKhfJ413DSvlGgU/edit?usp=sharing&ouid=112157414060543752223&rtpof=true&sd=true).
+All of this happens within the Desktop environment provided by the [headless VNC container](https://github.com/ConSol/docker-headless-vnc-container/tree/master). The editable version of this image is in the [Google Drive](https://docs.google.com/presentation/d/1lngYynWwW2UdKyUY5vKhfJ413DSvlGgU/edit?usp=sharing&ouid=112157414060543752223&rtpof=true&sd=true).
 
 ## 5. Components
 
@@ -96,7 +86,7 @@ The flow of the crawler script is described in the diagram below.
 
 ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/6261650d-1cc3-4a8e-b6e2-da682e4c1251)
 
-This script is stored and executed locally. The Crawler also keeps a log of sites that cause errors. It stores these logs in the `error-logging.json` file and updates this file after each error.
+This script is stored and executed on a Desktop environment living in a docker image. The Crawler also keeps a log of sites that cause errors. It stores these logs in the `error-logging.json` file and updates this file after each error.
 
 #### Types of Errors that May Be Logged
 

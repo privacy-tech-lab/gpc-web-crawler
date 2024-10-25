@@ -31,11 +31,22 @@ class HumanCheckError extends Error {
     this.name = "HumanCheckError";
   }
 }
+// Capture command-line arguments
+const args = process.argv.slice(2); // Skip first two elements (node and script path)
+
+// Check if `-d` or `--dev` flag is present
+const devMode = args.includes('-d') || args.includes('--dev');
 
 async function setup() {
+  var bin;
+  if (devMode){
+    bin = "/Applications/Firefox\ Nightly.app/Contents/MacOS/firefox"
+  }else{
+    bin = "/usr/lib/firefox-nightly/firefox"
+  }
   await new Promise((resolve) => setTimeout(resolve, 3000));
   options = new firefox.Options()
-    .setBinary("/usr/lib/firefox-nightly/firefox")
+    .setBinary(bin)
     .setPreference("xpinstall.signatures.required", false)
     .setPreference("services.settings.server", "https://firefox.settings.services.mozilla.com/v1")
     .addExtensions("./myextension.xpi");
