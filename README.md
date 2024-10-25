@@ -56,7 +56,7 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
 5. Open sites.csv and enter the URLs of the sites you want to analyze in the first column. Some examples are included in the file.
 
-6. Ensure Firefox Nightly is installed on your computer per the [official Firefox documentation](https://www.mozilla.org/en-US/firefox/channel/desktop/). Depending on where you install it, you may need to change the location of your Firefox Nightly installation in the [crawler](https://github.com/privacy-tech-lab/gpc-web-crawler/blob/main/selenium-optmeowt-crawler/local-crawler.js).
+6. Ensure Firefox Nightly is installed on your computer per the [official Firefox documentation](https://www.mozilla.org/en-US/firefox/channel/desktop/). Depending on where you install it, you may need to change the location of your Firefox Nightly installation in the [crawler](https://github.com/privacy-tech-lab/gpc-web-crawler/blob/main/selenium-optmeowt-crawler/local-crawler.js). Navigate to line 38 and change change the value following `.setBinary` to Nightly's executable path on your machine. 
 
 7. Install the crawler's dependencies by running from within the [crawler directory](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/selenium-optmeowt-crawler):
 
