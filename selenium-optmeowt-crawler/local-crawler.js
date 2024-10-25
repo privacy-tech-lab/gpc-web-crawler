@@ -34,14 +34,41 @@ class HumanCheckError extends Error {
 // Capture command-line arguments
 const args = process.argv.slice(2); // Skip first two elements (node and script path)
 
-// Check if `-d` or `--dev` flag is present
-const devMode = args.includes('-d') || args.includes('--dev');
+// Function to get flag presence (returns true if flag is present)
+function hasFlag(flag) {
+  return args.includes(flag);
+}
 
+// Function to get argument for a flag (e.g., -bin /path/to/firefox)
+function getFlagValue(flag) {
+  try{
+    const index = args.indexOf(flag);
+    return index !== -1 && index + 1 < args.length ? args[index + 1] : null;
+  }catch (error){
+    throw new Error(`Specified -bin flag incorrectly: ${error}`)
+  }
+}
+
+// Check if `-d` or `--dev` flag is present
+const using_mac = hasFlag('-m')
+const using_windows = hasFlag('-w')
+const using_custom_bin = hasFlag("-bin")
+const num_active_flags = using_custom_bin + using_mac + using_windows
+if (num_active_flags > 1 ){
+  throw new Error("Only one operating system flag can be used, found many.")
+}
 async function setup() {
+  //Hardcodes firefox.Channel.nightly which is deprecated:
+  //https://github.com/SeleniumHQ/selenium/blob/798f3f966dfcf0c7e1f1c0bce11407e2f702e1d7/javascript/node/selenium-webdriver/firefox.js#L766C92-L766C112
   var bin;
-  if (devMode){
+  if (using_mac){
     bin = "/Applications/Firefox\ Nightly.app/Contents/MacOS/firefox"
-  }else{
+  }else if (using_windows){
+    bin = "Nightly\\firefox.exe"
+  }else if (using_custom_bin){
+    bin = getFlagValue("-bin")
+  }
+  else{
     bin = "/usr/lib/firefox-nightly/firefox"
   }
   await new Promise((resolve) => setTimeout(resolve, 3000));
