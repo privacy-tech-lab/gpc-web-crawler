@@ -1,17 +1,16 @@
 #!/bin/bash
 
 cd /srv/analysis/rest-api
-echo "Running $0 in `pwd`"
+echo "Running $0 in `pwd` with argument: $1"
 
-set -e
-set -x
+set -e  # Exit on error
+set -x  # Print commands for debugging
 
 # Start the MariaDB service
 service mariadb start
 service mariadb status &> /dev/null
 
-# Configure the MariaDB database using compatible commands
-# Update the root password and create the `analysis` database and tables
+# Configure the MariaDB database and create necessary tables
 mysql -u root << SQLCOMMANDS || true
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'toor';
 FLUSH PRIVILEGES;
@@ -45,15 +44,22 @@ CREATE TABLE IF NOT EXISTS debug (
 );
 SQLCOMMANDS
 
-
-# Install dependencies for the REST API using npm
+# Install dependencies
 npm install
 
-# Start the REST API using Node.js directly instead of systemd
-# This step replaces `systemctl` usage since Docker containers typically don't use systemd
-node index.js debug
+# Use the first argument to determine which mode to start
+echo "DEBUG_MODE is set to: '$DEBUG_MODE'"
 
-set +x
+if [ "$DEBUG_MODE" = "true" ]; then
+  echo "Starting API in debug mode..."
+  node index.js debug
+else
+  echo "Starting API in normal mode..."
+  node index.js
+fi
+
+set +x  
 echo '--------------------------------------------------'
 echo "REST API started at http://localhost:8080/analysis"
 echo '--------------------------------------------------'
+
