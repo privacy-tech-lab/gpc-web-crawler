@@ -69,7 +69,31 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
 9. To watch the crawler operate on the Desktop environment, open a browser and navigate to <http://localhost:6901/vnc.html>. Click the button that says "connect" in the center of the screen. When prompted for a password, enter `vncpassword`.
 
-10. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
+10. To set up the analysis database on your local machine with the same structure and data as in the container, follow these steps:
+
+    Once the crawl is complete, enter the running container by using:
+
+    ```console
+    docker exec -it crawl_test /bin/bash
+    ```
+
+    Inside of the container, create a SQL dump file containing both the database structure and data:
+
+    ```console
+    mysqldump -u root -p analysis > /srv/analysis/entries_export.sql
+    ```
+
+    In a new terminal window, use the following command to copy the SQL file from the container to current directory on your local machine:
+
+    ```console
+    docker cp crawl_test:/srv/analysis/entries_export.sql ./entries_export.sql
+    ```
+
+    Finally, open your preferred database manager (such as phpMyAdmin or MySQL Workbench) and import the entries_export.sql file to recreate the database on your 
+    local machine.
+    
+
+12. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
 
 **Note**: When you perform a crawl, for one reason or another, some sites may fail to analyze. We always perform a second crawl for the sites that failed the first time (i.e., the redo sites).
 
