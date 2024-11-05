@@ -82,6 +82,7 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
     ```console
     mysqldump -u root -p analysis > /srv/analysis/entries_export.sql
     ```
+    - Password: toor
 
     In a new terminal window, use the following command to copy the SQL file from the container to current directory on your local machine:
 
