@@ -55,12 +55,12 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 6. In the root directory of the repo, the crawler can be started on the Docker image by running:
 
     ```console
-    sh scripts/run_container.sh
+    sh scripts/start_container.sh
     ```
     or to start the crawler with enhanced debugging information:
 
    ```console
-    sh scripts/run_container.sh debug
+    sh scripts/start_container.sh debug
     ```
 
     - If you instead want to run the crawler on your local machine, follow the instructions in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-the-crawler-on-your-local-machine).
