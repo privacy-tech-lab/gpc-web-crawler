@@ -1,0 +1,34 @@
+
+services:
+  crawl_test:
+    container_name: crawl_test
+    image: crawl_test  # Use your custom image for crawling and MariaDB
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: toor  # Root password for MariaDB
+      MYSQL_DATABASE: analysis  # The database your crawler uses
+    ports:
+      - "3307:3306"  # Expose MariaDB port on host (optional)
+    networks:
+      - mynetwork  # Ensure crawl_test is on the 'mynetwork' network
+
+  phpmyadmin:
+    container_name: phpmyadmin-container
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: crawl_test  # Reference the MariaDB container by its service name
+      PMA_PORT: 3306  # Default MariaDB/MySQL port
+      MYSQL_ROOT_PASSWORD: toor  # Same as the one set in crawl_test
+    ports:
+      - "8081:80"  # Expose phpMyAdmin on host machine
+    depends_on:
+      - crawl_test  # Ensure phpMyAdmin starts after crawl_test
+    networks:
+      - mynetwork  # Ensure phpmyadmin is also on the 'mynetwork' network
+
+networks:
+  mynetwork:  # Define the custom bridge network for container communication
+    driver: bridge
+
+
