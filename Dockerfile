@@ -74,6 +74,34 @@ CMD ["sleep", "infinity"]
 # Install netcat (or nc) for network checks
 RUN apt-get update && apt-get install -y netcat-openbsd
 
+#install apache2
+RUN apt-get install -y apache2 apache2-utils
+RUN apt-get clean
+#install phpmyadmin
+RUN apt-get install -y php-mbstring php-zip php-gd php-php-gettext phpmyadmin
+RUN phpenmod mbstring
+RUN apt-get install -y libapache2-mod-php8.2
+RUN echo "<?php phpinfo(); ?>" > /var/www/html/info.php
+RUN mkdir -p /usr/local/share/phpmyadmin
+RUN ln -s /usr/share/phpmyadmin /usr/local/share/phpmyadmin
+
+
+RUN cat <<EOF >> /etc/apache2/apache2.conf
+Alias /phpmyadmin /usr/local/share/phpmyadmin
+
+<Directory /usr/local/share/phpmyadmin/>
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride All
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+    DirectoryIndex index.php
+</Directory>
+EOF
 # Install supervisored for managing multiple processes.
 RUN apt-get update && apt-get install -y supervisor
 RUN mkdir -p /var/log/supervisor

@@ -39,7 +39,8 @@ docker run -d --name crawl_test --privileged \
 	-p 6901:6901 \
 	-p 8080:8080 \
 	-p 3036:3036 \
+	-p 80:80 \
 	-e DEBUG_MODE=$DEBUG_MODE \
 	-e MARIADB_ROOT_PASSWORD=pass123 \
 	--user 0 \
-	crawl_test || true
+	crawl_test 
