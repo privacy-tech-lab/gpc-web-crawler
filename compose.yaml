@@ -1,0 +1,95 @@
+
+services:
+  crawl_test:
+    build: 
+      context: ./selenium-optmeowt-crawler
+    privileged: true  # Use with caution, consider alternatives
+    ports:
+      - "5901:5901"
+      - "6901:6901"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - .:/srv/analysis  # Using relative path for current directory
+    environment:
+      - DEBUG_MODE=${DEBUG_MODE}
+      - MARIADB_ROOT_PASSWORD=toor
+    user: "0"
+    networks:
+      - mariadb_network
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      rest_api:
+        condition: service_healthy
+
+
+  rest_api:
+    build: 
+      context: ./rest_api
+    ports:
+      - "8080:8080"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - .:/srv/analysis  # Using relative path for current directory
+    environment:
+      - DEBUG_MODE=${DEBUG_MODE}
+      - MARIADB_ROOT_PASSWORD=toor
+      - DB_HOST=mariadb
+      - DB_CONNECTION=mysql
+      - DB_DATABASE=analysis
+      - DB_USERNAME=root
+      - DB_PASSWORD=toor
+    networks:
+      - mariadb_network
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb-compose
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_DATABASE=analysis
+      - DB_USERNAME=root
+      - MARIADB_ROOT_PASSWORD=toor
+    ports:
+      - "3306:3306"
+    networks:
+      - mariadb_network
+    volumes:
+      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
+    healthcheck:
+        test: ["CMD", "mariadb-admin" ,"ping", "-h", "localhost", "-ptoor"]
+        timeout: 3s
+        retries: 10
+        
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_PORT=3306 
+      - MARIADB_ROOT_PASSWORD=toor
+    networks:
+      - mariadb_network
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+
+volumes:
+  mariadb:
+    driver: local
+
+
+networks:
+  mariadb_network:
+    driver: bridge

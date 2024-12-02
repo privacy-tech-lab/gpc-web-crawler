@@ -7,6 +7,22 @@ const connection = require("./database.js");
 const app = express();
 var debug = false;
 
+function checkDatabaseConnection() {
+  return new Promise((resolve, reject) => {
+      connection.query('SELECT 1', (err, results) => {
+        if (err) {
+          console.error('Error testing database query:', err);
+          reject(err);
+          return;
+        }
+        resolve(true); // Resolve the promise indicating success
+      });
+
+    });
+
+
+}
+
 const args = process.argv;
 if (args.length > 2 && args[2] == "debug") {
   console.log("using debugging version!");
@@ -148,6 +164,17 @@ async function rest(table) {
           res.json(results);
         }
       );
+    });
+
+    app.get('/healthz', (req, res) => {
+      // Perform health checks here. E.g., database connection
+      const isDatabaseConnected = checkDatabaseConnection(); // Your implementation
+    
+      if (isDatabaseConnected) {
+        res.status(200).send('OK');
+      } else {
+        res.status(500).send('Database connection error');
+      }
     });
   }
 }
