@@ -9,4 +9,4 @@ echo "REST API is up. Starting the web crawler..."
 # https://github.com/privacy-tech-lab/gpc-web-crawler/blob/main/README.md
 cd /srv/analysis/selenium-optmeowt-crawler
 npm install
-node local-crawler.js
+node local-crawler.tsx
