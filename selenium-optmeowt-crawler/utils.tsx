@@ -37,3 +37,14 @@ async function check_if_captcha_page(driver) {
     }
 
 }
+
+const unrecoverable_errors = ["InsecureCertificateError" , "WebDriverError" , "HumanCheckError"
+]
+
+const toBase64 = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = reject;
+});
+
