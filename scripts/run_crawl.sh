@@ -1,15 +1,8 @@
 #!/bin/bash
 
 
-host="localhost"
+host="rest_api"
 port=8080
-
-echo "Waiting for the REST API to be available on port $port..."
-
-while ! nc -z $host $port; do
-  sleep 1
-  echo "Waiting..."
-done
 
 echo "REST API is up. Starting the web crawler..."
 

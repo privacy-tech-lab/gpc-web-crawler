@@ -1,16 +1,17 @@
-const { Builder } = require("selenium-webdriver");
+const { Builder, FluentWait } = require("selenium-webdriver");
 const firefox = require("selenium-webdriver/firefox");
 
 const fs = require("fs");
 const path = require("path");
 const { parse } = require("csv-parse");
 const axios = require("axios");
+const utils = require("./utils");
 
-var total_begin = Date.now(); //start logging time
+var script_started = Date.now(); //start logging time
 var err_obj = new Object();
 // Loads sites to crawl
 const sites = [];
-fs.createReadStream("sites.csv")
+fs.createReadStream("crawl-sets/sites.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
     sites.push(row[0]);
@@ -22,15 +23,7 @@ fs.createReadStream("sites.csv")
 var options;
 let driver;
 
-// write a custom error
-// we throw this the title of the site has a human check
-// then we can identify sites that we can't crawl with the vpn on
-class HumanCheckError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "HumanCheckError";
-  }
-}
+
 // Capture command-line arguments
 const args = process.argv.slice(2); // Skip first two elements (node and script path)
 
@@ -50,9 +43,9 @@ function getFlagValue(flag) {
 }
 
 // Check if `-d` or `--dev` flag is present
-const using_mac = hasFlag('-m')
-const using_windows = hasFlag('-w')
-const using_custom_bin = hasFlag("-bin")
+const using_mac = hasFlag('-m') ? 1 : 0
+const using_windows = hasFlag('-w') ? 1 : 0
+const using_custom_bin = hasFlag("-bin") ? 1 : 0
 const num_active_flags = using_custom_bin + using_mac + using_windows
 if (num_active_flags > 1 ){
   throw new Error("Only one operating system flag can be used, found many.")
@@ -76,7 +69,7 @@ async function setup() {
     .setBinary(bin)
     .setPreference("xpinstall.signatures.required", false)
     .setPreference("services.settings.server", "https://firefox.settings.services.mozilla.com/v1")
-    .addExtensions("./myextension.xpi");
+    .addExtensions("./ff-optmeowt-2.0.1.xpi");
 
   options.addArguments("--headful");
   options.addArguments("disable-infobars");
@@ -100,28 +93,23 @@ async function setup() {
 
 async function put_site_id(data) {
   try {
-    var response = await axios.put(`http://localhost:8080/analysis`, data);
+    var response = await axios.put(`http://rest_api:8080/analysis`, data);
   } catch (error) {
     console.error(error);
   }
 }
 
 async function check_update_DB(site, site_id) {
-  st = site.replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
-  st = st.replace("https://", ""); // removes https:// if www. isn't in the link
-  // dealing with sites that have additional paths (only keep the part before the path)
-  split = st.split("/");
-  site_str = split[0];
-  // https://www.npmjs.com/package//axios?activeTab=readme --axios with async
-  //   console.log(site_str);
   var added = false;
   try {
+    console.log(site)
     // after a site is visited, to see if the data was added to the db
     var response = await axios.get(
-      `http://localhost:8080/analysis/${site_str}`
+      `http://rest_api:8080/analysis/${site}`
     );
+    console.log('tried to get response:', response, 3)
 
-    latest_res_data = response.data;
+    var latest_res_data = response.data;
     // console.log("getting: ", site_str, "-->", latest_res_data);
 
     if (latest_res_data.length >= 1) {
@@ -135,7 +123,7 @@ async function check_update_DB(site, site_id) {
         added = true;
       }
     } else {
-      var res = await axios.get(`http://localhost:8080/null_analysis`);
+      var res = await axios.get(`http://rest_api:8080/null_analysis`);
 
       latest_res_data = res.data;
       console.log("null site_id: ", latest_res_data);
@@ -152,56 +140,14 @@ async function check_update_DB(site, site_id) {
   }
   return added;
 }
-async function visit_site(sites, site_id) {
-  var error_value = "no_error";
-  console.log(site_id, ": ", sites[site_id]);
+async function visit_site_with_retires(site, site_id, retries) {
   try {
-    await driver.get(sites[site_id]);
-    // console.log(Date.now()); to compare to site loading time in debug table
-    await new Promise((resolve) => setTimeout(resolve, 22000));
-    // await new Promise((resolve) => setTimeout(resolve, 80000)); // for ground truth collection
-
-    // check if access is denied
-    // if so, throw an error so it gets tagged as a human check site
-    var title = await driver.getTitle();
-    if (
-      (title.match(/Access/i) && title.match(/Denied/i)) ||
-      title.match(/error/i) ||
-      (title.match(/service/i) && title.match(/unavailable/i)) ||
-      title.match(/Just a moment.../i) ||
-      title.match(/you have been blocked/i) ||
-      title.match(/site not available/i) ||
-      title.match(/attention required/i) ||
-      title.match(/access to this page has been blocked/i) ||
-      (title.match(/site/i) && title.match(/temporarily unavailable/i)) ||
-      (title.match(/site/i) && title.match(/temporarily down/i)) ||
-      title.match(/403 forbidden/i) ||
-      title.match(/pardon our interruption/i) ||
-      title.match(/robot or human/i) ||
-      title.match(/are you a robot/i) ||
-      title.match(/block -/i) ||
-      title.match(/Human Verification/i)
-    ) {
-      throw new HumanCheckError("Human Check");
-    }
+    await driver.get(sites[site_id])
+    await new Promise((resolve) => setTimeout(resolve, 45000));
+    utils.check_if_captcha_page(driver)    
   } catch (e) {
-    console.log(e);
-    var msg = "";
-    // we want to separate the reaching an error page from other webdriver errors
-    if (e.message.match(/reached error page/i)) {
-      msg = ": Reached Error Page";
-    }
-    // log the errors in an object so you don't have to sort through manually
-    if (e.name + msg in err_obj) {
-      err_obj[e.name + msg].push(sites[site_id]);
-    } else {
-      err_obj[e.name + msg] = [sites[site_id]];
-    }
-    console.log(err_obj);
-    error_value = e.name; // update error value
-
-    ///////////////
-    // converting the JSON object to a string
+    let err_key = e.name + (e.message.match(/reached error page/i) ? ": Reached Error Page" : "")
+    err_obj[err_key] = site;
     var err_data = JSON.stringify(err_obj);
 
     // writing the JSON string content to a file
@@ -216,9 +162,7 @@ async function visit_site(sites, site_id) {
       }
       console.log("error-logging.json written correctly");
     });
-    //////////////////////
 
-    // if it's just a human check site, we don't need to restart
     if (e.name != "HumanCheckError") {
       if (e.message.match(/Failed to decode response from marionette/i)) {
         console.log(
@@ -229,10 +173,7 @@ async function visit_site(sites, site_id) {
         try {
           driver.takeScreenshot().then(function (data) {
             var base64Data = data.replace(/^data:image\/png;base64,/, "");
-            var st = sites[site_id].replace("https://www.", ""); // keep only the domain part of the url -- this only works if site is of this form
-            st = st.replace("https://", ""); // removes https:// if www. isn't in the link
-            st = st.replace(/\/$/, '') // removes trailing / from filename
-            var fullfilename = path.join("./error-logging/", st + ".png"); //creates full file name
+            var fullfilename = path.join("./error-logging/", site + ".png"); //creates full file name
             fs.writeFile(fullfilename, base64Data, "base64", function (err) {
               if (err) console.log(err);
             });
@@ -245,59 +186,48 @@ async function visit_site(sites, site_id) {
       console.log("------restarting driver------");
       new Promise((resolve) => setTimeout(resolve, 10000));
       await setup(); //restart the selenium driver
+      if (retries > 0 && (!utils.unrecoverable_errors.includes(e.name))){
+        visit_site_with_retires(sites, site_id, retries - 1)
+      }else{
+        return e.name
+      }
     }
   }
-  return error_value;
+  return "success"
 }
-async function putReq_and_checkRedo(sites, site_id, error_value) {
-  // check the db to see if prev site was added / add the site_id
-  var added = await check_update_DB(sites[site_id], site_id);
-  if (
-    //determine whether to redo the site--redo if it wasn't added and there was not
-    //an error that prevents us from analyzing that site
-    added == false &&
-    error_value != "InsecureCertificateError" &&
-    error_value != "WebDriverError" &&
-    error_value != "HumanCheckError"
-  ) {
-    console.log("redo prev site");
-    await visit_site(sites, site_id);
+
+async function crawl_site(site, site_id) {
+  var visit_result = await visit_site_with_retires(site, site_id, 0);
+  console.log(visit_result, 1)
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  var added = await check_update_DB(site, site_id);
+  console.log(added, 2)
+  if ((! added) && (!utils.unrecoverable_errors.includes(visit_result))) {
+    await visit_site_with_retires(site, site_id, 1)
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    // putting site id on redo site
-    added = await check_update_DB(sites[site_id], site_id);
+    await check_update_DB(site, site_id);
   }
 }
 
 (async () => {
+  //setup crawler browser
   await setup();
-  var error_value = "no_error";
   for (let site_id in sites) {
-    var begin_site = Date.now(); // for timing
+    var crawl_started = Date.now();
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    if (site_id > 0) {
-      // check if previous site was added
-      // if so, do the put request accordingly
-      // if not, see if we need to redo it
-      await putReq_and_checkRedo(sites, site_id - 1, error_value);
-    }
-    error_value = await visit_site(sites, site_id);
-
-    //just for the last entry--inc timeout to make sure it is input before checking
-    if (site_id == sites.length - 1) {
-      // give it extra time for site to be added to db
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      await putReq_and_checkRedo(sites, site_id, error_value);
-    }
-
-    var end_site = Date.now();
-    var timeSpent_site = (end_site - begin_site) / 1000;
+    const { hostname } = new URL(sites[site_id]);
+    console.log("crawling: ", hostname)
+    await crawl_site(hostname, site_id)
+    var crawl_ended = Date.now();
+    var time_spent_on_site_in_seconds = (crawl_ended - crawl_started) / 1000;
     console.log(
       "time spent: ",
-      timeSpent_site,
+      time_spent_on_site_in_seconds,
       "total elapsed: ",
-      (end_site - total_begin) / 1000
+      (crawl_ended - script_started) / 1000
     );
   }
 
   driver.quit();
 })();
+
