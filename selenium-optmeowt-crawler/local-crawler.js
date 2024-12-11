@@ -5,11 +5,12 @@ const fs = require("fs");
 const path = require("path");
 const { parse } = require("csv-parse");
 const axios = require("axios");
-import "./utils"
+const utils = require("./utils");
+
 var script_started = Date.now(); //start logging time
 var err_obj = new Object();
 // Loads sites to crawl
-const sites : string[] = [];
+const sites = [];
 fs.createReadStream("crawl-sets/sites.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
@@ -68,7 +69,7 @@ async function setup() {
     .setBinary(bin)
     .setPreference("xpinstall.signatures.required", false)
     .setPreference("services.settings.server", "https://firefox.settings.services.mozilla.com/v1")
-    .addExtensions("./myextension.xpi");
+    .addExtensions("./ff-optmeowt-2.0.1.xpi");
 
   options.addArguments("--headful");
   options.addArguments("disable-infobars");
@@ -92,7 +93,7 @@ async function setup() {
 
 async function put_site_id(data) {
   try {
-    var response = await axios.put(`http://localhost:8080/analysis`, data);
+    var response = await axios.put(`http://rest_api:8080/analysis`, data);
   } catch (error) {
     console.error(error);
   }
@@ -101,10 +102,12 @@ async function put_site_id(data) {
 async function check_update_DB(site, site_id) {
   var added = false;
   try {
+    console.log(site)
     // after a site is visited, to see if the data was added to the db
     var response = await axios.get(
-      `http://localhost:8080/analysis/${site}`
+      `http://rest_api:8080/analysis/${site}`
     );
+    console.log('tried to get response:', response, 3)
 
     var latest_res_data = response.data;
     // console.log("getting: ", site_str, "-->", latest_res_data);
@@ -120,7 +123,7 @@ async function check_update_DB(site, site_id) {
         added = true;
       }
     } else {
-      var res = await axios.get(`http://localhost:8080/null_analysis`);
+      var res = await axios.get(`http://rest_api:8080/null_analysis`);
 
       latest_res_data = res.data;
       console.log("null site_id: ", latest_res_data);
@@ -140,8 +143,8 @@ async function check_update_DB(site, site_id) {
 async function visit_site_with_retires(site, site_id, retries) {
   try {
     await driver.get(sites[site_id])
-    await new Promise((resolve) => setTimeout(resolve, 22000));
-    check_if_captcha_page(driver)    
+    await new Promise((resolve) => setTimeout(resolve, 45000));
+    utils.check_if_captcha_page(driver)    
   } catch (e) {
     let err_key = e.name + (e.message.match(/reached error page/i) ? ": Reached Error Page" : "")
     err_obj[err_key] = site;
@@ -183,7 +186,7 @@ async function visit_site_with_retires(site, site_id, retries) {
       console.log("------restarting driver------");
       new Promise((resolve) => setTimeout(resolve, 10000));
       await setup(); //restart the selenium driver
-      if (retries > 0 && (!unrecoverable_errors.includes(e.name))){
+      if (retries > 0 && (!utils.unrecoverable_errors.includes(e.name))){
         visit_site_with_retires(sites, site_id, retries - 1)
       }else{
         return e.name
@@ -193,13 +196,16 @@ async function visit_site_with_retires(site, site_id, retries) {
   return "success"
 }
 
-async function crawl_site(sites, site_id) {
-  const { hostname } = new URL(sites[site_id]);
-  var visit_result = await visit_site_with_retires(hostname, site_id, 0);
+async function crawl_site(site, site_id) {
+  var visit_result = await visit_site_with_retires(site, site_id, 0);
+  console.log(visit_result, 1)
   await new Promise((resolve) => setTimeout(resolve, 2000));
-  var added = await check_update_DB(sites[site_id], site_id);
-  if (! added && (!unrecoverable_errors.includes(visit_result))) {
-    visit_site_with_retires(hostname, site_id, 1)
+  var added = await check_update_DB(site, site_id);
+  console.log(added, 2)
+  if ((! added) && (!utils.unrecoverable_errors.includes(visit_result))) {
+    await visit_site_with_retires(site, site_id, 1)
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await check_update_DB(site, site_id);
   }
 }
 
@@ -208,7 +214,9 @@ async function crawl_site(sites, site_id) {
   await setup();
   for (let site_id in sites) {
     var crawl_started = Date.now();
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     const { hostname } = new URL(sites[site_id]);
+    console.log("crawling: ", hostname)
     await crawl_site(hostname, site_id)
     var crawl_ended = Date.now();
     var time_spent_on_site_in_seconds = (crawl_ended - crawl_started) / 1000;

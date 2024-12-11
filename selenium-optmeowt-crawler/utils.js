@@ -7,11 +7,6 @@ class HumanCheckError extends Error {
       this.name = "HumanCheckError";
     }
   }
-enum CrawlerError {
-    InsecureCertificateError = "InsecureCertificateError",
-    WebDriverError = "WebDriverError",
-    HumanCheckError = "HumanCheckError"
-}
 
 async function check_if_captcha_page(driver) {
     var title = await driver.getTitle();
@@ -26,9 +21,9 @@ async function check_if_captcha_page(driver) {
       title.match(/access to this page has been blocked/i) ||
       (title.match(/site/i) && title.match(/temporarily unavailable/i)) ||
       (title.match(/site/i) && title.match(/temporarily down/i)) ||
+      title.match(/robot or human/i) ||
       title.match(/403 forbidden/i) ||
       title.match(/pardon our interruption/i) ||
-      title.match(/robot or human/i) ||
       title.match(/are you a robot/i) ||
       title.match(/block -/i) ||
       title.match(/Human Verification/i)
@@ -48,3 +43,4 @@ const toBase64 = file => new Promise((resolve, reject) => {
   reader.onerror = reject;
 });
 
+module.exports = {unrecoverable_errors,check_if_captcha_page }

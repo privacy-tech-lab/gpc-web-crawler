@@ -142,6 +142,17 @@ async function rest(table) {
       }
     );
   });
+  app.get('/healthz', (req, res) => {
+    // Perform health checks here. E.g., database connection
+    const isDatabaseConnected = checkDatabaseConnection(); // Your implementation
+  
+    if (isDatabaseConnected) {
+      res.status(200).send('OK');
+    } else {
+      res.status(500).send('Database connection error');
+    }
+  });
+  
   if (debug == true) {
     app.post("/debug", jsonParser, (req, res) => {
       // console.log("posting", req.body.domain, "to debug...");
@@ -164,17 +175,6 @@ async function rest(table) {
           res.json(results);
         }
       );
-    });
-
-    app.get('/healthz', (req, res) => {
-      // Perform health checks here. E.g., database connection
-      const isDatabaseConnected = checkDatabaseConnection(); // Your implementation
-    
-      if (isDatabaseConnected) {
-        res.status(200).send('OK');
-      } else {
-        res.status(500).send('Database connection error');
-      }
     });
   }
 }
