@@ -268,7 +268,7 @@ function send_sql_and_reset(domain) {
   analysis_userend[domain]["domain"] = domain;
   analysis_userend[domain]["urlClassification"] = JSON.stringify(urlclassification[domain]).slice(0, 5000); //add urlClassification info, cap it at 5000 chars 
   axios
-    .post("http://localhost:8080/analysis", analysis_userend[domain], {
+    .post("http://rest_api:8080/analysis", analysis_userend[domain], {
       headers: {
         "Content-Type": "application/json",
       },
@@ -291,7 +291,7 @@ function post_to_debug(domain, a, b) {
       debug_data_post['b'] = debug_data_post['b'].slice(0, 4000);
     }
     axios
-      .post("http://localhost:8080/debug", debug_data_post, {
+      .post("http://rest_api:8080/debug", debug_data_post, {
         headers: {
           "Content-Type": "application/json",
         },
