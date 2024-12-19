@@ -54,47 +54,48 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
 6. In the root directory of the repo, the crawler can be started on the Docker image by running:
 
-    ```console
-    sh scripts/start_container.sh
-    ```
-    or to start the crawler with enhanced debugging information:
+   ```console
+   sh scripts/start_container.sh
+   ```
+
+   or to start the crawler with enhanced debugging information:
 
    ```console
     sh scripts/start_container.sh debug
-    ```
+   ```
 
-    - If you instead want to run the crawler on your local machine, follow the instructions in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-the-crawler-on-your-local-machine).
+   - If you instead want to run the crawler on your local machine, follow the instructions in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-the-crawler-on-your-local-machine).
 
-8. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would ned to adjust the URL or your configuration accordingly.
+7. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would ned to adjust the URL or your configuration accordingly.
 
-9. To watch the crawler operate on the Desktop environment, open a browser and navigate to <http://localhost:6901/vnc.html>. Click the button that says "connect" in the center of the screen. When prompted for a password, enter `vncpassword`.
+8. To watch the crawler operate on the Desktop environment, open a browser and navigate to <http://localhost:6901/vnc.html>. Click the button that says "connect" in the center of the screen. When prompted for a password, enter `vncpassword`.
 
-10. To set up the analysis database on your local machine with the same structure and data as in the container, follow these steps:
+9. To set up the analysis database on your local machine with the same structure and data as in the container, follow these steps:
 
-    Once the crawl is complete, enter the running container by using:
+   Once the crawl is complete, enter the running container by using:
 
-    ```console
-    docker exec -it crawl_test /bin/bash
-    ```
+   ```console
+   docker exec -it crawl_test /bin/bash
+   ```
 
-    Inside of the container, create a SQL dump file containing both the database structure and data:
+   Inside of the container, create a SQL dump file containing both the database structure and data:
 
-    ```console
-    mysqldump -u root -p analysis > /srv/analysis/entries_export.sql
-    ```
-    - Password: toor
+   ```console
+   mysqldump -u root -p analysis > /srv/analysis/entries_export.sql
+   ```
 
-    In a new terminal window, use the following command to copy the SQL file from the container to current directory on your local machine:
+   - Password: toor
 
-    ```console
-    docker cp crawl_test:/srv/analysis/entries_export.sql ./entries_export.sql
-    ```
+   In a new terminal window, use the following command to copy the SQL file from the container to current directory on your local machine:
 
-    Finally, open your preferred database manager (such as phpMyAdmin or MySQL Workbench) and import the entries_export.sql file to recreate the database on your 
-    local machine.
-    
+   ```console
+   docker cp crawl_test:/srv/analysis/entries_export.sql ./entries_export.sql
+   ```
 
-12. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
+   Finally, open your preferred database manager (such as phpMyAdmin or MySQL Workbench) and import the entries_export.sql file to recreate the database on your
+   local machine.
+
+10. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
 
 **Note**: When you perform a crawl, for one reason or another, some sites may fail to analyze. We always perform a second crawl for the sites that failed the first time (i.e., the redo sites).
 
@@ -210,7 +211,7 @@ There are some types of sites that we cannot analyze due to our methodology:
 
 ### 7.1 Python Library for GPP String Decoding
 
-GPP strings must be decoded. The IAB provides a [JavaScript library](https://www.npmjs.com/package/@iabgpp/cmpapi) and an [interactive html decoder](https://iabgpp.com/#) to do so. To integrate decoding with our colab notebooks for data analysis, we rewrote the library in Python. The library can be found on [our Google Drive](https://drive.google.com/drive/folders/1b542jvVWm4ny9h_12fplL_VRvBfEVxFX?usp=sharing).
+GPP strings must be decoded. The IAB provides a [JavaScript library](https://www.npmjs.com/package/@iabgpp/cmpapi) and an [interactive html decoder](https://iabgpp.com/#) to do so. To integrate decoding with our colab notebooks for data analysis, we rewrote the library in Python. The library can be found on [our Google Drive](https://drive.google.com/drive/folders/1b542jvVWm4ny9h_12fplL_VRvBfEVxFX?usp=sharing). More info can be found in our [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#gpp-string-decoding) and the [related issue](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/89).
 
 ### 7.2 .well-known/gpc.json Python Script
 
