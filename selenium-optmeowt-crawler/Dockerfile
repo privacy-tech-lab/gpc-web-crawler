@@ -1,11 +1,6 @@
 # Base image with systemd support
 FROM consol/debian-xfce-vnc
 ENV REFRESHED_AT 2022-10-12
-ENV DB_CONNECTION=mysql
-ENV DB_HOST=localhost
-ENV DB_DATABASE=analysis
-ENV DB_USERNAME=root
-ENV DB_PASSWORD=toor
 # Switch to root user to install additional software
 USER 0
 
@@ -14,7 +9,7 @@ SHELL ["/bin/bash", "-c"]
 
 # Get repositories and keys for Node.js and MySQL, then install core utilities
 RUN apt-get update && \
-    apt-get -y install apt-utils curl file gnupg lsb-release wget python3-pip && \
+    apt-get -y install apt-utils curl file gnupg lsb-release wget && \
     install -d -m 0755 /etc/apt/keyrings
 
 # Set up Node.js repository
@@ -38,7 +33,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv-keys B7B3B788A8D37
 
 # Update package lists and install necessary packages, replacing firefox with firefox-esr and mysql-server with mariadb-server
 RUN apt-get update && \
-    apt-get -y install apache2 firefox-nightly mariadb-server nodejs zip && \
+    apt-get -y install firefox-nightly nodejs zip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/mysql.deb
 
@@ -50,36 +45,6 @@ RUN npm install -g geckodriver
 RUN npm install -g selenium-webdriver
 
 
-#update apt
-RUN apt-get update
-
-#install python venv
-RUN apt-get -y install python3.11-venv
-
-#create virtual environment
-RUN python3 -m venv .venv
-
-#use virtual environment
-RUN source .venv/bin/activate
-
-# Install Selenium using pip3
-RUN .venv/bin/pip3 install selenium
-
-# Expose the required ports for Apache and MySQL
-EXPOSE 80 3306
-
-# Keep the container running indefinitely to facilitate testing
-CMD ["sleep", "infinity"]
-
-# Install netcat (or nc) for network checks
-RUN apt-get update && apt-get install -y netcat-openbsd
-
-# Install supervisored for managing multiple processes.
-RUN apt-get update && apt-get install -y supervisor
-RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-CMD ["/usr/bin/supervisord"]
-
-
+CMD ["sh", "/srv/analysis/scripts/run_crawl.sh"]
 ## switch back to default user
 USER 1000

@@ -10,6 +10,7 @@ var config = {
 // else {
 console.log("Running from localhost. Connecting to DB directly.");
 config.host = process.env.DB_HOST;
+config.port = 3306;
 // }
 
 let connection = mysql.createConnection(config);
@@ -21,5 +22,6 @@ connection.connect(function (err) {
   }
   console.log("Connected as thread id: " + connection.threadId);
 });
+
 
 module.exports = connection;

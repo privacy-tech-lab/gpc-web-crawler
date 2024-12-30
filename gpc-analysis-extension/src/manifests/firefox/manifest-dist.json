@@ -35,5 +35,10 @@
   },
   "web_accessible_resources": ["json/*.json"],
   "manifest_version": 2,
-  "incognito": "spanning"
+  "incognito": "spanning",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{daf44bf7-a45e-4450-979c-91cf07434c3d}"
+    }
+  }
 }
