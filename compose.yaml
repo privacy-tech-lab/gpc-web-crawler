@@ -9,7 +9,6 @@ services:
       - "6901:6901"
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      - .:/srv/analysis  # Using relative path for current directory
     environment:
       - DEBUG_MODE=${DEBUG_MODE}
       - MARIADB_ROOT_PASSWORD=toor
@@ -88,6 +87,9 @@ services:
 volumes:
   mariadb:
     driver: local
+  node_modules_volume:
+
+
 
 
 networks:

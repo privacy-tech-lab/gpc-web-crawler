@@ -144,7 +144,7 @@ async function rest(table) {
   });
   app.get('/healthz', (req, res) => {
     // Perform health checks here. E.g., database connection
-    const isDatabaseConnected = checkDatabaseConnection(); // Your implementation
+    const isDatabaseConnected = checkDatabaseConnection(); 
   
     if (isDatabaseConnected) {
       res.status(200).send('OK');

@@ -4,6 +4,7 @@ ENV REFRESHED_AT 2022-10-12
 # Switch to root user to install additional software
 USER 0
 
+
 #Set shell to bash
 SHELL ["/bin/bash", "-c"]
 
@@ -44,7 +45,15 @@ RUN npm install -g geckodriver
 # Manually install selenium-webdriver
 RUN npm install -g selenium-webdriver
 
+#manually install 
+RUN npm install rimraf -g
 
-CMD ["sh", "/srv/analysis/scripts/run_crawl.sh"]
-## switch back to default user
-USER 1000
+# Set a working directory inside the container (important!)
+WORKDIR /srv/analysis/selenium-optmeowt-crawler
+
+# Copy the crawler code (since the Dockerfile is in this directory, just copy everything)
+COPY . /srv/analysis/selenium-optmeowt-crawler
+
+
+CMD ["sh", "run_crawl.sh"]
+
