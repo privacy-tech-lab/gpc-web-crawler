@@ -1,17 +1,15 @@
 FROM node:16
 
-WORKDIR /app
+WORKDIR /srv/analysis/rest_api
 
 RUN apt-get update && apt-get install -y curl mariadb-client && rm -rf /var/lib/apt/lists/*
 
-COPY package*.json ./
+RUN ls
 
 RUN npm install
 
-COPY . .
+COPY . /srv/analysis/rest_api
 
 EXPOSE 8080
 
-
-
-CMD ["sh", "/srv/analysis/scripts/rest_api.sh"]
+CMD ["sh", "start_rest_api.sh"]

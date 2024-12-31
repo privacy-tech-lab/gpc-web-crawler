@@ -87,7 +87,6 @@ services:
 volumes:
   mariadb:
     driver: local
-  node_modules_volume:
 
 
 

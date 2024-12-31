@@ -26,6 +26,7 @@ const PAGE_LOAD_TIMEOUT = 35000;
 const SCRIPT_TIMEOUT = 30000;
 const RETRY_DELAY = 3000;
 const API_BASE_URL = 'http://rest_api:8080';
+const CRALWER_BROWSER_URL = 'http://crawl_browser:4444';
 
 /**
  * Combined results from crawling and GPC endpoint checking
@@ -125,6 +126,7 @@ class BrowserManager {
     this.driver = await new Builder()
       .forBrowser('firefox')
       .setFirefoxOptions(options)
+      .usingServer(CRALWER_BROWSER_URL)
       .build();
 
     await this.driver.manage().setTimeouts({
