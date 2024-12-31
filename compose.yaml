@@ -44,7 +44,7 @@ services:
       mariadb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/healthz || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://rest_api:8080/healthz || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3

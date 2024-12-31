@@ -8,7 +8,6 @@ const fs = require('fs');
 const path = require('path');
 const { parse } = require('csv-parse');
 const axios = require('axios');
-const requests = require('requests');
 
 /**
  * Custom error class for human verification detection
@@ -197,7 +196,7 @@ class DatabaseManager {
    * @param {Object} gpcResult - GPC check result
    */
   async logGPCResult(site, gpcResult) {
-    const csvLine = `${site},${gpcResult?.status || 'None'},"${gpcResult?.data || 'None'}"\n`;
+    const csvLine = `${site},${gpcResult?.status || 'None'},"${JSON.stringify(gpcResult?.data) || 'None'}"\n`;
     await fs.promises.appendFile('well-known-data.csv', csvLine);
     
     if (gpcResult?.error) {
@@ -291,8 +290,9 @@ class WebCrawler {
    * @returns {Promise<Object>} GPC check result
    */
   async checkGPCEndpoint(site) {
+    const gpcUrl = new URL('/.well-known/gpc.json', site)
     try {
-      const response = await axios.get(`${site}/.well-known/gpc.json`, {
+      const response = await axios.get(gpcUrl, {
         timeout: PAGE_LOAD_TIMEOUT
       });
 
@@ -410,7 +410,7 @@ class WebCrawler {
       console.log(
         `Site: ${hostname}`,
         `Crawl: ${result.crawlSuccess ? 'Success' : 'Failed'}`,
-        `GPC: ${result.gpcData ? 'Found' : 'Not Found'}`,
+        `GPC: ${result.gpcData.status ? 'Found' : 'Not Found'}`,
         `Time: ${timeSpent}s`
       );
     }
