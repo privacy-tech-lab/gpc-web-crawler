@@ -145,7 +145,7 @@ class AnalysisAPI {
     try {
       console.log("posting", req.body.domain, "to analysis...");
       const values = fields.map(field => req.body[field]);
-      const query = `INSERT INTO ?? (${fields.join(', ')}) VALUES (${'?,'.repeat(fields.length - 1)})`;
+      const query = `INSERT INTO ?? (${fields.join(', ')}) VALUES (${ Array(fields.length).fill("?").join(",")})`;
       
       const results = await this.handleDatabaseQuery(query, [this.tableName, ...values]);
       res.json(results);

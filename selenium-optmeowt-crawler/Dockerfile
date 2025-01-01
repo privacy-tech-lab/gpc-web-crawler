@@ -1,5 +1,5 @@
 # Base image with systemd support
-FROM node:16
+FROM node:18
 
 #Set shell to bash
 SHELL ["/bin/bash", "-c"]
@@ -12,5 +12,6 @@ COPY . /srv/analysis/selenium-optmeowt-crawler
 
 RUN npm install
 
-CMD ["sh", "run_crawl.sh"]
+CMD echo "Starting crawler"; \
+    node "local-crawler.js"
 

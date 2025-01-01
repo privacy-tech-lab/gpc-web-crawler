@@ -110,10 +110,8 @@ class BrowserManager {
    */
   async setup() {
     const options = new firefox.Options()
-      .setBinary(this.config.firefoxBinary)
       .setPreference('xpinstall.signatures.required', false)
       .setPreference('services.settings.server', 'https://firefox.settings.services.mozilla.com/v1')
-      .addExtensions('./ff-optmeowt-2.0.1.xpi')
       .addArguments(
         '--headful',
         'disable-infobars',
@@ -128,6 +126,8 @@ class BrowserManager {
       .setFirefoxOptions(options)
       .usingServer(CRALWER_BROWSER_URL)
       .build();
+
+    await this.driver.installAddon('./ff-optmeowt-2.0.1.xpi', true)
 
     await this.driver.manage().setTimeouts({
       implicit: 0,
