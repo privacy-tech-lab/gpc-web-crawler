@@ -168,6 +168,8 @@ yarn-error.log*
 /selenium-optmeowt-crawler/error-logging/*
 
 # Dependency directories
+/selenium-optmeowt-crawler/node_modules
+/rest_api/node_modules
 node_modules/
 jspm_packages/
 
