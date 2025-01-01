@@ -199,7 +199,7 @@ class DatabaseManager {
    */
   async logGPCResult(site, gpcResult) {
     const csvLine = `${site},${gpcResult?.status || 'None'},"${JSON.stringify(gpcResult?.data) || 'None'}"\n`;
-    await fs.promises.appendFile('well-known-data.csv', csvLine);
+    await fs.promises.appendFile('./crawl_results/well-known-data.csv', csvLine);
     
     if (gpcResult?.error) {
       await this.logError(site, gpcResult.error);
@@ -210,7 +210,7 @@ class DatabaseManager {
     const errors = await this.loadErrors();
     errors[site] = error;
     await fs.promises.writeFile(
-      'well-known-errors.json',
+      './crawl_results/well-known-errors.json',
       JSON.stringify(errors, null, 2)
     );
   }
