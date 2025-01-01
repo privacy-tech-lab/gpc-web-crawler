@@ -10,6 +10,8 @@ services:
       - DEBUG_MODE=${DEBUG_MODE}
       - MARIADB_ROOT_PASSWORD=toor
     user: "0"
+    volumes:
+      - ./crawl_results:/srv/analysis/selenium-optmeowt-crawler/crawl_results      
     networks:
       - mariadb_network
     depends_on:

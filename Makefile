@@ -10,7 +10,8 @@ start-debug:
 	DEBUG_MODE=true docker-compose up --build -d
 
 clean:
-	docker builder prune --all
+	rm -rf ./crawl_results
+	docker system prune --all
 
 help:
 	@echo "Available commands:"

@@ -12,6 +12,5 @@ COPY . /srv/analysis/selenium-optmeowt-crawler
 
 RUN npm install
 
-CMD echo "Starting crawler"; \
-    node "local-crawler.js"
+CMD sh run_crawl.sh
 
