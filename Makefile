@@ -4,18 +4,10 @@ stop:
 	docker-compose down
 
 start:
-	for i in 1 2 3 4 5 6 7 8; \
-	do \
-		DEBUG_MODE=true TEST_CRAWL=false CRAWL_ID=$$i docker-compose up --build -d ; \
-	done
-
+	DEBUG_MODE=false sh run-crawlers.sh
 
 start-debug:
-	for i in 1 2 3 4 5 6 7 8; \
-	do \
-		DEBUG_MODE=true CRAWL_ID=$$i docker-compose up --build -d ; \
-	done
-
+	DEBUG_MODE=true sh run-crawlers.sh
 
 clean:
 	rm -rf ./crawl_results

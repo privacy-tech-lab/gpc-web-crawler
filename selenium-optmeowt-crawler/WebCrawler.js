@@ -80,8 +80,8 @@ class WebCrawler {
     async visitSiteWithRetries(site, siteId, retries = 0) {
       //Checks if a site has been added to database
       //Always false on first try of a site
-      const added = await this.dbManager.checkAndUpdateDB(site, siteId);
-      if (!added){
+      const alreadyAdded = await this.dbManager.checkAndUpdateDB(site, siteId);
+      if (!alreadyAdded){
         try {
           await this.browserManager.driver.get(this.config.sites[siteId]);
           await new Promise(resolve => setTimeout(resolve, 45000));
@@ -101,7 +101,8 @@ class WebCrawler {
           }
         }
       }
-      return 'success';
+      const wasAdded = await this.dbManager.checkAndUpdateDB(site, siteId);
+      return wasAdded ? 'success' : 'failure';
     }
   
     async checkRedirect(url) {

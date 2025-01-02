@@ -91,15 +91,7 @@ class DatabaseManager {
           await this.updateSiteId(lastEntry);
         }
         return true;
-      } else {
-        const nullResponse = await axios.get(`${API_BASE_URL}/null_analysis`);
-        const nullData = nullResponse.data;
-        if (nullData.length >= 1) {
-          nullData[nullData.length - 1].site_id = siteId;
-          await this.updateSiteId(nullData[nullData.length - 1]);
-          return true;
-        }
-      }
+      } 
     } catch (error) {
       console.error('Database operation failed:', error.message);
     }
