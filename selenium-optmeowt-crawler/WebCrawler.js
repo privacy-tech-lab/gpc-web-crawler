@@ -25,7 +25,7 @@ class WebCrawler {
       if(this.config.test_crawl){
         return 'crawl-sets/sites.csv'
       }else{
-        return `crawl-sets/crawl-set-parts/crawl-set-pt${this.config.crawl_id}`
+        return `crawl-sets/crawl-set-parts/crawl-set-pt${this.config.crawl_id}.csv`
       }
     }
     /**

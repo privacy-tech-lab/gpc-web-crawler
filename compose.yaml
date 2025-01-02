@@ -63,8 +63,6 @@ services:
       - "3306:3306"
     networks:
       - mariadb_network
-    volumes:
-      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
     healthcheck:
         test: ["CMD", "mariadb-admin" ,"ping", "-h", "localhost", "-ptoor"]
         interval: 5s
