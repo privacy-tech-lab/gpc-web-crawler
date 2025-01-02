@@ -4,14 +4,25 @@ stop:
 	docker-compose down
 
 start:
-	DEBUG_MODE=false docker-compose up --build -d
+	for i in 1 2 3 4 5 6 7 8; \
+	do \
+		DEBUG_MODE=true TEST_CRAWL=false CRAWL_ID=$$i docker-compose up --build -d ; \
+	done
+
 
 start-debug:
-	DEBUG_MODE=true docker-compose up --build -d
+	for i in 1 2 3 4 5 6 7 8; \
+	do \
+		DEBUG_MODE=true CRAWL_ID=$$i docker-compose up --build -d ; \
+	done
+
 
 clean:
 	rm -rf ./crawl_results
 	docker system prune --all
+
+test:
+	DEBUG_MODE=true TEST_CRAWL=true docker-compose up --build -d
 
 help:
 	@echo "Available commands:"

@@ -8,6 +8,8 @@ services:
       - "6901:6901"
     environment:
       - DEBUG_MODE=${DEBUG_MODE}
+      - TEST_CRAWL=${TEST_CRAWL}
+      - CRAWL_ID=${CRAWL_ID}
       - MARIADB_ROOT_PASSWORD=toor
     user: "0"
     volumes:
@@ -45,6 +47,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    restart: on-failure
+
 
   mariadb:
     image: mariadb:latest
@@ -62,8 +66,13 @@ services:
       - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
     healthcheck:
         test: ["CMD", "mariadb-admin" ,"ping", "-h", "localhost", "-ptoor"]
+        interval: 5s
         timeout: 3s
         retries: 10
+        start_period: 30s
+    restart: unless-stopped
+
+
         
   phpmyadmin:
     image: phpmyadmin
@@ -97,8 +106,6 @@ services:
 volumes:
   mariadb:
     driver: local
-
-
 
 
 networks:

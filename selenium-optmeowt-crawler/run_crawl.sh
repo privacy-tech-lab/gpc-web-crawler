@@ -1,9 +1,16 @@
 echo "Starting crawler"
 
-mkdir ./crawl_results/error-logging
-touch ./crawl_results/error-logging/error-logging.json
+TIMESTAMP=$(date +"%Y%m%d%H%M%S")
 
-node local-crawler.js
+mkdir -p ./crawl_results/"$TIMESTAMP"/error-logging
+touch ./crawl_results/"$TIMESTAMP"/error-logging/error-logging.json
 
-curl -o ./crawl_results/analysis.json "http://rest_api:8080/analysis"
-curl -o ./crawl_results/debug.json "http://rest_api:8080/debug"
+
+if [ "$TEST_CRAWL" = "true" ]; then
+  node local-crawler.js $TIMESTAMP 1 -1
+else
+  node local-crawler.js $TIMESTAMP 0 $CRAWL_ID
+fi
+
+curl -o ./crawl_results/"$TIMESTAMP"/analysis.json "http://rest_api:8080/analysis"
+curl -o ./crawl_results/"$TIMESTAMP"/debug.json "http://rest_api:8080/debug"
