@@ -51,7 +51,8 @@ services:
 
 
   mariadb:
-    image: mariadb:latest
+    build:
+      context: ./mariadb-compose
     container_name: mariadb-compose
     environment:
       - DB_CONNECTION=mysql
