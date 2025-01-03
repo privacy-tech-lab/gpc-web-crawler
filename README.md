@@ -52,50 +52,36 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
 5. Open sites.csv and enter the URLs of the sites you want to analyze in the first column. Some examples are included in the file.
 
-6. In the root directory of the repo, the crawler can be started on the Docker image by running:
+6. In the root directory of the repo, the crawler can be started on the chosen test batch of sites in sites.csv with debug mode on by running:
 
    ```console
-   sh scripts/start_container.sh
+   make test
    ```
 
-   or to start the crawler with enhanced debugging information:
+   or to start the crawler on our eight preselected batches of sites with debug mode off:
 
    ```console
-    sh scripts/start_container.sh debug
+    make start
+   ```
+
+   or to start the crawler on our eight preselected batches of sites with debug mode on:
+
+   ```console
+    make start-debug
    ```
 
    - If you instead want to run the crawler on your local machine, follow the instructions in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-the-crawler-on-your-local-machine).
 
-7. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would ned to adjust the URL or your configuration accordingly.
+8. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would need to adjust the URL or your configuration accordingly.
+    - After the crawl is completed, a .json file containing the analysis results will also be dumped in the `crawl_results` directory 
 
-8. To watch the crawler operate on the Desktop environment, open a browser and navigate to <http://localhost:6901/vnc.html>. Click the button that says "connect" in the center of the screen. When prompted for a password, enter `vncpassword`.
 
-9. To set up the analysis database on your local machine with the same structure and data as in the container, follow these steps:
+10. To view the crawl results in a phpmyadmin, navigate to `localhost` in your browser. Enter the following credentials when prompted.
+    - Username: root
+    - Password: toor
 
-   Once the crawl is complete, enter the running container by using:
 
-   ```console
-   docker exec -it crawl_test /bin/bash
-   ```
-
-   Inside of the container, create a SQL dump file containing both the database structure and data:
-
-   ```console
-   mysqldump -u root -p analysis > /srv/analysis/entries_export.sql
-   ```
-
-   - Password: toor
-
-   In a new terminal window, use the following command to copy the SQL file from the container to current directory on your local machine:
-
-   ```console
-   docker cp crawl_test:/srv/analysis/entries_export.sql ./entries_export.sql
-   ```
-
-   Finally, open your preferred database manager (such as phpMyAdmin or MySQL Workbench) and import the entries_export.sql file to recreate the database on your
-   local machine.
-
-10. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
+11. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
 
 **Note**: When you perform a crawl, for one reason or another, some sites may fail to analyze. We always perform a second crawl for the sites that failed the first time (i.e., the redo sites).
 
