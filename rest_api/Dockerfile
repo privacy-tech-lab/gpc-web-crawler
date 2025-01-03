@@ -1,17 +1,21 @@
 FROM node:16
 
-WORKDIR /app
+WORKDIR /srv/analysis/rest_api
 
 RUN apt-get update && apt-get install -y curl mariadb-client && rm -rf /var/lib/apt/lists/*
 
-COPY package*.json ./
+COPY . /srv/analysis/rest_api
+
+RUN ls
 
 RUN npm install
 
-COPY . .
-
 EXPOSE 8080
 
-
-
-CMD ["sh", "/srv/analysis/scripts/rest_api.sh"]
+CMD if [ "$DEBUG_MODE" = "true" ]; then \
+        echo "Starting API in debug mode..."; \
+        node index.js debug; \
+    else \
+        echo "Starting API in normal mode..."; \
+        node index.js; \
+    fi

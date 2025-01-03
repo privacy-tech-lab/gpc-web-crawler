@@ -1,19 +1,19 @@
 
 services:
-  crawl_test:
+  crawl_driver:
     build: 
       context: ./selenium-optmeowt-crawler
-    privileged: true  # Use with caution, consider alternatives
     ports:
       - "5901:5901"
       - "6901:6901"
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      - .:/srv/analysis  # Using relative path for current directory
     environment:
       - DEBUG_MODE=${DEBUG_MODE}
+      - TEST_CRAWL=${TEST_CRAWL}
+      - CRAWL_ID=${CRAWL_ID}
       - MARIADB_ROOT_PASSWORD=toor
     user: "0"
+    volumes:
+      - ./crawl_results:/srv/analysis/selenium-optmeowt-crawler/crawl_results      
     networks:
       - mariadb_network
     depends_on:
@@ -21,16 +21,14 @@ services:
         condition: service_healthy
       rest_api:
         condition: service_healthy
-
+      crawl_browser:
+        condition: service_started
 
   rest_api:
     build: 
       context: ./rest_api
     ports:
       - "8080:8080"
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      - .:/srv/analysis  # Using relative path for current directory
     environment:
       - DEBUG_MODE=${DEBUG_MODE}
       - MARIADB_ROOT_PASSWORD=toor
@@ -45,13 +43,16 @@ services:
       mariadb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/healthz || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://rest_api:8080/healthz || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
+    restart: on-failure
+
 
   mariadb:
-    image: mariadb:latest
+    build:
+      context: ./mariadb-compose
     container_name: mariadb-compose
     environment:
       - DB_CONNECTION=mysql
@@ -62,12 +63,15 @@ services:
       - "3306:3306"
     networks:
       - mariadb_network
-    volumes:
-      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
     healthcheck:
         test: ["CMD", "mariadb-admin" ,"ping", "-h", "localhost", "-ptoor"]
+        interval: 5s
         timeout: 3s
         retries: 10
+        start_period: 30s
+    restart: unless-stopped
+
+
         
   phpmyadmin:
     image: phpmyadmin
@@ -83,8 +87,21 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+      
+  crawl_browser:
+    image: selenium/standalone-firefox:nightly
+    privileged: true
+    ports:
+      - "4444:4444"
+    environment:
+     - SE_START_VNC=false
+    volumes:
+      - ./selenium-optmeowt-crawler/ff-optmeowt-2.0.1.xpi:/extensions/ff-optmeowt-2.0.1.xpi
+    networks:
+      - mariadb_network
+    shm_size: 2g
 
-
+  
 volumes:
   mariadb:
     driver: local
