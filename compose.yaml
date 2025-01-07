@@ -101,11 +101,6 @@ services:
       - mariadb_network
     shm_size: 2g
 
-  
-volumes:
-  mariadb:
-    driver: local
-
 
 networks:
   mariadb_network:
