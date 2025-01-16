@@ -10,11 +10,10 @@ start-debug:
 	DEBUG_MODE=true sh run-crawlers.sh
 
 clean:
-	rm -rf ./crawl_results
-	docker system prune
+	docker system prune --volumes
 
-test:
-	DEBUG_MODE=true TEST_CRAWL=true docker-compose up --build -d
+custom:
+	CUSTOM_CRAWL=true sh run-crawlers.sh
 
 help:
 	@echo "Available commands:"

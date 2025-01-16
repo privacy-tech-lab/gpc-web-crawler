@@ -7,11 +7,11 @@ const {API_BASE_URL} = require('./constants')
 class DatabaseManager {
   /**
    * Creates a new DatabaseManager instance.
-   * @param {string} timestamp - Timestamp for the current crawl, used for organizing results.
+   * @param {string} save_path - base directory path for saving crawl results
    */
-  constructor(timestamp) {
+  constructor(crawl_path) {
     this.gpcResults = [];
-    this.timestamp = timestamp;
+    this.crawl_path = crawl_path;
   }
 
   /**
@@ -36,7 +36,7 @@ class DatabaseManager {
    */
   async logGPCResult(site, gpcResult) {
     const csvLine = `${site},${gpcResult?.status || 'None'},"${JSON.stringify(gpcResult?.data) || 'None'}"\n`;
-    await fs.promises.appendFile(`./crawl_results/${this.timestamp}/well-known-data.csv`, csvLine);
+    await fs.promises.appendFile(`${this.crawl_path}/well-known-data.csv`, csvLine);
 
     if (gpcResult?.error) {
       await this.logError(site, gpcResult.error);
@@ -53,7 +53,7 @@ class DatabaseManager {
     const errors = await this.loadErrors();
     errors[site] = error;
     await fs.promises.writeFile(
-      `./crawl_results/${this.timestamp}/well-known-errors.json`,
+      `${this.crawl_path}/well-known-errors.json`,
       JSON.stringify(errors, null, 2)
     );
   }
@@ -65,7 +65,7 @@ class DatabaseManager {
    */
   async loadErrors() {
     try {
-      const data = await fs.promises.readFile(`./crawl_results/${this.timestamp}/well-known-errors.json`, 'utf8');
+      const data = await fs.promises.readFile(`${this.crawl_path}/well-known-errors.json`, 'utf8');
       return JSON.parse(data);
     } catch {
       return {};

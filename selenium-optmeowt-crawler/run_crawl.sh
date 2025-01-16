@@ -2,15 +2,28 @@ echo "Starting crawler"
 
 TIMESTAMP=$(date +"%Y%m%d%H%M%S")
 
-mkdir -p ./crawl_results/"$TIMESTAMP"/error-logging
-touch ./crawl_results/"$TIMESTAMP"/error-logging/error-logging.json
 
 
 if [ "$TEST_CRAWL" = "true" ]; then
-  node index.js $TIMESTAMP 1 -1
+  SAVE_PATH=./crawl_results/CUSTOMCRAWL-"$TIMESTAMP"
+  mkdir -p "$SAVE_PATH"/error-logging
+  touch "$SAVE_PATH"/error-logging/error-logging.json
+  
+  node index.js $SAVE_PATH 1 -1 
+  
+  curl -o "$SAVE_PATH"/analysis.json "http://rest_api:8080/analysis"
+  if [ "$DEBUG_MODE" = "true" ]; then
+    curl -o "$SAVE_PATH"/debug.json "http://rest_api:8080/debug"
+  fi
 else
-  node index.js $TIMESTAMP 0 $CRAWL_ID
-fi
+  SAVE_PATH=./crawl_results/CRAWLSET"$CRAWL_ID"-"$TIMESTAMP"
+  mkdir -p "$SAVE_PATH"/error-logging
+  touch "$SAVE_PATH"/error-logging/error-logging.json
+  
+  node index.js $SAVE_PATH 0 $CRAWL_ID
 
-curl -o ./crawl_results/"$TIMESTAMP"/analysis.json "http://rest_api:8080/analysis"
-curl -o ./crawl_results/"$TIMESTAMP"/debug.json "http://rest_api:8080/debug"
+  curl -o "$SAVE_PATH"/analysis.json "http://rest_api:8080/analysis"
+  if ["$DEBUG_MODE" = "true"]; then
+    curl -o "$SAVE_PATH"/debug.json "http://rest_api:8080/debug"
+  fi
+fi

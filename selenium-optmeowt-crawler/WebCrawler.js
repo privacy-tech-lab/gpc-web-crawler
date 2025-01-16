@@ -18,7 +18,7 @@ class WebCrawler {
     constructor(args) {
       this.config = new CrawlerConfig(args);
       this.browserManager = new BrowserManager(this.config);
-      this.dbManager = new DatabaseManager(this.config.timestamp);
+      this.dbManager = new DatabaseManager(this.config.save_path);
     }
   
     getSitePath() {
@@ -128,7 +128,7 @@ class WebCrawler {
     async handleError(error, site) {
       this.config.errors[error.name] = site;
       await fs.promises.writeFile(
-        `./crawl_results/${this.config.timestamp}/error-logging/error-logging.json`,
+        `${this.config.save_path}/error-logging/error-logging.json`,
         JSON.stringify(this.config.errors)
       );
   
@@ -136,7 +136,7 @@ class WebCrawler {
         try {
           const screenshot = await this.browserManager.driver.takeScreenshot();
           const base64Data = screenshot.replace(/^data:image\/png;base64,/, '');
-          const filename = path.join(`./crawl_results/${this.config.timestamp}/error-logging/`, `${site}.png`);
+          const filename = path.join(`${this.config.save_path}/error-logging/`, `${site}.png`);
           await fs.promises.writeFile(filename, base64Data, 'base64');
         } catch (screenshotError) {
           console.log('Screenshot failed');

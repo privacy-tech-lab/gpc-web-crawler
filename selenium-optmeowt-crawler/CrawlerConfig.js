@@ -11,7 +11,7 @@ class CrawlerConfig {
       this.scriptStartTime = Date.now();
       this.sites = [];
       this.errors = {};
-      this.timestamp = args[0];
+      this.save_path = args[0];
       this.test_crawl = args[1] === "1";
       this.crawl_id = args[2];
     }

@@ -50,15 +50,15 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
 4. Clone this repo locally or download a zipped copy and unzip it.
 
-5. Open sites.csv and enter the URLs of the sites you want to analyze in the first column. Some examples are included in the file.
+5. If you're performing a test run of the crawler or plan on running the crawler on your own set of sites, follow the directions in the sublist of this bullet. If not, skip to 6.
+    1. Open sites.csv and enter the URLs of the sites you want to analyze in the first column. Some examples are included in the file - do not change anything if you simply want to perform a test run.
 
-6. In the root directory of the repo, the crawler can be started on the chosen test batch of sites in sites.csv with debug mode on by running:
+    2. In the root directory of the repo, the crawler can be started on the chosen test batch of sites in sites.csv with debug mode on by running:
 
-   ```console
-   make test
-   ```
-
-   or to start the crawler on our eight preselected batches of sites with debug mode off:
+       ```console
+       make test
+       ```
+6. To run the crawler on our eight preselected batches of sites with debug mode off, run the following command:
 
    ```console
     make start
@@ -72,16 +72,17 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
    - If you instead want to run the crawler on your local machine, follow the instructions in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-the-crawler-on-your-local-machine).
 
-8. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would need to adjust the URL or your configuration accordingly.
+7. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would need to adjust the URL or your configuration accordingly.
     - After the crawl is completed, a .json file containing the analysis results will also be dumped in the `crawl_results` directory 
 
 
-10. To view the crawl results in a phpmyadmin, navigate to `localhost` in your browser. Enter the following credentials when prompted.
+8. To view the crawl results in a phpmyadmin, navigate to `localhost` in your browser. Enter the following credentials when prompted.
     - Username: root
     - Password: toor
 
 
-11. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
+9. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
+
 
 **Note**: When you perform a crawl, for one reason or another, some sites may fail to analyze. We always perform a second crawl for the sites that failed the first time (i.e., the redo sites).
 
