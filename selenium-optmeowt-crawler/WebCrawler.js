@@ -141,7 +141,11 @@ class WebCrawler {
         } catch (screenshotError) {
           console.log('Screenshot failed');
         }
-        await this.browserManager.driver.quit();
+        try{
+          await this.browserManager.driver.quit();
+        }catch (driverError) {
+          console.log(`Encountered error while trying to end browser session, error: ${driverError}`)
+        }
       }
     }
   

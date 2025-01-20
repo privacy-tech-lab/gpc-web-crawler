@@ -20,11 +20,7 @@ run_crawler_batch() {
         sleep 30
     done
 
-    # Once crawler is done, shut down all services from this compose
-    DEBUG_MODE=$DEBUG_MODE TEST_CRAWL=false CRAWL_ID=$batch_id docker-compose down
-    docker system prune --volumes -f
-
-    echo "Batch $batch_id completed and cleaned up"
+    echo "Batch $batch_id completed"
 }
 
 run_crawler_custom() {
@@ -42,11 +38,7 @@ run_crawler_custom() {
         sleep 30
     done
 
-    # Once crawler is done, shut down all services from this compose
-    DEBUG_MODE=$DEBUG_MODE TEST_CRAWL=false CRAWL_ID=$batch_id docker-compose down
-    docker system prune --volumes -f
-
-    echo "Custom batch completed and cleaned up"
+    echo "Custom batch completed"
 }
 
 if [ "$CUSTOM_CRAWL" = "true" ]; then

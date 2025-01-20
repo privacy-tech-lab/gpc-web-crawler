@@ -33,24 +33,32 @@ class BrowserManager {
           '--disable-gpu',
           '--disable-dev-shm-usage'
         );
-  
+        await this.startup(2, options)
+      }
+  async startup(retries = 0, options){
+    try{
       this.driver = await new Builder()
-        .forBrowser('firefox')
-        .setFirefoxOptions(options)
-        .usingServer(CRALWER_BROWSER_URL)
-        .build();
+      .forBrowser('firefox')
+      .setFirefoxOptions(options)
+      .usingServer(CRALWER_BROWSER_URL)
+      .build();
   
-      await this.driver.installAddon('./ff-optmeowt-2.0.1.xpi', true)
+    await this.driver.installAddon('./ff-optmeowt-2.0.1.xpi', true)
   
-      await this.driver.manage().setTimeouts({
-        implicit: 0,
-        pageLoad: PAGE_LOAD_TIMEOUT,
-        script: SCRIPT_TIMEOUT
-      });
+    await this.driver.manage().setTimeouts({
+      implicit: 0,
+      pageLoad: PAGE_LOAD_TIMEOUT,
+      script: SCRIPT_TIMEOUT
+    });
   
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-      console.log('built')
+    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+    console.log('built')
+    }catch(error){
+      if(retries > 0){
+        await this.startup(retries - 1)
+      }
     }
+  }
     
   /**
    * Checks the current page title for patterns indicating a CAPTCHA or human verification challenge.

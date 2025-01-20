@@ -58,23 +58,21 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
        ```console
        make custom
        ```
-6. To run the crawler one of our eight preselected batches of sites with debug mode off, run the following command and select one of the eight batches:
-
+6. To run the crawler one of our eight preselected batches sites:
+  1. If you have already run the crawler (perhaps to test it, or on another batch) and have containers running, run "make stop && make clean"
+  2. To start the crawler with debug mode off, run:
    ```console
     make start
    ```
 
-   or to start the crawler one of our eight preselected batches of sites with debug mode on:
+   or to start the crawler with debug mode on:
 
    ```console
     make start-debug
    ```
+  3. When prompted with "Enter a batch number (1-8):", enter a number from one to eight, representing which batch of sites you wish to crawl.
 
-   - If you instead want to run the crawler on your local machine, follow the instructions in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/How-to-run-the-crawler-on-your-local-machine).
-   - To display an overview of the available commands in the terminal, simply run:
-     ```console
-     make help
-     ```
+  4. If the crawl unexpectedly fails midway through, run `make start` again and re-select the batch you are interested in.
 
 7. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would need to adjust the URL or your configuration accordingly.
     - After the crawl is completed, a .json file containing the analysis results will also be dumped in the `crawl_results` directory 
