@@ -84,7 +84,7 @@ class WebCrawler {
       if (!alreadyAdded){
         try {
           await this.browserManager.driver.get(this.config.sites[siteId]);
-          await new Promise(resolve => setTimeout(resolve, 45000));
+          await new Promise(resolve => setTimeout(resolve, 22000));
           await this.browserManager.checkForCaptcha();
         } catch (error) {
           await this.handleError(error, site);
