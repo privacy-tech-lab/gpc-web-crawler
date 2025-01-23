@@ -19,6 +19,17 @@ class WebCrawler {
       this.config = new CrawlerConfig(args);
       this.browserManager = new BrowserManager(this.config);
       this.dbManager = new DatabaseManager(this.config.save_path);
+    
+      this.proxy = {
+      protocol: 'http',
+      host: 'residential.geonode.com',
+      port: 10000,
+      auth: {
+        username: 'geonode_vPfLJJBen3',
+        password: '7332b6f3-070d-4e15-91e2-7c709928a807',
+      },
+    };
+
     }
   
     getSitePath() {
@@ -49,23 +60,27 @@ class WebCrawler {
      * @param {string} site - The base URL of the site to check.
      * @returns {Promise<object>} An object containing the status and data of the GPC endpoint check.
      */
-    async checkGPCEndpoint(site) {
+    async checkGPCEndpoint(site, retries = 0) {
       const gpcUrl = new URL('/.well-known/gpc.json', site)
       try {
-        const response = await axios.get(gpcUrl, {
+        const response = await axios.get(gpcUrl.href, {
           timeout: PAGE_LOAD_TIMEOUT
-        });
-  
+	});
+	
         return {
           status: response.status,
           data: response.status === 200 ? response.data : null
         };
       } catch (error) {
-        return {
+	if (retries > 0){
+	return this.checkGPCEndpoint(site, retries - 1);
+	}else{
+	return {
           status: null,
           data: null,
           error: error.message
         };
+	}
       }
     }
   
@@ -102,6 +117,13 @@ class WebCrawler {
         }
       }
       const wasAdded = await this.dbManager.checkAndUpdateDB(site, siteId);
+      if (wasAdded){
+         return 'success';
+      }else if(retries > 0){
+         return this.visitSiteWithRetries(site, siteId, retries - 1);
+      }else{
+         return 'failure'
+      }
       return wasAdded ? 'success' : 'failure';
     }
   
@@ -160,7 +182,7 @@ class WebCrawler {
     async crawlSite(site, siteId) {
       const tasks = [
         this.visitSiteWithRetries(site, siteId, 1),
-        this.checkGPCEndpoint(this.config.sites[siteId])
+        this.checkGPCEndpoint(this.config.sites[siteId], 1)
       ];
   
       const [visitResult, gpcResult] = await Promise.all(tasks);

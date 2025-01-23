@@ -14,6 +14,14 @@ class BrowserManager {
     constructor(config) {
       this.config = config;
       this.driver = null;
+    
+      this.proxy = {
+      username: 'geonode_vPfLJJBen3',
+      password: '7332b6f3-070d-4e15-91e2-7c709928a807',
+      host: 'residential.geonode.com',
+      port: 10000,
+    };
+
     }
   
     /**
@@ -33,7 +41,11 @@ class BrowserManager {
           '--disable-gpu',
           '--disable-dev-shm-usage'
         );
-        await this.startup(2, options)
+            // Configure proxy settings
+
+    // Proxy authentication
+
+	await this.startup(2, options)
       }
   async startup(retries = 0, options){
     try{
@@ -55,7 +67,9 @@ class BrowserManager {
     console.log('built')
     }catch(error){
       if(retries > 0){
-        await this.startup(retries - 1)
+        console.log(`Retrying WebDriver connection... (${retries} retries left)`);
+        await new Promise(resolve => setTimeout(resolve, 3000));
+	await this.startup(retries - 1, options)
       }
     }
   }

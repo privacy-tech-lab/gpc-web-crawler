@@ -87,7 +87,7 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-      
+  
   crawl_browser:
     image: selenium/standalone-firefox:nightly
     privileged: true
@@ -100,8 +100,7 @@ services:
     networks:
       - mariadb_network
     shm_size: 2g
-
-  
+    
 volumes:
   mariadb:
     driver: local
