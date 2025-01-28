@@ -23,7 +23,7 @@ else
   node index.js $SAVE_PATH 0 $CRAWL_ID
 
   curl -o "$SAVE_PATH"/analysis.json "http://rest_api:8080/analysis"
-  if ["$DEBUG_MODE" = "true"]; then
+  if [ "$DEBUG_MODE" = "true" ]; then
     curl -o "$SAVE_PATH"/debug.json "http://rest_api:8080/debug"
   fi
 fi

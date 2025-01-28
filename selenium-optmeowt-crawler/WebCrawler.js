@@ -20,15 +20,6 @@ class WebCrawler {
       this.browserManager = new BrowserManager(this.config);
       this.dbManager = new DatabaseManager(this.config.save_path);
     
-      this.proxy = {
-      protocol: 'http',
-      host: 'residential.geonode.com',
-      port: 10000,
-      auth: {
-        username: 'geonode_vPfLJJBen3',
-        password: '7332b6f3-070d-4e15-91e2-7c709928a807',
-      },
-    };
 
     }
   
@@ -63,24 +54,23 @@ class WebCrawler {
     async checkGPCEndpoint(site, retries = 0) {
       const gpcUrl = new URL('/.well-known/gpc.json', site)
       try {
-        const response = await axios.get(gpcUrl.href, {
+        const response = await axios.get(gpcUrl, {
           timeout: PAGE_LOAD_TIMEOUT
 	});
-	
         return {
           status: response.status,
           data: response.status === 200 ? response.data : null
         };
       } catch (error) {
-	if (retries > 0){
-	return this.checkGPCEndpoint(site, retries - 1);
-	}else{
-	return {
-          status: null,
-          data: null,
-          error: error.message
-        };
-	}
+          if (retries > 0){
+            return this.checkGPCEndpoint(site, retries - 1);
+          }else {
+            return {
+                  status: null,
+                  data: null,
+                  error: error.message
+                };
+          }
       }
     }
   
@@ -124,7 +114,6 @@ class WebCrawler {
       }else{
          return 'failure'
       }
-      return wasAdded ? 'success' : 'failure';
     }
   
     async checkRedirect(url) {
@@ -186,6 +175,7 @@ class WebCrawler {
       ];
   
       const [visitResult, gpcResult] = await Promise.all(tasks);
+
       await this.dbManager.logGPCResult(site, gpcResult);
   
       return {
@@ -203,7 +193,6 @@ class WebCrawler {
     async start() {
       await this.loadSites();
       await this.browserManager.setup();
-  
       for (let siteId in this.config.sites) {
         //gets redirected domain name
         const originalUrl = this.config.sites[siteId]
