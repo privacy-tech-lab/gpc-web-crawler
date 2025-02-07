@@ -210,10 +210,13 @@ Here are the steps for doing so:
 
 1. Just as the GPC Web Crawler, this script should be run using the same California VPN after all eight crawl batches are completed
 2. Ensure the lock screen setting is as for the usual crawl
-3. Start the script using:
+3. Change directories to `well-known-crawl`
+4. On line 25 of `well-known-adhoc.py`, change `csv_path` to the location of the list of sites you wish to crawl
+5. On line 38 of `well-known-adhoc.py`, change `save_path` to the location you wish to save the results to, for example: `save_path = "well-known-data.csv"'
+6. Start the script using:
 
    ```bash
-   python3 well-known-collection.py
+   python3 well-known-adhoc.py
    ```
 
 Running this script requires three input files: `selenium-optmeowt-crawler/full-crawl-set.csv`, which is in the repo, `redo-original-sites.csv`, and `redo-sites.csv`. The second two files are not found in the repo and should be created for that crawl based on the [instructions in our Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#saving-crawl-data-when-crawling-our-8-batch-dataset). As explained in `selenium-optmeowt-crawler/well-known-collection.py`, the output is a csv called `well-known-data.csv` with three columns: Site URL, request status, json data as well as an error json file called `well-known-errors.json` that logs all errors. To run this script on a csv file of sites without accounting for redo sites, comment all lines between line 27 and line 40 except for line 34.
