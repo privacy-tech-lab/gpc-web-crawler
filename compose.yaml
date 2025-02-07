@@ -11,6 +11,7 @@ services:
       - TEST_CRAWL=${TEST_CRAWL}
       - CRAWL_ID=${CRAWL_ID}
       - MARIADB_ROOT_PASSWORD=toor
+      - TIMESTAMP=${TIMESTAMP}
     user: "0"
     volumes:
       - ./crawl_results:/srv/analysis/selenium-optmeowt-crawler/crawl_results      
@@ -23,6 +24,23 @@ services:
         condition: service_healthy
       crawl_browser:
         condition: service_started
+
+  well_known_crawl:
+    build: 
+      context: ./well-known-crawl
+    environment:
+      - TEST_CRAWL=${TEST_CRAWL}
+      - CRAWL_ID=${CRAWL_ID}
+      - TIMESTAMP=${TIMESTAMP}
+    user: "0"
+    volumes:
+      - ./crawl_results:/crawl_results   
+      - ./selenium-optmeowt-crawler/crawl-sets:/crawl-sets   
+    networks:
+      - mariadb_network
+    depends_on:
+      crawl_driver:
+        condition: service_completed_successfully
 
   rest_api:
     build: 

@@ -5,12 +5,13 @@ DEBUG_MODE=${DEBUG_MODE:-true}
 
 run_crawler_batch() {
     local batch_id=$1
+    TIMESTAMP=$(date +"%Y%m%d%H%M%S")
 
     # Start the containers for this batch
-    DEBUG_MODE=$DEBUG_MODE TEST_CRAWL=false CRAWL_ID=$batch_id docker compose up --build -d
+    DEBUG_MODE=$DEBUG_MODE TEST_CRAWL=false CRAWL_ID=$batch_id TIMESTAMP=$TIMESTAMP docker compose up --build -d
 
     crawler_service="crawl_driver"
-    container_name=$(docker-compose ps -q $crawler_service)
+    container_name=$(docker-compose ps -q -a $crawler_service)
 
     echo "Started batch $batch_id with container $container_name (DEBUG_MODE=$DEBUG_MODE)"
 
@@ -24,11 +25,12 @@ run_crawler_batch() {
 }
 
 run_crawler_custom() {
+    TIMESTAMP=$(date +"%Y%m%d%H%M%S")
     # Start the containers for this batch
-    DEBUG_MODE=true TEST_CRAWL=true docker compose up --build -d
+    DEBUG_MODE=true TEST_CRAWL=true TIMESTAMP=$TIMESTAMP docker compose up --build -d
 
     crawler_service="crawl_driver"
-    container_name=$(docker-compose ps -q $crawler_service)
+    container_name=$(docker-compose ps -q -a $crawler_service)
 
     echo "Started custom batch with container $container_name (DEBUG_MODE=$DEBUG_MODE)"
 

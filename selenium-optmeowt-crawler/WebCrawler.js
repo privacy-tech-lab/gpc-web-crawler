@@ -169,19 +169,13 @@ class WebCrawler {
      * @returns {Promise<object>} An object containing the crawl status and GPC data.
      */
     async crawlSite(site, siteId) {
-      const tasks = [
-        this.visitSiteWithRetries(site, siteId, 1),
-        this.checkGPCEndpoint(this.config.sites[siteId], 1)
-      ];
-  
-      const [visitResult, gpcResult] = await Promise.all(tasks);
 
-      await this.dbManager.logGPCResult(site, gpcResult);
+      const visitResult = await this.visitSiteWithRetries(site, siteId, 1)
+
   
       return {
         site,
-        crawlSuccess: visitResult === 'success',
-        gpcData: gpcResult
+        crawlSuccess: visitResult === 'success'
       };
     }
   
@@ -209,7 +203,6 @@ class WebCrawler {
         console.log(
           `Site: ${domain}`,
           `Crawl: ${result.crawlSuccess ? 'Success' : 'Failed'}`,
-          `GPC: ${result.gpcData.status ? 'Found' : 'Not Found'}`,
           `Time: ${timeSpent}s`
         );
       }

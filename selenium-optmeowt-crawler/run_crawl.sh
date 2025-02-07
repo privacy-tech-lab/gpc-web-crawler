@@ -1,9 +1,5 @@
 echo "Starting crawler"
 
-TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-
-
-
 if [ "$TEST_CRAWL" = "true" ]; then
   SAVE_PATH=./crawl_results/CUSTOMCRAWL-"$TIMESTAMP"
   mkdir -p "$SAVE_PATH"/error-logging
