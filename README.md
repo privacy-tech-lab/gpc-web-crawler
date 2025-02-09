@@ -40,7 +40,7 @@ The GPC Web Crawler analyzes websites' compliance with [Global Privacy Control (
 
 You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBook. Get started as follows:
 
-0. If you want to test sites' compliance with a particular law, for example, the California Consumer Privacy Act (CCPA), make sure to crawl the sites from a computer in the respective geographical location. If you are located in a different location, you can use a VPN. We perform our crawls for the CCPA using [Mullvad VPN](https://mullvad.net/en) set to Los Angeles, California.
+0. If you want to test sites' compliance with a particular law, for example, the California Consumer Privacy Act (CCPA), make sure to crawl the sites from a computer in the respective geographical location. If you are located in a different location, you can use a VPN. We perform our crawls for the CCPA using [Mullvad VPN](https://mullvad.net/en) set to Los Angeles, California. Generally, if you want to perform your crawl for a particular location different from yours, you will need to set your VPN accordingly.
 
 1. Sign in to [Docker](https://www.docker.com/get-started/), or create a Docker account if you do not already have one.
 
@@ -51,40 +51,44 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 4. Clone this repo locally or download a zipped copy and unzip it.
 
 5. If you're performing a test run of the crawler or plan on running the crawler on your own set of sites, follow the directions in the sublist of this bullet. If not, skip to step 6.
-    1. Open sites.csv and enter the URLs of the sites you want to analyze in the first column. Some examples are included in the file - do not change anything if you simply want to perform a test run.
 
-    2. In the root directory of the repo, the crawler can be started on the chosen test batch of sites in sites.csv with debug mode on by running:
+   1. Open sites.csv and enter the URLs of the sites you want to analyze in the first column. Some examples are included in the file - do not change anything if you simply want to perform a test run.
 
-       ```console
-       make custom
-       ```
+   2. In the root directory of the repo, the crawler can be started on the chosen test batch of sites in sites.csv with debug mode on by running:
+
+      ```console
+      make custom
+      ```
+
 6. To run the crawler on one of our eight preselected batches sites:
+
    1. If you have already run the crawler (perhaps to test it, or on another batch) and have containers running, run "make stop && make clean"
    2. To start the crawler with debug mode off, run:
-    ```console
-     make start
-    ```
 
-    or to start the crawler with debug mode on:
+   ```console
+    make start
+   ```
 
-    ```console
-     make start-debug
-    ```
+   or to start the crawler with debug mode on:
+
+   ```console
+    make start-debug
+   ```
+
    3. When prompted with "Enter a batch number (1-8):", enter a number from one to eight, representing which batch of sites you wish to crawl.
 
    4. If the crawl unexpectedly fails midway through, run `make start` again and re-select the batch you are interested in.
 
 7. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would need to adjust the URL or your configuration accordingly.
-    - After the crawl is completed, a .json file containing the analysis results will also be dumped in the `crawl_results` directory 
 
+   - After the crawl is completed, a .json file containing the analysis results will also be dumped in the `crawl_results` directory
 
 8. To view the crawl results in a phpmyadmin, navigate to `localhost` in your browser. Enter the following credentials when prompted.
-    - Username: root
-    - Password: toor
 
+   - Username: root
+   - Password: toor
 
 9. If you modify the analysis extension, you should test it to make sure it still works properly. Some guidelines can be found in the [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Testing-the-OptMeowt-Analysis-Extension).
-
 
 **Note**: When you perform a crawl, for one reason or another, some sites may fail to analyze. We always perform a second crawl for the sites that failed the first time (i.e., the redo sites).
 
@@ -208,7 +212,7 @@ We collect [.well-known/gpc.json](https://privacycg.github.io/gpc-spec/#gpc-supp
 
 Here are the steps for doing so:
 
-1. Just as the GPC Web Crawler, this script should be run using the same California VPN after all eight crawl batches are completed
+1. Just as the GPC Web Crawler, this script should be run using the same VPN location after all eight crawl batches are completed
 2. Ensure the lock screen setting is as for the usual crawl
 3. Change directories to `well-known-crawl`
 4. On line 25 of `well-known-adhoc.py`, change `csv_path` to the location of the list of sites you wish to crawl
