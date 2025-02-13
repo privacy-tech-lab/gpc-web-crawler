@@ -47,12 +47,12 @@ if [ "$CUSTOM_CRAWL" = "true" ]; then
     run_crawler_custom
 else
     # Ask user for batch number
-    read -p "Enter a batch number (1-8): " batch_number
+    read -p "Enter a batch number (0-8): " batch_number
 
-    # Validate input is a number between 1 and 8
-    if [ "$batch_number" -ge 1 ] && [ "$batch_number" -le 8 ]; then
+    # Validate input is a number between 0 and 8
+    if [ "$batch_number" -ge 0 ] && [ "$batch_number" -le 8 ]; then
         run_crawler_batch $batch_number
     else
-        echo "Invalid input. Please enter a number between 1 and 8."
+        echo "Invalid input. Please enter a number between 0 and 8."
     fi
 fi
