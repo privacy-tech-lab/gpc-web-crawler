@@ -50,8 +50,9 @@ if TEST_CRAWL == "true":
     save_path = f"./crawl_results/CUSTOMCRAWL-{TIMESTAMP}"
 else:
     save_path = f"./crawl_results/CRAWLSET{CRAWL_ID}-{TIMESTAMP}"
-save_path += "/well-known-data.csv"
-with open(save_path, "a") as f:
+data_save_path = save_path + "/well-known-data.csv"
+error_save_path = save_path + "/well-known-errors.json"
+with open(data_save_path, "a") as f:
     csv_writer = csv.writer(f, quoting=csv.QUOTE_ALL)
     for site_idx, site in enumerate(sites_list):
         ts = time.time()
@@ -84,5 +85,5 @@ with open(save_path, "a") as f:
         )
 
 # Convert and write JSON object containing errors to file
-with open("well-known-errors.json", "w") as outfile:
+with open(error_save_path, "w") as outfile:
     json.dump(errors, outfile)
