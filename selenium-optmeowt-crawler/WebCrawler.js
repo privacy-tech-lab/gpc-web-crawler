@@ -188,20 +188,18 @@ class WebCrawler {
       await this.loadSites();
       await this.browserManager.setup();
       for (let siteId in this.config.sites) {
-        //gets redirected domain name
         const originalUrl = this.config.sites[siteId]
         
         const finalUrl = await this.checkRedirect(originalUrl)
   
         const startTime = Date.now();
         const { hostname } = new URL(finalUrl);
-        const domain = psl.parse(hostname).domain
-        console.log('Processing:', domain);
-        const result = await this.crawlSite(domain, siteId);
+        console.log('Processing:', hostname);
+        const result = await this.crawlSite(hostname, siteId);
   
         const timeSpent = (Date.now() - startTime) / 1000;
         console.log(
-          `Site: ${domain}`,
+          `Site: ${hostname}`,
           `Crawl: ${result.crawlSuccess ? 'Success' : 'Failed'}`,
           `Time: ${timeSpent}s`
         );
