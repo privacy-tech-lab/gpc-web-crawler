@@ -10,7 +10,7 @@ class AnalysisAPI {
     this.tableName = "entries";
     this.debug = process.argv.length > 2 && process.argv[2] === "debug";
     this.port = process.env.PORT || 8080;
-
+    this.siteId = 0
     this.initializeRoutes();
     if (this.debug) {
       this.initializeDebugRoutes();
@@ -64,12 +64,16 @@ class AnalysisAPI {
       }
     });
 
+    this.app.get('/increment_siteId', async (req, res) => {
+        this.siteId += 1
+        res.status(200).send('Site ID incremented');
+    });
     // Analysis routes
     this.app.get("/analysis", this.getAllEntries.bind(this));
     this.app.get("/last_input_domain_analysis", this.getLastEntry.bind(this));
     this.app.get("/null_analysis", this.getNullEntries.bind(this));
     this.app.post("/analysis", this.createEntry.bind(this));
-    this.app.get("/analysis/:domain", this.getEntryByDomain.bind(this));
+    this.app.get("/analysis/:siteId", this.getEntryBySiteId.bind(this));
     this.app.put("/analysis", this.updateEntry.bind(this));
   }
 
@@ -134,7 +138,7 @@ class AnalysisAPI {
 
   async createEntry(req, res) {
     const fields = [
-      'domain', 'sent_gpc', 'gpp_version', 'uspapi_before_gpc', 
+      'domain', 'site_id', 'sent_gpc', 'gpp_version', 'uspapi_before_gpc', 
       'uspapi_after_gpc', 'usp_cookies_before_gpc', 'usp_cookies_after_gpc',
       'OptanonConsent_before_gpc', 'OptanonConsent_after_gpc', 
       'gpp_before_gpc', 'gpp_after_gpc', 'urlClassification',
@@ -143,7 +147,8 @@ class AnalysisAPI {
     ];
 
     try {
-      console.log("posting", req.body.domain, "to analysis...");
+      req.body['site_id'] = this.siteId
+      console.log(`posting ${req.body.domain}, site_id: ${req.body.site_id} to analysis...`);
       const values = fields.map(field => req.body[field]);
       const query = `INSERT INTO ?? (${fields.join(', ')}) VALUES (${ Array(fields.length).fill("?").join(",")})`;
       
@@ -154,11 +159,11 @@ class AnalysisAPI {
     }
   }
 
-  async getEntryByDomain(req, res) {
+  async getEntryBySiteId(req, res) {
     try {
       const results = await this.handleDatabaseQuery(
-        "SELECT * FROM analysis.?? WHERE domain = ?",
-        [this.tableName, req.params.domain]
+        "SELECT * FROM analysis.?? WHERE site_id = ?",
+        [this.tableName, req.params.siteId]
       );
       res.json(results);
     } catch (error) {

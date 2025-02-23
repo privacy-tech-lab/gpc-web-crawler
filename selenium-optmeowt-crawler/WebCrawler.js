@@ -19,8 +19,6 @@ class WebCrawler {
       this.config = new CrawlerConfig(args);
       this.browserManager = new BrowserManager(this.config);
       this.dbManager = new DatabaseManager(this.config.save_path);
-    
-
     }
   
     getSitePath() {
@@ -107,6 +105,7 @@ class WebCrawler {
         }
       }
       const wasAdded = await this.dbManager.checkAndUpdateDB(site, siteId);
+      console.log(wasAdded)
       if (wasAdded){
          return 'success';
       }else if(retries > 0){
@@ -169,9 +168,9 @@ class WebCrawler {
      * @returns {Promise<object>} An object containing the crawl status and GPC data.
      */
     async crawlSite(site, siteId) {
-
+      console.log(`before`)
       const visitResult = await this.visitSiteWithRetries(site, siteId, 1)
-
+      console.log(`after`)
   
       return {
         site,
@@ -188,15 +187,13 @@ class WebCrawler {
       await this.loadSites();
       await this.browserManager.setup();
       for (let siteId in this.config.sites) {
-        const originalUrl = this.config.sites[siteId]
-        
-        const finalUrl = await this.checkRedirect(originalUrl)
-  
+        const url = this.config.sites[siteId]
+        const { hostname } = new URL(url);
+
         const startTime = Date.now();
-        const { hostname } = new URL(finalUrl);
         console.log('Processing:', hostname);
         const result = await this.crawlSite(hostname, siteId);
-  
+        await this.dbManager.increment_siteId()
         const timeSpent = (Date.now() - startTime) / 1000;
         console.log(
           `Site: ${hostname}`,
