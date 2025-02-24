@@ -43,34 +43,6 @@ class WebCrawler {
       });
     }
   
-    /**
-     * Checks for the presence of a GPC endpoint (gpc.json) on a given site.
-     * @async
-     * @param {string} site - The base URL of the site to check.
-     * @returns {Promise<object>} An object containing the status and data of the GPC endpoint check.
-     */
-    async checkGPCEndpoint(site, retries = 0) {
-      const gpcUrl = new URL('/.well-known/gpc.json', site)
-      try {
-        const response = await axios.get(gpcUrl, {
-          timeout: PAGE_LOAD_TIMEOUT
-	});
-        return {
-          status: response.status,
-          data: response.status === 200 ? response.data : null
-        };
-      } catch (error) {
-          if (retries > 0){
-            return this.checkGPCEndpoint(site, retries - 1);
-          }else {
-            return {
-                  status: null,
-                  data: null,
-                  error: error.message
-                };
-          }
-      }
-    }
   
     /**
      * Visits a site using the browser, with retry logic for recoverable errors.
