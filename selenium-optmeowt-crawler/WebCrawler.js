@@ -105,7 +105,6 @@ class WebCrawler {
         }
       }
       const wasAdded = await this.dbManager.checkAndUpdateDB(site, siteId);
-      console.log(wasAdded)
       if (wasAdded){
          return 'success';
       }else if(retries > 0){
@@ -113,21 +112,7 @@ class WebCrawler {
       }else{
          return 'failure'
       }
-    }
-  
-    async checkRedirect(url) {
-      try {
-        const response = await axios.get(url);
-        return response.request.res.responseUrl || url;
-      } catch (error) {
-        if (error.response && error.response.request.res.responseUrl) {
-          return error.response.request.res.responseUrl;
-        }
-        console.error('Error checking redirect:', error.message);
-        return url; // Return the original URL if there's an error
-      }
-    }
-    
+    }    
     
     /**
      * Handles errors encountered during crawling, logs the error, and takes a screenshot if applicable.
@@ -168,9 +153,7 @@ class WebCrawler {
      * @returns {Promise<object>} An object containing the crawl status and GPC data.
      */
     async crawlSite(site, siteId) {
-      console.log(`before`)
       const visitResult = await this.visitSiteWithRetries(site, siteId, 1)
-      console.log(`after`)
   
       return {
         site,
