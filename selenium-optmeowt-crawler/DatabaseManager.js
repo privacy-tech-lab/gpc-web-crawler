@@ -15,24 +15,19 @@ class DatabaseManager {
   }
 
   /**
-   * Checks the database for existing analysis records for a given site and updates the site ID if necessary.
-   * Prioritizes updating existing entries where the site_id is null. If no such entry exists, it tries to update a null analysis entry.
+   * Checks the database for existing analysis records for a given siteId
    * @async
-   * @param {string} site - The URL of the site.
    * @param {number} siteId - The ID of the site to be updated in the database.
    * @returns {Promise<boolean>} True if the database was updated, false otherwise.
    */
-  async checkAndUpdateDB(siteId) {
+  async hasEntryInDb(siteId) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/analysis/${siteId}`);
-      const latestData = response.data;
-      if (latestData.length >= 1) {
-        return true;
-      } 
+      const response = await axios.get(`${API_BASE_URL}/analysis/${siteId}/exists`);
+      return response.data === true
     } catch (error) {
       console.error('Database operation failed:', error.message);
+      return false;
     }
-    return false;
   }
 
   /**

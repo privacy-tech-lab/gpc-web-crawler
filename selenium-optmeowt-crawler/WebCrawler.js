@@ -55,7 +55,7 @@ class WebCrawler {
     async visitSiteWithRetries(site, siteId, retries = 0) {
       //Checks if a site has been added to database
       //Always false on first try of a site
-      const alreadyAdded = await this.dbManager.checkAndUpdateDB(site, siteId);
+      const alreadyAdded = await this.dbManager.hasEntryInDb(siteId);
       if (!alreadyAdded){
         try {
           await this.browserManager.driver.get(this.config.sites[siteId]);
@@ -76,7 +76,7 @@ class WebCrawler {
           }
         }
       }
-      const wasAdded = await this.dbManager.checkAndUpdateDB(site, siteId);
+      const wasAdded = await this.dbManager.hasEntryInDb(siteId);
       if (wasAdded){
          return 'success';
       }else if(retries > 0){
@@ -152,6 +152,7 @@ class WebCrawler {
         const timeSpent = (Date.now() - startTime) / 1000;
         console.log(
           `Site: ${hostname}`,
+          `Site ID: ${siteID}`,
           `Crawl: ${result.crawlSuccess ? 'Success' : 'Failed'}`,
           `Time: ${timeSpent}s`
         );

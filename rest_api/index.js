@@ -73,7 +73,7 @@ class AnalysisAPI {
     this.app.get("/last_input_domain_analysis", this.getLastEntry.bind(this));
     this.app.get("/null_analysis", this.getNullEntries.bind(this));
     this.app.post("/analysis", this.createEntry.bind(this));
-    this.app.get("/analysis/:siteId", this.getEntryBySiteId.bind(this));
+    this.app.get("/analysis/:siteId/exists", this.hasEntryInDb.bind(this));
     this.app.put("/analysis", this.updateEntry.bind(this));
   }
 
@@ -159,13 +159,13 @@ class AnalysisAPI {
     }
   }
 
-  async getEntryBySiteId(req, res) {
+  async hasEntryInDb(req, res) {
     try {
       const results = await this.handleDatabaseQuery(
         "SELECT * FROM analysis.?? WHERE site_id = ?",
         [this.tableName, req.params.siteId]
       );
-      res.json(results);
+      res.json(results.length > 0);
     } catch (error) {
       this.handleError(res, error);
     }
