@@ -7,6 +7,9 @@ run_crawler_batch() {
     local batch_id=$1
     TIMESTAMP=$(date +"%Y%m%d%H%M%S")
 
+    # Start the containers for this batch
+    DEBUG_MODE=$DEBUG_MODE TEST_CRAWL=false CRAWL_ID=$batch_id TIMESTAMP=$TIMESTAMP docker compose up --build -d
+
     echo "Batch $batch_id completed"
 }
 
