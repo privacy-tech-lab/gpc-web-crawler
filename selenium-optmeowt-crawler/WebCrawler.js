@@ -121,7 +121,7 @@ class WebCrawler {
      * @param {string} site - The URL of the site where the error occurred.
      */
     async handleError(error, site) {
-      this.config.errors[error.name] = site;
+      (this.config.errors[error.name] ??= []).push(site);
       await fs.promises.writeFile(
         `${this.config.save_path}/error-logging/error-logging.json`,
         JSON.stringify(this.config.errors)

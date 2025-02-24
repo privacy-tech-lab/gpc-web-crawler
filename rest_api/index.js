@@ -64,7 +64,7 @@ class AnalysisAPI {
       }
     });
 
-    this.app.get('/increment_siteId', async (req, res) => {
+    this.app.post('/increment_siteId', async (req, res) => {
         this.siteId += 1
         res.status(200).send('Site ID incremented');
     });

@@ -15,35 +15,6 @@ class DatabaseManager {
   }
 
   /**
-   * Updates the site ID for a given analysis record in the database.
-   * @async
-   * @param {object} data - The data object containing the analysis record to update.
-   */
-  async updateSiteId(data) {
-    try {
-      await axios.put(`${API_BASE_URL}/analysis`, data);
-    } catch (error) {
-      console.error('Error updating site ID:', error.message);
-    }
-  }
-
-  /**
-   * Logs the GPC endpoint check result to a CSV file.
-   * Also logs any errors associated with the GPC check.
-   * @async
-   * @param {string} site - The URL of the site being checked.
-   * @param {object} gpcResult - The result of the GPC endpoint check, including status and data.
-   */
-  async logGPCResult(site, gpcResult) {
-    const csvLine = `${site},${gpcResult?.status || 'None'},"${JSON.stringify(gpcResult?.data) || 'None'}"\n`;
-    await fs.promises.appendFile(`${this.crawl_path}/well-known-data.csv`, csvLine);
-
-    if (gpcResult?.error) {
-      await this.logError(site, gpcResult.error);
-    }
-  }
-
-  /**
    * Logs an error encountered during crawling or GPC endpoint checking to a JSON file.
    * @async
    * @param {string} site - The URL of the site where the error occurred.
@@ -103,7 +74,7 @@ class DatabaseManager {
    * @returns {Promise<void>} A promise that resolves when the siteId has been incremented.
    */
   async increment_siteId() {
-    await axios.get(`${API_BASE_URL}/increment_siteId`);
+    await axios.post(`${API_BASE_URL}/increment_siteId`);
   }
 }
 
