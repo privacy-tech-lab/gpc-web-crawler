@@ -7,20 +7,6 @@ run_crawler_batch() {
     local batch_id=$1
     TIMESTAMP=$(date +"%Y%m%d%H%M%S")
 
-    # Start the containers for this batch
-    DEBUG_MODE=$DEBUG_MODE TEST_CRAWL=false CRAWL_ID=$batch_id TIMESTAMP=$TIMESTAMP docker compose up --build -d
-
-    crawler_service="crawl_driver"
-    container_name=$(docker-compose ps -q -a $crawler_service)
-
-    echo "Started batch $batch_id with container $container_name (DEBUG_MODE=$DEBUG_MODE)"
-
-    # Wait for the crawler container to finish
-    while docker ps -q --no-trunc | grep -q "$container_name"; do
-        echo "Batch $batch_id still running..."
-        sleep 30
-    done
-
     echo "Batch $batch_id completed"
 }
 
@@ -29,16 +15,6 @@ run_crawler_custom() {
     # Start the containers for this batch
     DEBUG_MODE=true TEST_CRAWL=true TIMESTAMP=$TIMESTAMP docker compose up --build -d
 
-    crawler_service="crawl_driver"
-    container_name=$(docker-compose ps -q -a $crawler_service)
-
-    echo "Started custom batch with container $container_name (DEBUG_MODE=$DEBUG_MODE)"
-
-    # Wait for the crawler container to finish
-    while docker ps -q --no-trunc | grep -q "$container_name"; do
-        echo "Custom batch still running..."
-        sleep 30
-    done
 
     echo "Custom batch completed"
 }

@@ -19,8 +19,6 @@ class WebCrawler {
       this.config = new CrawlerConfig(args);
       this.browserManager = new BrowserManager(this.config);
       this.dbManager = new DatabaseManager(this.config.save_path);
-    
-
     }
   
     getSitePath() {
@@ -45,34 +43,6 @@ class WebCrawler {
       });
     }
   
-    /**
-     * Checks for the presence of a GPC endpoint (gpc.json) on a given site.
-     * @async
-     * @param {string} site - The base URL of the site to check.
-     * @returns {Promise<object>} An object containing the status and data of the GPC endpoint check.
-     */
-    async checkGPCEndpoint(site, retries = 0) {
-      const gpcUrl = new URL('/.well-known/gpc.json', site)
-      try {
-        const response = await axios.get(gpcUrl, {
-          timeout: PAGE_LOAD_TIMEOUT
-	});
-        return {
-          status: response.status,
-          data: response.status === 200 ? response.data : null
-        };
-      } catch (error) {
-          if (retries > 0){
-            return this.checkGPCEndpoint(site, retries - 1);
-          }else {
-            return {
-                  status: null,
-                  data: null,
-                  error: error.message
-                };
-          }
-      }
-    }
   
     /**
      * Visits a site using the browser, with retry logic for recoverable errors.
@@ -85,7 +55,7 @@ class WebCrawler {
     async visitSiteWithRetries(site, siteId, retries = 0) {
       //Checks if a site has been added to database
       //Always false on first try of a site
-      const alreadyAdded = await this.dbManager.checkAndUpdateDB(site, siteId);
+      const alreadyAdded = await this.dbManager.hasEntryInDb(siteId);
       if (!alreadyAdded){
         try {
           await this.browserManager.driver.get(this.config.sites[siteId]);
@@ -106,7 +76,7 @@ class WebCrawler {
           }
         }
       }
-      const wasAdded = await this.dbManager.checkAndUpdateDB(site, siteId);
+      const wasAdded = await this.dbManager.hasEntryInDb(siteId);
       if (wasAdded){
          return 'success';
       }else if(retries > 0){
@@ -114,21 +84,7 @@ class WebCrawler {
       }else{
          return 'failure'
       }
-    }
-  
-    async checkRedirect(url) {
-      try {
-        const response = await axios.get(url);
-        return response.request.res.responseUrl || url;
-      } catch (error) {
-        if (error.response && error.response.request.res.responseUrl) {
-          return error.response.request.res.responseUrl;
-        }
-        console.error('Error checking redirect:', error.message);
-        return url; // Return the original URL if there's an error
-      }
-    }
-    
+    }    
     
     /**
      * Handles errors encountered during crawling, logs the error, and takes a screenshot if applicable.
@@ -137,7 +93,7 @@ class WebCrawler {
      * @param {string} site - The URL of the site where the error occurred.
      */
     async handleError(error, site) {
-      this.config.errors[error.name] = site;
+      (this.config.errors[error.name] ??= []).push(site);
       await fs.promises.writeFile(
         `${this.config.save_path}/error-logging/error-logging.json`,
         JSON.stringify(this.config.errors)
@@ -161,17 +117,15 @@ class WebCrawler {
     }
   
     /**
-     * Crawls a single site, including visiting the site and checking for the GPC endpoint.
-     * It also updates the database with the crawl and GPC check results.
+     * Crawls a single site,.
+     * It also updates the database with the crawl results.
      * @async
      * @param {string} site - The hostname of the site to crawl.
      * @param {number} siteId - The ID of the site in the crawl list.
-     * @returns {Promise<object>} An object containing the crawl status and GPC data.
+     * @returns {Promise<object>} An object containing the crawl status.
      */
     async crawlSite(site, siteId) {
-
       const visitResult = await this.visitSiteWithRetries(site, siteId, 1)
-
   
       return {
         site,
@@ -188,18 +142,17 @@ class WebCrawler {
       await this.loadSites();
       await this.browserManager.setup();
       for (let siteId in this.config.sites) {
-        const originalUrl = this.config.sites[siteId]
-        
-        const finalUrl = await this.checkRedirect(originalUrl)
-  
+        const url = this.config.sites[siteId]
+        const { hostname } = new URL(url);
+
         const startTime = Date.now();
-        const { hostname } = new URL(finalUrl);
         console.log('Processing:', hostname);
         const result = await this.crawlSite(hostname, siteId);
-  
+        await this.dbManager.increment_siteId()
         const timeSpent = (Date.now() - startTime) / 1000;
         console.log(
           `Site: ${hostname}`,
+          `Site ID: ${siteId}`,
           `Crawl: ${result.crawlSuccess ? 'Success' : 'Failed'}`,
           `Time: ${timeSpent}s`
         );

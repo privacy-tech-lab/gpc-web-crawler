@@ -15,87 +15,30 @@ class DatabaseManager {
   }
 
   /**
-   * Updates the site ID for a given analysis record in the database.
+   * Checks the database for existing analysis records for a given siteId
    * @async
-   * @param {object} data - The data object containing the analysis record to update.
-   */
-  async updateSiteId(data) {
-    try {
-      await axios.put(`${API_BASE_URL}/analysis`, data);
-    } catch (error) {
-      console.error('Error updating site ID:', error.message);
-    }
-  }
-
-  /**
-   * Logs the GPC endpoint check result to a CSV file.
-   * Also logs any errors associated with the GPC check.
-   * @async
-   * @param {string} site - The URL of the site being checked.
-   * @param {object} gpcResult - The result of the GPC endpoint check, including status and data.
-   */
-  async logGPCResult(site, gpcResult) {
-    const csvLine = `${site},${gpcResult?.status || 'None'},"${JSON.stringify(gpcResult?.data) || 'None'}"\n`;
-    await fs.promises.appendFile(`${this.crawl_path}/well-known-data.csv`, csvLine);
-
-    if (gpcResult?.error) {
-      await this.logError(site, gpcResult.error);
-    }
-  }
-
-  /**
-   * Logs an error encountered during crawling or GPC endpoint checking to a JSON file.
-   * @async
-   * @param {string} site - The URL of the site where the error occurred.
-   * @param {string} error - The error message.
-   */
-  async logError(site, error) {
-    const errors = await this.loadErrors();
-    errors[site] = error;
-    await fs.promises.writeFile(
-      `${this.crawl_path}/well-known-errors.json`,
-      JSON.stringify(errors, null, 2)
-    );
-  }
-
-  /**
-   * Loads previously logged errors from the JSON file.
-   * @async
-   * @returns {Promise<object>} An object containing the logged errors, keyed by site URL.
-   */
-  async loadErrors() {
-    try {
-      const data = await fs.promises.readFile(`${this.crawl_path}/well-known-errors.json`, 'utf8');
-      return JSON.parse(data);
-    } catch {
-      return {};
-    }
-  }
-
-  /**
-   * Checks the database for existing analysis records for a given site and updates the site ID if necessary.
-   * Prioritizes updating existing entries where the site_id is null. If no such entry exists, it tries to update a null analysis entry.
-   * @async
-   * @param {string} site - The URL of the site.
    * @param {number} siteId - The ID of the site to be updated in the database.
    * @returns {Promise<boolean>} True if the database was updated, false otherwise.
    */
-  async checkAndUpdateDB(site, siteId) {
+  async hasEntryInDb(siteId) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/analysis/${site}`);
-      const latestData = response.data;
-      if (latestData.length >= 1) {
-        const lastEntry = latestData[latestData.length - 1];
-        if (lastEntry.site_id === null) {
-          lastEntry.site_id = siteId;
-          await this.updateSiteId(lastEntry);
-        }
-        return true;
-      } 
+      const response = await axios.get(`${API_BASE_URL}/analysis/${siteId}/exists`);
+      return response.data === true
     } catch (error) {
       console.error('Database operation failed:', error.message);
+      return false;
     }
-    return false;
+  }
+
+  /**
+   * Increments the siteId variable by sending a GET request to the REST API.
+   *
+   * This method calls the `/increment_siteId` endpoint, which increments the siteId value on the server.
+   *
+   * @returns {Promise<void>} A promise that resolves when the siteId has been incremented.
+   */
+  async increment_siteId() {
+    await axios.post(`${API_BASE_URL}/increment_siteId`);
   }
 }
 
