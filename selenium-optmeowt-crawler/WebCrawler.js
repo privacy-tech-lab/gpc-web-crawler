@@ -145,12 +145,12 @@ class WebCrawler {
     }
   
     /**
-     * Crawls a single site, including visiting the site and checking for the GPC endpoint.
-     * It also updates the database with the crawl and GPC check results.
+     * Crawls a single site,.
+     * It also updates the database with the crawl results.
      * @async
      * @param {string} site - The hostname of the site to crawl.
      * @param {number} siteId - The ID of the site in the crawl list.
-     * @returns {Promise<object>} An object containing the crawl status and GPC data.
+     * @returns {Promise<object>} An object containing the crawl status.
      */
     async crawlSite(site, siteId) {
       const visitResult = await this.visitSiteWithRetries(site, siteId, 1)
