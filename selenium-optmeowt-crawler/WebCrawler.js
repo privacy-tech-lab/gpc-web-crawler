@@ -152,7 +152,7 @@ class WebCrawler {
         const timeSpent = (Date.now() - startTime) / 1000;
         console.log(
           `Site: ${hostname}`,
-          `Site ID: ${siteID}`,
+          `Site ID: ${siteId}`,
           `Crawl: ${result.crawlSuccess ? 'Success' : 'Failed'}`,
           `Time: ${timeSpent}s`
         );
