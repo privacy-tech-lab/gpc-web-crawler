@@ -77,6 +77,10 @@ with open(data_save_path, "a") as f:
         except requests.exceptions.RequestException as e:
             csv_writer.writerow([site, r.status_code, None])
             errors[site] = str(e)
+        except Exception as e:
+            print("An unexpected error occurred for", site, ":", e)
+            csv_writer.writerow([site, None, None])
+            errors[site] = str(e)
         print(
             "time for the site:",
             time.time() - ts,
