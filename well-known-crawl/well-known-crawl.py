@@ -75,7 +75,7 @@ with open(data_save_path, "a") as f:
         # this block runs when status is 200 but r.json() is not json data
         # the "Expecting value: line 1 column 1 (char 0)", mean that the status ..." error will appear in the error logging json
         except requests.exceptions.RequestException as e:
-            csv_writer.writerow([site, r.status_code, None])
+            csv_writer.writerow([site, None, None])
             errors[site] = str(e)
         except Exception as e:
             print("An unexpected error occurred for", site, ":", e)
