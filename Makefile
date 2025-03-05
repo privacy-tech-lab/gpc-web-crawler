@@ -1,7 +1,7 @@
 .PHONY: clean start stop help start-debug test
 
 stop:
-	docker-compose down
+	docker compose down
 
 start:
 	DEBUG_MODE=false sh run-crawlers.sh
