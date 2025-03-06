@@ -12,7 +12,7 @@ if [ "$TEST_CRAWL" = "true" ]; then
     curl -o "$SAVE_PATH"/debug.json "http://rest_api:8080/debug"
   fi
 else
-  SAVE_PATH=./crawl_results/CRAWLSET"$CRAWL_ID"-"$TIMESTAMP"
+  SAVE_PATH=./crawl_results/pt"$CRAWL_ID"
   mkdir -p "$SAVE_PATH"/error-logging
   touch "$SAVE_PATH"/error-logging/error-logging.json
   

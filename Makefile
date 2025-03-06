@@ -15,6 +15,9 @@ clean:
 custom:
 	CUSTOM_CRAWL=true sh run-crawlers.sh
 
+check-if-up:
+	docker compose ls | grep -q "gpc-web-crawler.*running" && echo "true" || echo "false"
+
 help:
 	@echo "Available commands:"
 	@echo "  make start        - Starts crawler on all 8 batches of sites with debug mode turned off"

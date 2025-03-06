@@ -242,7 +242,6 @@ Here are the steps for doing so:
    python3 well-known-adhoc.py
    ```
 
-Running this script requires three input files: `selenium-optmeowt-crawler/full-crawl-set.csv`, which is in the repo, `redo-original-sites.csv`, and `redo-sites.csv`. The second two files are not found in the repo and should be created for that crawl based on the [instructions in our Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#saving-crawl-data-when-crawling-our-8-batch-dataset). As explained in `selenium-optmeowt-crawler/well-known-collection.py`, the output is a csv called `well-known-data.csv` with three columns: Site URL, request status, json data as well as an error json file called `well-known-errors.json` that logs all errors. To run this script on a csv file of sites without accounting for redo sites, comment all lines between line 27 and line 40 except for line 34.
 
 #### Details of the .well-known Analysis
 
@@ -261,22 +260,6 @@ Analyze the full crawl set with the redo sites replaced, i.e., using the full se
 - Status Codes (HTTP Responses)
   - In general, we expect a 404 status code (Not Found) when a site does not have a .well-known/gpc.json (output: Site_URL, 404, None)
   - Other possible status codes signaling that the .well-known data is not found include but are not limited to: 403 (Forbidden: the server understands the request but refuses to authorize it), 500 (Internal Server Error: the server encountered an unexpected condition that prevented it from fulfilling the request), 406 (Not Acceptable: the server cannot produce a response matching the list of acceptable values define), 429 (Too Many Requests)
-- `.well-known-collection.py` Code Rundown
-
-  1. First, the file reads in the full site set, i.e., original sites and redo sites
-     - sites_df.index(redo_original_sites[idx]): get the index of the site we want to change
-     - sites_list[x] = redo_new_sites[idx]: replace the site with the new site
-  2. r = requests.get(sites\*df[site_idx] + '/.well-known/gpc.json', timeout=35): The code runs with a timeout of 35 seconds (to stay consistent with Crawler timeouts)  
-     (i) checks if there will be json data, then logging all three columns (Site URL, request status, json data)  
-     (ii) if there is no json data, it will just log the **status and site**  
-     (iii) if r.json is not json data(), the "Expecting value: line 1 column 1 (char 0)", means that the status .." error will appear in the error logging and the error will log site and status  
-     (iv) if the request.get does not finish within 35 seconds, it will store errors and only log **site**
-
-- Important Code Documentation
-
-  - "file1.write(sites_df[site_idx] + "," + str(r.status_code) + ',"' + str(r.json()) + '"\n')" : writing data to a file with three columns (site, status and json data)
-  - "errors[sites_df[site_idx]] = str(e)" -> store errors with original links
-  - "with open("well-known-errors.json", "w") as outfile: json.dump(errors, outfile)" -> convert and write JSON object as containing errors to file
 
 ## 9. Thank You!
 

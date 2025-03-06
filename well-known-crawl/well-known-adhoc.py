@@ -15,7 +15,6 @@
 # was 200 (i.e. site exists and loaded) but it didn't find a json
 # this happens when sites send all incorrect links to a generic error page
 # instead of not serving the page. Also, it seems like human check error sites are the ones that time out
-
 import requests
 import pandas as pd
 import json

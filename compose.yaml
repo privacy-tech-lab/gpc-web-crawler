@@ -111,6 +111,7 @@ services:
     privileged: true
     ports:
       - "4444:4444"
+###Delete the following lines to start the crawler with the VNC environment started
     environment:
      - SE_START_VNC=false
     volumes:
