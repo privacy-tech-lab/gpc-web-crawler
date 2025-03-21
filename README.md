@@ -116,7 +116,7 @@ Here is an overview of the GPC Web Crawler architecture:
 
 ![crawler-architecture](crawler-architecture.png)
 
-All of this happens within the Desktop environment provided by the [headless VNC container](https://github.com/ConSol/docker-headless-vnc-container/tree/master). The editable version of this image is in the [Google Drive](https://docs.google.com/presentation/d/1lngYynWwW2UdKyUY5vKhfJ413DSvlGgU/edit?usp=sharing&ouid=112157414060543752223&rtpof=true&sd=true).
+One caveat is that all of this happens in a docker compose stack. Each aspect of this diagram (Selenium remote-controlled browser, REST API, and SQL database) live in their own container and their lifecycle is managed simultaneously. The editable version of this image is in the [Google Drive](https://docs.google.com/presentation/d/1lngYynWwW2UdKyUY5vKhfJ413DSvlGgU/edit?usp=sharing&ouid=112157414060543752223&rtpof=true&sd=true).
 
 ## 6. Components
 
