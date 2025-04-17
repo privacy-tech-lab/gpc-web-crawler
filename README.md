@@ -223,7 +223,7 @@ There are some types of sites that we cannot analyze due to our methodology:
 
 ### 8.1 Python Library for GPP String Decoding
 
-GPP strings must be decoded. The IAB provides a [JavaScript library](https://www.npmjs.com/package/@iabgpp/cmpapi) and an [interactive html decoder](https://iabgpp.com/#) to do so. To integrate decoding with our colab notebooks for data analysis, we rewrote the library in Python. The library can be found on [our Google Drive](https://drive.google.com/drive/folders/1b542jvVWm4ny9h_12fplL_VRvBfEVxFX?usp=sharing). More info can be found in our [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#gpp-string-decoding) and the [related issue](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/89).
+GPP strings must be decoded. The IAB provides a [JavaScript library](https://www.npmjs.com/package/@iabgpp/cmpapi) and an [interactive html decoder](https://iabgpp.com/#) to do so. To integrate decoding with our colab notebooks for data analysis, we rewrote the library in Python. The library is hosted in the [`cmp_api_python` directory](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/cmp_api_python) of this repository. More info can be found in our [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#gpp-string-decoding) and the [related issue](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/89).
 
 ### 8.2 .well-known/gpc.json Python Script
 
