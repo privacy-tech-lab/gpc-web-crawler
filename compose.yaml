@@ -3,6 +3,7 @@ services:
   crawl_driver:
     build: 
       context: ./selenium-optmeowt-crawler
+    image: ghcr.io/privacy-tech-lab/crawl-driver:latest
     ports:
       - "5901:5901"
       - "6901:6901"
@@ -28,6 +29,7 @@ services:
   well_known_crawl:
     build: 
       context: ./well-known-crawl
+    image: ghcr.io/privacy-tech-lab/well-known-crawl:latest
     environment:
       - TEST_CRAWL=${TEST_CRAWL}
       - CRAWL_ID=${CRAWL_ID}
@@ -45,6 +47,7 @@ services:
   rest_api:
     build: 
       context: ./rest_api
+    image: ghcr.io/privacy-tech-lab/rest-api:latest
     ports:
       - "8080:8080"
     environment:
@@ -71,6 +74,7 @@ services:
   mariadb:
     build:
       context: ./mariadb-compose
+    image: ghcr.io/privacy-tech-lab/mariadb-custom:latest
     container_name: mariadb-compose
     environment:
       - DB_CONNECTION=mysql
