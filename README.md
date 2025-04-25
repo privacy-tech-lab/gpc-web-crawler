@@ -190,6 +190,16 @@ The remaining columns pertain to the opt out status of a user, i.e., the OptMeow
 - `OTGPPConsent_before_gpc`: the value of the OTGPPConsent cookie before a GPC signal is sent. This cookie is [described by OneTrust](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0). Additional information is available in [issue #94](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/94)
 - `OTGPPConsent_after_gpc`: the value of the OTGPPConsent cookie after a GPC signal was sent. This cookie is [described by OneTrust](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0). Additional information is available in [issue #94](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/94)
 
+### 6.5 Well-Known Crawls
+
+When running the dockerized version of the crawl, there is a seperate, but contained crawl called the Well-Known crawl that occurs simultaneously. The results of these crawls can be found in a subfolder that get created called 'crawl_results'.
+
+For example, when running a custom crawl batch, you get the following files created: analysis.json, debug.json, an error-logging folder, well-known-data.csv, and well-known-errors.json. If the last two files are present in your crawl results, then the well-known crawl ran successfully!
+
+For more instructions on how to run the well-known crawl, there is a python script included. For more information about the script and how to run it, [see section 8.2](#82-well-knowngpcjson-python-script).
+
+Howe
+
 ## 7. Limitations/Known Issues/Bug Fixes
 
 ### 7.1 Sites that Cannot Be Analyzed
@@ -241,7 +251,6 @@ Here are the steps for doing so:
    ```bash
    python3 well-known-adhoc.py
    ```
-
 
 #### Details of the .well-known Analysis
 
