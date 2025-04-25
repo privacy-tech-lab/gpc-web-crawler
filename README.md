@@ -198,8 +198,6 @@ For example, when running a custom crawl batch, you get the following files crea
 
 For more instructions on how to run the well-known crawl, there is a python script included. For more information about the script and how to run it, [see section 8.2](#82-well-knowngpcjson-python-script).
 
-Howe
-
 ## 7. Limitations/Known Issues/Bug Fixes
 
 ### 7.1 Sites that Cannot Be Analyzed
