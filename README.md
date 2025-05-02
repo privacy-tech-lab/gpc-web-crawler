@@ -190,6 +190,15 @@ The remaining columns pertain to the opt out status of a user, i.e., the OptMeow
 - `OTGPPConsent_before_gpc`: the value of the OTGPPConsent cookie before a GPC signal is sent. This cookie is [described by OneTrust](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0). Additional information is available in [issue #94](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/94)
 - `OTGPPConsent_after_gpc`: the value of the OTGPPConsent cookie after a GPC signal was sent. This cookie is [described by OneTrust](https://my.onetrust.com/articles/en_US/Knowledge/UUID-2dc719a8-4be5-8d16-1dc8-c7b4147b88e0). Additional information is available in [issue #94](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/94)
 
+### 6.5 Well-Known Crawls
+
+Running the dockerized version of the crawler will also run a well-known crawl. For details on the well-known, see the [GPC spec's GPC Support Resource section](https://w3c.github.io/gpc/#gpc-support-resource)
+. The results of the well-known crawl will be stored in the 'crawl_results' subfolder.
+
+When running a crawl batch, the following files and folders are created: analysis.json, debug.json, an error-logging folder, well-known-data.csv, and well-known-errors.json. If the last two files are present, then the well-known crawl ran successfully!
+
+You can also run the well-know crawl separately. For more information [see section 8.2](#82-well-knowngpcjson-python-script).
+
 ## 7. Limitations/Known Issues/Bug Fixes
 
 ### 7.1 Sites that Cannot Be Analyzed
@@ -227,7 +236,7 @@ GPP strings must be decoded. The IAB provides a [JavaScript library](https://www
 
 ### 8.2 .well-known/gpc.json Python Script
 
-We collect [.well-known/gpc.json](https://privacycg.github.io/gpc-spec/#gpc-support-resource) data after the whole crawl finishes with a separate Python script, `selenium-optmeowt-crawler/well-known-collection.py`.
+Part of each crawl is also a well-known crawl. However, if you want, you can also run a separate well-known crawl with our Python script, `selenium-optmeowt-crawler/well-known-collection.py`.
 
 Here are the steps for doing so:
 
@@ -241,7 +250,6 @@ Here are the steps for doing so:
    ```bash
    python3 well-known-adhoc.py
    ```
-
 
 #### Details of the .well-known Analysis
 
