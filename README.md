@@ -192,11 +192,12 @@ The remaining columns pertain to the opt out status of a user, i.e., the OptMeow
 
 ### 6.5 Well-Known Crawls
 
-When running the dockerized version of the crawl, there is a seperate, but contained crawl called the Well-Known crawl that occurs simultaneously. The results of these crawls can be found in a subfolder that get created called 'crawl_results'.
+Running the dockerized version of the crawler will also run a well-known crawl. For details on the well-known, see the [GPC spec's GPC Support Resource section](https://w3c.github.io/gpc/#gpc-support-resource)
+. The results of the well-known crawl will be stored in the 'crawl_results' subfolder.
 
-For example, when running a custom crawl batch, you get the following files created: analysis.json, debug.json, an error-logging folder, well-known-data.csv, and well-known-errors.json. If the last two files are present in your crawl results, then the well-known crawl ran successfully!
+When running a crawl batch, the following files and folders are created: analysis.json, debug.json, an error-logging folder, well-known-data.csv, and well-known-errors.json. If the last two files are present, then the well-known crawl ran successfully!
 
-For more instructions on how to run the well-known crawl, there is a python script included. For more information about the script and how to run it, [see section 8.2](#82-well-knowngpcjson-python-script).
+You can also run the well-know crawl separately. For more information [see section 8.2](#82-well-knowngpcjson-python-script).
 
 ## 7. Limitations/Known Issues/Bug Fixes
 
@@ -235,7 +236,7 @@ GPP strings must be decoded. The IAB provides a [JavaScript library](https://www
 
 ### 8.2 .well-known/gpc.json Python Script
 
-We collect [.well-known/gpc.json](https://privacycg.github.io/gpc-spec/#gpc-support-resource) data after the whole crawl finishes with a separate Python script, `selenium-optmeowt-crawler/well-known-collection.py`.
+Part of each crawl is also a well-known crawl. However, if you want, you can also run a separate well-known crawl with our Python script, `selenium-optmeowt-crawler/well-known-collection.py`.
 
 Here are the steps for doing so:
 
