@@ -89,13 +89,13 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
    2. To start the Crawler with debug mode off, run:
 
       ```console
-        make start
+      make start
       ```
 
       or to start the Crawler with debug mode on:
 
       ```console
-        make start-debug
+      make start-debug
       ```
 
    3. When prompted with "Enter a batch number (1-8):", enter a number from one to eight, representing which batch of sites you wish to crawl.
