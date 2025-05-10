@@ -62,7 +62,7 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
 1. Sign in to [Docker](https://www.docker.com/get-started/), or create a Docker account if you do not already have one.
 
-2. Download docker by following the instructions in the [official Docker documentation](https://docs.docker.com/get-started/get-docker/)
+2. Download Docker by following the instructions in the [official Docker documentation](https://docs.docker.com/get-started/get-docker/)
 
 3. Authenticate to Docker Hub by following the instructions in the [official Docker Documentation](https://docs.docker.com/reference/cli/docker/login/#authenticate-to-docker-hub-with-web-based-login).
 
@@ -78,9 +78,14 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
       make custom
       ```
 
-6. To run the Crawler on one of our eight preselected batches sites:
+6. To run the Crawler on one of our eight preselected batches:
 
-   1. If you have already run the Crawler (perhaps to test it, or on another batch) and have containers running, run "make stop && make clean"
+   1. If you have already run the Crawler (perhaps to test it, or on another batch) and have containers running, run:
+
+      ```console
+      make stop && make clean
+      ```
+
    2. To start the Crawler with debug mode off, run:
 
       ```console
@@ -95,13 +100,19 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
    3. When prompted with "Enter a batch number (1-8):", enter a number from one to eight, representing which batch of sites you wish to crawl.
 
-   4. If the crawl unexpectedly fails midway through, run `make start` again and re-select the batch you are interested in.
+   4. If the crawl unexpectedly fails midway through, run
+
+      ```console
+      make start
+      ```
+
+      again and re-select the batch that failed to analyze.
 
 7. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would need to adjust the URL or your configuration accordingly.
 
-   - After the crawl is completed, a .json file containing the analysis results will also be dumped in the `crawl_results` directory
+   - After the crawl is completed, a .json file containing the analysis results will also be dumped in the `crawl_results` directory.
 
-8. To view the crawl results in a phpmyadmin, navigate to `localhost` in your browser. Enter the following credentials when prompted.
+8. To view the crawl results in a phpmyadmin interface, navigate to `localhost` in your browser. Enter the following credentials when prompted.
 
    - Username: root
    - Password: toor
@@ -116,7 +127,7 @@ Here is an overview of the GPC Web Crawler architecture:
 
 ![crawler-architecture](crawler-architecture.png)
 
-One caveat is that all of this happens in a docker compose stack. Each aspect of this diagram (Selenium remote-controlled browser, REST API, and SQL database) live in their own container and their lifecycle is managed simultaneously. The editable version of this image is in the [Google Drive](https://docs.google.com/presentation/d/1lngYynWwW2UdKyUY5vKhfJ413DSvlGgU/edit?usp=sharing&ouid=112157414060543752223&rtpof=true&sd=true).
+One caveat is that all of this happens in a Docker compose stack. Each aspect of this diagram (Selenium remote-controlled browser, REST API, and SQL database) live in their own container and their lifecycle is managed simultaneously. The editable version of this image is in the [Google Drive](https://docs.google.com/presentation/d/1lngYynWwW2UdKyUY5vKhfJ413DSvlGgU/edit?usp=sharing&ouid=112157414060543752223&rtpof=true&sd=true).
 
 ## 6. Components
 
@@ -128,7 +139,7 @@ The flow of the Crawler script is described in the diagram below.
 
 ![analysis-flow](https://github.com/privacy-tech-lab/gpc-web-crawler/assets/40359590/6261650d-1cc3-4a8e-b6e2-da682e4c1251)
 
-This script is stored and executed on a Desktop environment living in a docker image. The Crawler also keeps a log of sites that cause errors. It stores these logs in the `error-logging.json` file and updates this file after each error.
+This script is stored and executed on a Desktop environment living in a Docker image. The Crawler also keeps a log of sites that cause errors. It stores these logs in the `error-logging.json` file and updates this file after each error.
 
 #### Types of Errors that May Be Logged
 
@@ -192,7 +203,7 @@ The remaining columns pertain to the opt out status of a user, i.e., the OptMeow
 
 ### 6.5 Well-Known Crawls
 
-Running the dockerized version of the crawler will also run a well-known crawl. For details on the well-known, see the [GPC spec's GPC Support Resource section](https://w3c.github.io/gpc/#gpc-support-resource)
+Running the Dockerized version of the crawler will also run a well-known crawl. For details on the well-known, see the [GPC spec's GPC Support Resource section](https://w3c.github.io/gpc/#gpc-support-resource)
 . The results of the well-known crawl will be stored in the 'crawl_results' subfolder.
 
 When running a crawl batch, the following files and folders are created: analysis.json, debug.json, an error-logging folder, well-known-data.csv, and well-known-errors.json. If the last two files are present, then the well-known crawl ran successfully!
