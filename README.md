@@ -62,7 +62,7 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 
 1. Sign in to [Docker](https://www.docker.com/get-started/), or create a Docker account if you do not already have one.
 
-2. Download Docker by following the instructions in the [official Docker documentation](https://docs.docker.com/get-started/get-docker/)
+2. Download Docker by following the instructions in the [official Docker documentation](https://docs.docker.com/get-started/get-docker/).
 
 3. Authenticate to Docker Hub by following the instructions in the [official Docker Documentation](https://docs.docker.com/reference/cli/docker/login/#authenticate-to-docker-hub-with-web-based-login).
 
@@ -161,10 +161,10 @@ The [OptMeowt Analysis extension](https://github.com/privacy-tech-lab/gpc-optmeo
 
 The information collected during this process is used to determine whether the site respects GPC. Note that legal obligations to respect GPC differ by geographic location. In order for a site to be GPC compliant, the following statements should be true after the GPC signal was sent for each string or cookie that the site implemented:
 
-1. the third character of the US Privacy string is a `Y`
-2. the value of the OptanonConsent cookie is `isGpcEnabled=1`
-3. the opt out columns in the GPP string's relevant [US section](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/tree/main/Sections) (i.e., `SaleOptOut`, `TargetedAdvertisingOptOut`, `SharingOptOut`) have a value of `1`; Note that the columns and opt out requirements vary by state
-4. the value of the OneTrustWPCCPAGoogleOptOut cookie is `true`
+1. The third character of the US Privacy string is a `Y`.
+2. The value of the OptanonConsent cookie is `isGpcEnabled=1`.
+3. The opt out columns in the GPP string's relevant [US section](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/tree/main/Sections) (i.e., `SaleOptOut`, `TargetedAdvertisingOptOut`, `SharingOptOut`) have a value of `1`; Note that the columns and opt out requirements vary by state.
+4. The value of the OneTrustWPCCPAGoogleOptOut cookie is `true`.
 
 ### 6.3 Node.js REST API
 
@@ -251,14 +251,14 @@ Part of each crawl is also a well-known crawl. However, if you want, you can als
 
 Here are the steps for doing so:
 
-1. Just as the GPC Web Crawler, this script should be run using the same VPN location after all eight crawl batches are completed
-2. Ensure the lock screen setting is as for the usual crawl
-3. Change directories to `well-known-crawl`
-4. On line 25 of `well-known-adhoc.py`, change `csv_path` to the location of the list of sites you wish to crawl
-5. On line 38 of `well-known-adhoc.py`, change `save_path` to the location you wish to save the results to, for example: `save_path = "well-known-data.csv"'
+1. Just as the GPC Web Crawler, this script should be run using the same VPN location after all eight crawl batches are completed.
+2. Ensure the lock screen setting is as for the usual crawl.
+3. Change directories to `well-known-crawl`.
+4. On line 25 of `well-known-adhoc.py`, change `csv_path` to the location of the list of sites you wish to crawl.
+5. On line 38 of `well-known-adhoc.py`, change `save_path` to the location you wish to save the results to, for example: `save_path = "well-known-data.csv"'.
 6. Start the script using:
 
-   ```bash
+   ```console
    python3 well-known-adhoc.py
    ```
 
@@ -268,8 +268,8 @@ Analyze the full crawl set with the redo sites replaced, i.e., using the full se
 
 - Output
 
-  1. If successful, a csv with three columns will be created: Site URL, request status, json data
-  2. If not successful, an error json file will be created: logs all errors, including the reason for an error and 500 characters of the request text
+  1. If successful, a csv with three columns will be created: Site URL, request status, json data.
+  2. If not successful, an error json file will be created: logs all errors, including the reason for an error and 500 characters of the request text.
 
      Examples of an error:
 
