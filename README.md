@@ -129,7 +129,7 @@ Here is an overview of the GPC Web Crawler architecture:
 
 One caveat is that all of this happens in a Docker compose stack. Each aspect of this diagram (Selenium remote-controlled browser, REST API, and SQL database) live in their own container and their lifecycle is managed simultaneously. The editable version of this image is in the [Google Drive](https://docs.google.com/presentation/d/1lngYynWwW2UdKyUY5vKhfJ413DSvlGgU/edit?usp=sharing&ouid=112157414060543752223&rtpof=true&sd=true).
 
-For a more in-depth look at how the GPC Web Crawler works, check out our [Beginners Guide to GPC Web Crawler](https://docs.google.com/document/d/11RvO7fwe3hhugcK9u3rzGDcIfAKkc7kPUcigTv411_8/edit?usp=sharing). (The document is up to date as of its date. Later changes to Crawler are not reflected.)
+For a more in-depth look at how the GPC Web Crawler works, check out our [Beginners Guide to GPC Web Crawler](https://docs.google.com/document/d/11RvO7fwe3hhugcK9u3rzGDcIfAKkc7kPUcigTv411_8/edit?usp=sharing). (The document is up to date as of its date. Later changes to the Crawler are not reflected.)
 
 ## 6. Components
 
