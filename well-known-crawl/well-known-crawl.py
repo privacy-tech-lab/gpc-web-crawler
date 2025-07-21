@@ -66,20 +66,20 @@ with open(data_save_path, "a") as f:
             if r.status_code == 200:
                 csv_writer.writerow([site, r.status_code, json.dumps(r.json())])
             else:
-                csv_writer.writerow([site, r.status_code])
+                csv_writer.writerow([site, r.status_code,'None'])
         # if the request.get doesn't finish in 35 seconds, this runs.
         except requests.exceptions.Timeout as e:
             print("Timed Out")
-            csv_writer.writerow([site, None, None])
+            csv_writer.writerow([site, 'None', 'None'])
             errors[site] = str(e)
         # this block runs when status is 200 but r.json() is not json data
         # the "Expecting value: line 1 column 1 (char 0)", mean that the status ..." error will appear in the error logging json
         except requests.exceptions.RequestException as e:
-            csv_writer.writerow([site, None, None])
+            csv_writer.writerow([site, 'None', 'None'])
             errors[site] = str(e)
         except Exception as e:
             print("An unexpected error occurred for", site, ":", e)
-            csv_writer.writerow([site, None, None])
+            csv_writer.writerow([site, 'None', 'None'])
             errors[site] = str(e)
         print(
             "time for the site:",
