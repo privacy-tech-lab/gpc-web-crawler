@@ -183,7 +183,7 @@ The first few columns primarily pertain to identifying the site and verifying th
 
 - `id`: autoincrement primary key to identify the database entry (not zero indexed)
 - `site_id`: the id of the domain in the csv file that lists the sites to crawl (zero indexed). This id is used for processing purposes (i.e., to identify domains that redirect to another domain) and is set by the Crawler script
-- `domain`: the domain name of the site
+- `domain`: the domain name of the site that was analyzed, note that the domain may be different than the site provided for the crawl if a redirect occurs.
 - `sent_gpc`: a binary indicator of whether the OptMeowt Analysis extension sent a GPC opt out signal to the site
 
 The remaining columns pertain to the opt out status of a user, i.e., the OptMeowt Analysis extension, which is indicated by the value of the US Privacy string, OptanonConsent cookie, and GPP string. The US Privacy string can be implemented on a site via (1) the [client-side JavaScript USPAPI](https://github.com/InteractiveAdvertisingBureau/USPrivacy/blob/master/CCPA/USP%20API.md), which returns the US Privacy string value when called, or (2) an [HTTP cookie that stores its value](https://github.com/InteractiveAdvertisingBureau/USPrivacy/blob/master/CCPA/US%20Privacy%20String.md). The OptMeowt Analysis extension checks each site for both implementations of the US Privacy string by calling the USPAPI and checking all cookies. The GPP string's value is obtained via the [CMPAPI for GPP](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Core/CMP%20API%20Specification.md).
