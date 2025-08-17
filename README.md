@@ -181,8 +181,8 @@ The SQL database is a local database that stores analysis data. Instructions to 
 
 The first few columns primarily pertain to identifying the site and verifying that the OptMeowt Analysis extension is working properly.
 
-- `id`: autoincrement primary key to identify the database entry
-- `site_id`: the id of the domain in the csv file that lists the sites to crawl. This id is used for processing purposes (i.e., to identify domains that redirect to another domain) and is set by the Crawler script
+- `id`: autoincrement primary key to identify the database entry (not zero indexed)
+- `site_id`: the id of the domain in the csv file that lists the sites to crawl (zero indexed). This id is used for processing purposes (i.e., to identify domains that redirect to another domain) and is set by the Crawler script
 - `domain`: the domain name of the site
 - `sent_gpc`: a binary indicator of whether the OptMeowt Analysis extension sent a GPC opt out signal to the site
 
