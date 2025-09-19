@@ -37,6 +37,10 @@ You can find a list of our research publications in the [OptMeowt Analysis exten
 
 The GPC Web Crawler analyzes websites' compliance with [Global Privacy Control (GPC)](https://globalprivacycontrol.org/) at scale. GPC is a privacy preference signal that people can use to exercise their rights to opt out from web tracking. The GPC Web Crawler is based on [Selenium](https://www.selenium.dev/) and the [OptMeowt Analysis extension](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/gpc-analysis-extension).
 
+Unmute or turn up the volume if you do not hear any sound.
+
+<https://github.com/user-attachments/assets/e7f49f64-1d73-4a7d-add8-73dd576e726c>
+
 ## 3. Data
 
 To track the evolution of GPC compliance on the web over time we are performing regular crawls of a set of 11,708 websites. Our crawl results are publicly available (results are for California; Connecticut and Colorado coming soon):
