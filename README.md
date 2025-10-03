@@ -243,7 +243,11 @@ There are some types of sites that we cannot analyze due to our methodology:
 
 ### 7.2 Important Bug Fixes
 
-1. At some point the Crawler kept returning an empty result for [Firefox's urlClassification object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification). @eakubilo [fixed this tricky bug](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/122#issuecomment-2332655459).
+At some point the Crawler kept returning an empty result for [Firefox's urlClassification object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification). @eakubilo [fixed this tricky bug](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/122#issuecomment-2332655459).
+
+### 7.3 Running the Crawler on Windows
+
+There can be issues running the Crawler on Windows. For more information, see [issue #198](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/198).
 
 ## 8. Other Resources
 
