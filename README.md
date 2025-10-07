@@ -47,8 +47,8 @@ To track the evolution of GPC compliance on the web over time we are performing 
 
 <br>
 <p align="center">
-  <a href="https://docs.google.com/spreadsheets/d/1xDz4RS5tlWBmAS33xVEOk2rqtc21lSkdInRv9J02ZFs/edit?usp=sharing"><img src="https://github.com/privacy-tech-lab/gpc-web-crawler/blob/main/data_screen.png" width="364px" height="187px" title="screenshot of GPC data in Google Sheets"></a><br>
-  <a href="https://docs.google.com/spreadsheets/d/1xDz4RS5tlWBmAS33xVEOk2rqtc21lSkdInRv9J02ZFs/edit?usp=sharing">View crawl results on Google Sheets</a>
+  <a href="https://drive.google.com/drive/folders/1Li5Ixlv3V8XrVYDK91Txag56Cun6tQ4j?usp=sharing"><img src="https://github.com/privacy-tech-lab/gpc-web-crawler/blob/main/data_screen.png" width="364px" height="187px" title="screenshot of GPC data in Google Sheets"></a><br>
+  <a href="https://drive.google.com/drive/folders/1Li5Ixlv3V8XrVYDK91Txag56Cun6tQ4j?usp=sharing">View crawl results on Google Sheets</a>
 <p>
 
 Please note the following:
