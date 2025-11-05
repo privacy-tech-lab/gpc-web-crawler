@@ -250,6 +250,10 @@ At some point the Crawler kept returning an empty result for [Firefox's urlClass
 
 There can be issues running the Crawler on Windows. For more information, see [issue #198](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/198).
 
+### 7.4 urlClassification Truncation
+
+Before November 2025, all urlClassification data was being truncated at 5000 characters, leading to some sites losing data for that field. See [issue #199](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/199).
+
 ## 8. Other Resources
 
 ### 8.1 Python Library for GPP String Decoding
