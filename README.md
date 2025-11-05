@@ -252,7 +252,7 @@ There can be issues running the Crawler on Windows. For more information, see [i
 
 ### 7.4 urlClassification Truncation
 
-Before November 2025, all urlClassification data was being truncated at 5000 characters, leading to some sites losing data for that field. See [issue #199](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/199).
+Before November 2025, all urlClassification data was being truncated at 5,000 characters, leading to some sites losing data for that field. See [issue #199](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/199) with [statistics](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/199#issuecomment-3478288457).
 
 ## 8. Other Resources
 
