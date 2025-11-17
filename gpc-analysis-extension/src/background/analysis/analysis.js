@@ -266,7 +266,8 @@ async function fetchUSPStringData() {
 //sends sql post request to db and then resets the global sql_data
 function send_sql_and_reset(domain) {
   analysis_userend[domain]["domain"] = domain;
-  analysis_userend[domain]["urlClassification"] = JSON.stringify(urlclassification[domain]).slice(0, 5000); //add urlClassification info, cap it at 5000 chars 
+  console.log('truncating!')
+  analysis_userend[domain]["urlClassification"] = JSON.stringify(urlclassification[domain]).slice(0, 50000); //add urlClassification info, cap it at 5000 chars 
   axios
     .post("http://rest_api:8080/analysis", analysis_userend[domain], {
       headers: {
