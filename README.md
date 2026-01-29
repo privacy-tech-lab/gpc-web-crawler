@@ -43,7 +43,7 @@ Unmute or turn up the volume if you do not hear any sound.
 
 ## 3. Data
 
-To track the evolution of GPC compliance on the web over time we are performing regular crawls of a set of 11,708 websites. Our crawl results are publicly available (results are for California, Connecticut, Colorado, and New Jersey):
+To track the evolution of GPC compliance on the web over time we are performing regular crawls of a set of 11,708 websites. Our crawl results are publicly available (results are for California, Connecticut, Colorado, New Jersey, and Oregon):
 
 <br>
 <p align="center">
@@ -54,7 +54,7 @@ To track the evolution of GPC compliance on the web over time we are performing 
 Please note the following:
 
 - While our Crawler has high accuracy, occasional misclassifications are possible (for the accuracy of our Crawler see section 3.5 of our paper ["Websites' Global Privacy Control Compliance at Scale and over Time"](https://sebastianzimmeck.de/hausladenEtAlGPCWeb2025.pdf)). For the most recent accuracy measures, please refer to this [Google Sheet](https://docs.google.com/spreadsheets/d/1ZNE0hywsv-rVlcgsFpEgwta5d2Mmx5ik4DWxAvTaNFM/edit?gid=2089868373#gid=2089868373).
-- See directions for our accuracy check protocol [here](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#accuracy-check-methodology)
+- Here are the [directions for our accuracy check protocol](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#accuracy-check-methodology).
 - Whether GPC applies to a site depends on thresholds of revenue, users, and other criteria. In our paper we estimated GPC applicability based on a site's web traffic estimate (see section 3.2 of our [paper](https://sebastianzimmeck.de/hausladenEtAlGPCWeb2025.pdf)).
 
 If you have any questions or suggestions, especially, if you believe a website has been incorrectly identified as non-compliant, please contact us at sebastian[at]privacytechlab.org.
@@ -74,7 +74,6 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
 4. Clone this repo locally or download a zipped copy and unzip it.
 
 5. If you are performing a test run of the Crawler or plan on running the Crawler on your own set of sites, follow the directions in the sublist of this bullet. If not, skip to step 6.
-
    1. Open sites.csv and enter the URLs of the sites you want to analyze in the first column. Some examples are included in the file - do not change anything if you simply want to perform a test run.
 
    2. In the root directory of the repo, the Crawler can be started on the chosen test batch of sites in sites.csv with debug mode on by running:
@@ -84,7 +83,6 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
       ```
 
 6. To run the Crawler on one of our eight preselected batches:
-
    1. If you have already run the Crawler (perhaps to test it, or on another batch) and have containers running, run:
 
       ```console
@@ -114,11 +112,9 @@ You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBo
       again and re-select the batch that failed to analyze.
 
 7. To check the analysis results, open a browser and navigate to <http://localhost:8080/analysis>. Ports may be different depending on your local server setup. So, you would need to adjust the URL or your configuration accordingly.
-
    - After the crawl is completed, a .json file containing the analysis results will also be dumped in the `crawl_results` directory.
 
 8. To view the crawl results in a phpmyadmin interface, navigate to `localhost` in your browser. Enter the following credentials when prompted.
-
    - Username: root
    - Password: toor
 
@@ -282,12 +278,10 @@ Here are the steps for doing so:
 Analyze the full crawl set with the redo sites replaced, i.e., using the full set of sites and the sites that we have redone (which replaced the original sites with redo sites).
 
 - Output
-
   1. If successful, a csv with three columns will be created: Site URL, request status, json data.
   2. If not successful, an error json file will be created: logs all errors, including the reason for an error and 500 characters of the request text.
 
      Examples of an error:
-
      - "Expecting value: line 1 column 1 (char 0)": the status code was 200 (site exists and loaded) or 202 (the request is accepted but incomplete processing) but did not find a json (output: Site_URL, 200, None or Site_URL, 202, None)
      - Reason: site sent all incorrect URLs to a generic error page instead of not serving the page, which would have been a 404 status code
 
