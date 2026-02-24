@@ -53,11 +53,11 @@ To track the evolution of GPC compliance on the web over time we are performing 
 
 Please note the following:
 
-- While our Crawler has high accuracy, occasional misclassifications are possible (for the accuracy of our Crawler see section 3.5 of our paper ["Websites' Global Privacy Control Compliance at Scale and over Time"](https://sebastianzimmeck.de/hausladenEtAlGPCWeb2025.pdf)). For the most recent accuracy measures, please refer to this [Google Sheet](https://docs.google.com/spreadsheets/d/1ZNE0hywsv-rVlcgsFpEgwta5d2Mmx5ik4DWxAvTaNFM/edit?gid=2089868373#gid=2089868373).
-- Here are the [directions for our accuracy check protocol](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#accuracy-check-methodology).
-- Whether GPC applies to a site depends on thresholds of revenue, users, and other criteria. In our paper we estimated GPC applicability based on a site's web traffic estimate (see section 3.2 of our [paper](https://sebastianzimmeck.de/hausladenEtAlGPCWeb2025.pdf)).
+- Whether a website is compliant with GPC depends on its [Compliance Classifications](https://docs.google.com/spreadsheets/d/1cB-Y2W46tn7orDs7EcZ7neWzjVYEpIQHjCw_p8YSa0Y/edit?usp=sharing).
+- While our Crawler has high accuracy, occasional misclassifications are possible (see section 3.5 of our paper ["Websites' Global Privacy Control Compliance at Scale and over Time"](https://sebastianzimmeck.de/hausladenEtAlGPCWeb2025.pdf)). We [measure the accuracy of our Crawler on a regular basis](https://docs.google.com/spreadsheets/d/1ZNE0hywsv-rVlcgsFpEgwta5d2Mmx5ik4DWxAvTaNFM/edit?gid=2089868373#gid=2089868373). Here are the [directions for our accuracy check protocol](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#accuracy-check-methodology).
+- Whether GPC applies to a site depends on thresholds of revenue, users, and other criteria. In our paper we estimated GPC applicability based on a site's web traffic (see section 3.2 of our [paper](https://sebastianzimmeck.de/hausladenEtAlGPCWeb2025.pdf)).
 
-If you have any questions or suggestions, especially, if you believe a website has been incorrectly identified as non-compliant, please contact us at sebastian[at]privacytechlab.org.
+If you have any questions or suggestions, especially, if you believe a website has been incorrectly classified as non-compliant, please contact us at sebastian[at]privacytechlab.org.
 
 ## 4. Development
 
