@@ -1,0 +1,38 @@
+{
+    "$schema": "./compliance_classification_schema.json",
+    "schemaVersion": "1.0.0",
+    "site": "example.com",
+    "usps": {
+        "status": "opted_out"
+    },
+    "optanonConsent": {
+        "status": "did_not_opt_out"
+    },
+    "wellKnown": {
+        "status": "opted_out"
+    },
+    "gpp": {
+        "classifications": [
+            {
+                "state": "US",
+                "field": "SaleOptOut",
+                "status": "opted_out"
+            },
+            {
+                "state": "CA",
+                "field": "SaleOptOut",
+                "status": "did_not_opt_out"
+            },
+            {
+                "state": "CA",
+                "field": "SharingOptOut",
+                "status": "opted_out"
+            },
+            {
+                "state": "CT",
+                "field": "TargetedAdvertisingOptOut",
+                "status": "invalid_missing"
+            }
+        ]
+    }
+}

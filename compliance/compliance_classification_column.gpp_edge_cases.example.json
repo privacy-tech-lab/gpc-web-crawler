@@ -1,0 +1,29 @@
+{
+    "$schema": "./compliance_classification_schema.json",
+    "schemaVersion": "1.0.0",
+    "site": "gpp-problems.com",
+    "usps": null,
+    "optanonConsent": {
+        "status": "invalid_missing"
+    },
+    "wellKnown": null,
+    "gpp": {
+        "classifications": [
+            {
+                "state": "US",
+                "field": "SaleOptOut",
+                "status": "not_applicable"
+            },
+            {
+                "state": "CA",
+                "field": "SaleOptOut",
+                "status": "invalid_missing"
+            },
+            {
+                "state": "CA",
+                "field": "SharingOptOut",
+                "status": "did_not_opt_out"
+            }
+        ]
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "$schema": "./compliance_classification_schema.json",
+    "schemaVersion": "1.0.0",
+    "site": "usps-only-site.com",
+    "usps": {
+        "status": "did_not_opt_out"
+    },
+    "optanonConsent": null,
+    "wellKnown": {
+        "status": "opted_out"
+    },
+    "gpp": null
+}

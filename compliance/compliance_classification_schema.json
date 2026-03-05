@@ -1,0 +1,191 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "compliance_classification_schema.json",
+    "title": "Compliance Classification Column",
+    "description": "Schema for the per-site compliance classification column in crawl data. Each object represents one site's compliance status across all four tracked privacy string types: USPS, OptanonConsent, GPP, and Well-known. A 'null' value for any section means the site had no detectable implementation of that privacy string (before or after receiving a GPC signal) and therefore receives no classification for it. Only sites that have at least one privacy string detected — before, after, or both, even if invalid — will receive a classification for that string.",
+    "type": "object",
+    "required": [
+        "schemaVersion",
+        "site",
+        "usps",
+        "optanonConsent",
+        "wellKnown",
+        "gpp"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "Optional reference to this schema file."
+        },
+        "schemaVersion": {
+            "type": "string",
+            "description": "Semantic version of this schema format, e.g. '1.0.0'. Increment the major version for any breaking change to field names or enum values.",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "examples": [
+                "1.0.0"
+            ]
+        },
+        "site": {
+            "type": "string",
+            "description": "The domain of the site this record applies to (e.g. 'example.com').",
+            "examples": [
+                "example.com"
+            ]
+        },
+        "usps": {
+            "description": "Classification for the US Privacy String (USPS). Derived by comparing uspapi_before_gpc / usp_cookies_before_gpc against uspapi_after_gpc / usp_cookies_after_gpc. See the USPS Compliance Classification table for full condition-to-status mapping.",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "required": [
+                        "status"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "status": {
+                            "type": "string",
+                            "description": "The USPS compliance outcome.",
+                            "enum": [
+                                "opted_out",
+                                "did_not_opt_out",
+                                "invalid_missing",
+                                "not_applicable"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "type": "null",
+                    "description": "Null: no detectable USPS present before or after GPC — no classification assigned."
+                }
+            ]
+        },
+        "optanonConsent": {
+            "description": "Classification for the OneTrust OptanonConsent cookie. Derived by comparing the isGpcEnabled field in OptanonConsent_before_gpc vs OptanonConsent_after_gpc. Note: 'not_applicable' does not exist for OptanonConsent — the cookie format provides no mechanism to declare non-applicability. See the OptanonConsent Compliance Classification table for full condition-to-status mapping.",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "required": [
+                        "status"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "status": {
+                            "type": "string",
+                            "description": "The OptanonConsent compliance outcome.",
+                            "enum": [
+                                "opted_out",
+                                "did_not_opt_out",
+                                "invalid_missing"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "type": "null",
+                    "description": "Null: no detectable OptanonConsent cookie present before or after GPC — no classification assigned."
+                }
+            ]
+        },
+        "wellKnown": {
+            "description": "Classification for the /.well-known/gpc.json resource. Single-point-in-time evaluation — there is no before/after comparison; only the content found after GPC is evaluated. 'invalid' means the file exists but neither 'gpc: true' nor 'gpc: false' can be parsed from it. 'not_applicable' does not exist for Well-known. See the Well-known Compliance Classification table for full condition-to-status mapping.",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "required": [
+                        "status"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "status": {
+                            "type": "string",
+                            "description": "The Well-known compliance outcome.",
+                            "enum": [
+                                "opted_out",
+                                "did_not_opt_out",
+                                "invalid"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "type": "null",
+                    "description": "Null: no /.well-known/gpc.json file was served — no classification assigned."
+                }
+            ]
+        },
+        "gpp": {
+            "description": "Classification(s) for the Global Privacy Platform (GPP) String. GPP produces multiple classifications — one per (state, field) combination where data was detected. 'state' follows GPP spec section identifiers: 'US' for US National, two-letter abbreviations for state-level sections. 'field' is one of the three opt-out fields. 'status' is the outcome for that (state, field) pair. Derived by comparing decoded_gpp_before_gpc vs decoded_gpp_after_gpc. A site is considered to have a missing GPP String if sections do not match before and after opt-out. See the GPP Compliance Classification table and the Legend for full details.",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "required": [
+                        "classifications"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "classifications": {
+                            "type": "array",
+                            "description": "One entry per (state, field) combination where GPP data was detected. Must have at least one item — if no GPP data was detected at all, 'gpp' should be null.",
+                            "minItems": 1,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "state",
+                                    "field",
+                                    "status"
+                                ],
+                                "additionalProperties": false,
+                                "properties": {
+                                    "state": {
+                                        "type": "string",
+                                        "description": "GPP section identifier. 'US' = US National. State codes (CA, CT, CO, TX, VA, OR, MT, DE, IA, NH, NJ, TN, etc.) match the GPP spec.",
+                                        "examples": [
+                                            "US",
+                                            "CA",
+                                            "CT",
+                                            "CO",
+                                            "TX",
+                                            "VA",
+                                            "OR",
+                                            "MT",
+                                            "DE",
+                                            "IA",
+                                            "NH",
+                                            "NJ",
+                                            "TN"
+                                        ]
+                                    },
+                                    "field": {
+                                        "type": "string",
+                                        "description": "The opt-out field within the GPP section being classified.",
+                                        "enum": [
+                                            "SaleOptOut",
+                                            "SharingOptOut",
+                                            "TargetedAdvertisingOptOut"
+                                        ]
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "description": "The GPP compliance outcome for this (state, field) pair.",
+                                        "enum": [
+                                            "opted_out",
+                                            "did_not_opt_out",
+                                            "invalid_missing",
+                                            "not_applicable"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "null",
+                    "description": "Null: no GPP String detected in any state section before or after GPC — no classification assigned."
+                }
+            ]
+        }
+    }
+}

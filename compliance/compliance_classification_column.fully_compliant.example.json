@@ -1,0 +1,48 @@
+{
+    "$schema": "./compliance_classification_schema.json",
+    "schemaVersion": "1.0.0",
+    "site": "fully-compliant.com",
+    "usps": {
+        "status": "opted_out"
+    },
+    "optanonConsent": {
+        "status": "opted_out"
+    },
+    "wellKnown": {
+        "status": "opted_out"
+    },
+    "gpp": {
+        "classifications": [
+            {
+                "state": "US",
+                "field": "SaleOptOut",
+                "status": "opted_out"
+            },
+            {
+                "state": "US",
+                "field": "SharingOptOut",
+                "status": "opted_out"
+            },
+            {
+                "state": "CA",
+                "field": "SaleOptOut",
+                "status": "opted_out"
+            },
+            {
+                "state": "CA",
+                "field": "SharingOptOut",
+                "status": "opted_out"
+            },
+            {
+                "state": "CT",
+                "field": "SaleOptOut",
+                "status": "opted_out"
+            },
+            {
+                "state": "CT",
+                "field": "TargetedAdvertisingOptOut",
+                "status": "opted_out"
+            }
+        ]
+    }
+}
