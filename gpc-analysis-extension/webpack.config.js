@@ -30,8 +30,12 @@ export default (env, argv) => {
       filename: "[name].bundle.js",
       path: path.resolve(
         __dirname,
-        `${isProduction ? "dist" : "dev"}/${browser}`
+        `${isProduction ? "dist" : "dev"}/${browser}`,
       ),
+    },
+    output: {
+      path: path.resolve(__dirname, "dist"),
+      clean: true, // This replaces clean-webpack-plugin
     },
     devtool: isProduction ? "source-map" : "cheap-source-map",
     devServer: {
