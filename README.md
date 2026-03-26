@@ -63,7 +63,7 @@ If you have any questions or suggestions, especially, if you believe a website h
 
 You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBook. Get started as follows:
 
-0. If you want to test sites' compliance with a particular law, for example, the California Consumer Privacy Act (CCPA), make sure to crawl the sites from a computer in the respective geographical location. If you are located in a different location, you can use a VPN. For example, we perform our crawls for the CCPA using [Mullvad VPN](https://mullvad.net/en) set to Los Angeles, California.
+0. If you want to test sites' compliance with a particular law, for example, the California Consumer Privacy Act (CCPA), make sure to crawl the sites from a computer in the respective geographical location. If you are located in a different location, you can use a VPN. For example, we perform our crawls for the CCPA using the [Private Internet Access VPN](https://www.privateinternetaccess.com/) set to US California.
 
 1. Sign in to [Docker](https://www.docker.com/get-started/), or create a Docker account if you do not already have one.
 
