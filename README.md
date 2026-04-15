@@ -63,7 +63,7 @@ If you have any questions or suggestions, especially, if you believe a website h
 
 You can install the GPC Web Crawler on a consumer-grade computer. We use a MacBook. Get started as follows:
 
-0. If you want to test sites' compliance with a particular law, for example, the California Consumer Privacy Act (CCPA), make sure to crawl the sites from a computer in the respective geographical location. If you are located in a different location, you can use a VPN. For example, we perform our crawls for the CCPA using the [Private Internet Access VPN](https://www.privateinternetaccess.com/) set to US California.
+0. If you want to test sites' compliance with a particular law, for example, the California Consumer Privacy Act (CCPA), make sure to crawl the sites from a computer in the respective geographical location. If you are located in a different location, you can use a VPN. For example, we perform our crawls for the CCPA using [Mullvad VPN](https://mullvad.net/en) set to Los Angeles, California.
 
 1. Sign in to [Docker](https://www.docker.com/get-started/), or create a Docker account if you do not already have one.
 
@@ -211,7 +211,7 @@ Running the Dockerized version of the crawler will also run a well-known crawl. 
 
 When running a crawl batch, the following files and folders are created: analysis.json, debug.json, an error-logging folder, well-known-data.csv, and well-known-errors.json. If the last two files are present, then the well-known crawl ran successfully!
 
-You can also run the well-know crawl separately. For more information [see section 8.2](#82-well-knowngpcjson-python-script).
+You can also run the well-known crawl separately. For more information [see section 8.2](#82-well-knowngpcjson-python-script).
 
 ## 7. Limitations/Known Issues/Bug Fixes
 
