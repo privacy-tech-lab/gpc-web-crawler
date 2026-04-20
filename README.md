@@ -232,11 +232,11 @@ There are some types of sites that we cannot analyze due to our methodology:
 
 3. Sites that block script injection.
 
-   For instance, <https://www.flickr.com> blocks script injection and will not successfully be analyzed. In the debugging table, on the first attempt, the last message will be `runAnalysis-fetching`, and on the second attempt, the extension logs `SQL POSTING: SOMETHING WENT WRONG`.
+   For example, <https://www.flickr.com> blocks script injection and will not successfully be analyzed. In the debugging table, on the first attempt, the last message will be `runAnalysis-fetching`, and on the second attempt, the extension logs `SQL POSTING: SOMETHING WENT WRONG`.
 
 4. Sites that redirect between multiple domains throughout analysis.
 
-   For instance, <https://spothero.com/> and <https://parkingpanda.com/> are now one entity but still can use both domains. In the debugging table, you will see multiple debugging entries under each domain. Because we store analysis data by domain, the data will be incomplete and will not be added to the database.
+   For example, <https://spothero.com/> and <https://parkingpanda.com/> are now one entity but still can use both domains. In the debugging table, you will see multiple debugging entries under each domain. Because we store analysis data by domain, the data will be incomplete and will not be added to the database.
 
 ### 7.2 Important Bug Fixes
 
