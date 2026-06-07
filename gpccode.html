@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analysis Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      margin: 20px;
+      color: #333;
+    }
+    h1 {
+      color: #0056b3;
+    }
+    code {
+      background-color: #f4f4f4;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+    }
+    pre {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    ul {
+      list-style-type: disc;
+      margin-left: 20px;
+    }
+    ol {
+      margin-left: 20px;
+    }
+    .note {
+      background-color: #e9f5ff;
+      border-left: 4px solid #0056b3;
+      padding: 10px;
+      margin-top: 15px;
+    }
+    .legend {
+      background-color: #fff;
+      border-left: 4px solid #999;
+      padding: 10px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Ground Truth Analysis</h1>
+
+  <h2>Ground Truth Analysis Methodology</h2>
+  <ol>
+    <li>Change the timeout in <code>WebCrawler.js</code> to 120000 or 180000.</li>
+    <li>Connect to the VPN that matches the crawl location.</li>
+    <li>Load the set of custom sites into <code>sites.csv</code>; for accuracy checks, work in batches of five due to the slow VNC interface.</li>
+    <li>Determine the US Privacy String value by checking the site's cookies in the Network Monitor and by calling the USPAPI from the Web Console.</li>
+    <li>Determine the GPP String value by calling the GPP CMPAPI from the Web Console.</li>
+    <li>Find OneTrust’s <code>OptanonConsent</code> cookie value by inspecting cookies in the Network Monitor.</li>
+    <li>Retrieve the well-known value by appending <code>/.well-known/gpc.json</code> to the URL path.</li>
+    <li>After the GPC signal is detected, repeat steps 4–7 to capture the post-signal values.</li>
+  </ol>
+
+  <h2>Analysis Details</h2>
+
+  <h3>USPAPI Call</h3>
+  <pre><code>__uspapi('getUSPData', 1, (data) => { console.log("USP Data: ", data); });</code></pre>
+
+  <h3>GPP Calls</h3>
+  <pre><code>__gpp('ping', (data, success) => { console.log(data, success); });</code></pre>
+  <pre><code>__gpp('getGPPData', (data, success) => { console.log(data, success); });</code></pre>
+
+  <h3>Cookie Values</h3>
+  <ul>
+    <li>Check through <strong>Storage → Cookies</strong></li>
+    <li><code>USP</code> cookie value before and after GPC signal</li>
+    <li><code>OptanonConsent</code> cookie value before and after GPC signal</li>
+  </ul>
+
+  <h3>Verification Steps</h3>
+  <ul>
+    <li>Well-known data can be verified by adding <code>/.well-known/gpc.json</code> to the URL path.</li>
+    <li>GPP strings can be decoded at <a href="https://iabgpp.com/#" target="_blank">https://iabgpp.com/#</a>.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Note:</strong> Crawl and Manual Data are based on different website loads. In other words, 
+    the ground truth for the crawl was not analyzed based on the same data on which the crawl was run.
+  </div>
+
+  <div class="legend">
+    <h3>Legend</h3>
+    <ul>
+      <li><strong>Manual and crawl data are identical</strong></li>
+      <li><strong>Manual and crawl data are inconsistent</strong></li>
+    </ul>
+  </div>
+
+</body>
+</html>
