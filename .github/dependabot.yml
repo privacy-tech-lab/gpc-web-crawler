@@ -10,7 +10,7 @@ updates:
         update-types:
           - minor
           - patch
-      crawler-minor-and-patch:
+      crawler-major:
         update-types:
           - major
 
