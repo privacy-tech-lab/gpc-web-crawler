@@ -20,12 +20,12 @@ updates:
 
       # Groups for Security Updates
       crawler-security-minor-and-patch:
-        applies-to: securtiy-updates
+        applies-to: security-updates
         update-types:
           - minor
           - patch
       crawler-security-major:
-        applies-to: securtiy-updates
+        applies-to: security-updates
         update-types:
           - major
 
