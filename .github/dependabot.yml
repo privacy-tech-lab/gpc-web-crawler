@@ -1,47 +1,31 @@
 version: 2
 updates:
-  # 1. The Root Directory
   - package-ecosystem: npm
-    directory: /
+    directories:
+      - "/"
+      - "/gpc-analysis-extension"
+      - "/selenium-optmeowt-crawler"
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
     groups:
-      crawler-root-minor-and-patch:
+      # Groups for Version Updates
+      crawler-minor-and-patch:
         update-types:
           - minor
           - patch
-      crawler-root-major:
+      crawler-major:
         update-types:
           - major
 
-  # 2. The Analysis Extension Directory
-  - package-ecosystem: npm
-    directory: /gpc-analysis-extension
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
-    groups:
-      crawler-analysis-minor-and-patch:
+      # Groups for Security Updates
+      crawler-security-minor-and-patch:
+        applies-to: security-updates
         update-types:
           - minor
           - patch
-      crawler-analysis-major:
-        update-types:
-          - major
-
-  # 3. The Crawler Directory
-  - package-ecosystem: npm
-    directory: /selenium-optmeowt-crawler
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
-    groups:
-      crawler-selenium-minor-and-patch:
-        update-types:
-          - minor
-          - patch
-      crawler-selenium-major:
+      crawler-security-major:
+        applies-to: security-updates
         update-types:
           - major
 
