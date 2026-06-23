@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "chromedriver": "^149.0.4",
+    "chromedriver": "^150.0.0",
     "csv-parse": "^7.0.0",
     "geckodriver": "^6.1.0",
     "idb": "^8.0.3",
