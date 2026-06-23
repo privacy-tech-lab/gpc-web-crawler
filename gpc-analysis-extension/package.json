@@ -28,7 +28,7 @@
     "acorn": "^8.17.0",
     "ajv": "^8.18.0",
     "animate.css": "^4.1.1",
-    "axios": "^1.18.0",
+    "axios": "^1.18.1",
     "dark-mode-switch": "^1.0.0",
     "darkmode-js": "^1.5.7",
     "file-saver": "^2.0.5",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@babel/core": "^8.0.1",
-    "@babel/preset-env": "^8.0.1",
+    "@babel/preset-env": "^8.0.2",
     "babel-loader": "^10.1.1",
     "concurrently": "^10.0.3",
     "copy-webpack-plugin": "^14.0.0",
