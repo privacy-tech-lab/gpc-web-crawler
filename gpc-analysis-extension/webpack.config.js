@@ -6,7 +6,6 @@ privacy-tech-lab, https://www.privacytechlab.org/
 import CopyPlugin from "copy-webpack-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
-import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import path from "path";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
@@ -32,10 +31,7 @@ export default (env, argv) => {
         __dirname,
         `${isProduction ? "dist" : "dev"}/${browser}`,
       ),
-    },
-    output: {
-      path: path.resolve(__dirname, "dist"),
-      clean: true, // This replaces clean-webpack-plugin
+      clean: true,
     },
     devtool: isProduction ? "source-map" : "cheap-source-map",
     devServer: {
@@ -92,7 +88,6 @@ export default (env, argv) => {
     // All of our "extra" stuff is currently being copies over
     // When time permits, lets have everything compile correclty
     plugins: [
-      new CleanWebpackPlugin(),
       new CopyPlugin({
         patterns: [
           {

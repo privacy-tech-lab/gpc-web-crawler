@@ -1,5 +1,5 @@
 # Base image with systemd support
-FROM node:18
+FROM node:22
 
 #Set shell to bash
 SHELL ["/bin/bash", "-c"]
