@@ -41,6 +41,7 @@ import {
 } from "../../data/regex.js";
 import psl from "psl";
 import { headers } from "../../data/headers.js";
+
 /******************************************************************************/
 /******************************************************************************/
 /**********             # Initializers (cached values)               **********/
@@ -789,7 +790,7 @@ function enableListeners() {
           urlclassification[last_committed_url] = { "firstParty": {}, "thirdParty": {} };
         }
         if (details.urlClassification.firstParty.length > 0) {
-          for (let url_class = 0; url_class < details.urlClassification.firstParty.length; url_class++) {
+          for (let url_class = 0; url_class < details.urlClassification.firstParty.length; i++) {
             if (details.urlClassification.firstParty[url_class] in urlclassification[last_committed_url]['firstParty']) { // if the tracking type exists already
               if (!(urlclassification[last_committed_url]["firstParty"][details.urlClassification.firstParty[url_class]].includes(short_details_url))) {
                 urlclassification[last_committed_url]["firstParty"][details.urlClassification.firstParty[url_class]].push(short_details_url);
@@ -805,7 +806,7 @@ function enableListeners() {
         }
 
         if (details.urlClassification.thirdParty.length > 0) {
-          for (let url_class = 0; url_class < details.urlClassification.thirdParty.length; url_class++) {
+          for (let url_class = 0; url_class < details.urlClassification.thirdParty.length; i++) {
             // if (url_classes_we_want.includes(details.urlClassification.thirdParty[url_class])) {
             if (details.urlClassification.thirdParty[url_class] in urlclassification[last_committed_url]['thirdParty']) { // if the tracking type exists already
               if (!(urlclassification[last_committed_url]["thirdParty"][details.urlClassification.thirdParty[url_class]].includes(short_details_url))) {
