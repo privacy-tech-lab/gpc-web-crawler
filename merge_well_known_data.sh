@@ -10,7 +10,7 @@ rm -f "$output"
 mkdir crawl_results/well-known
 
 # Copy pt1 the output file
-cat crawl_results/pt1/well-known-data.csv >> $output
+cat crawl_results/pt1/Extra/well-known-data.csv >> $output
 
 # Append pt2 to pt8 
 for i in {2..8}
