@@ -242,13 +242,15 @@ There are some types of sites that we cannot analyze due to our methodology:
 
 At some point the Crawler kept returning an empty result for [Firefox's urlClassification object](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#urlclassification). @eakubilo [fixed this tricky bug](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/122#issuecomment-2332655459).
 
+Before November 2025, all urlClassification data was being truncated at 5,000 characters, leading to some sites losing data for that field. See [issue #199](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/199) with [statistics](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/199#issuecomment-3478288457).
+
+Prior to July 2026, The Crawler loop that counted `third_party_url` and `third_party_count` did not increment the right variable, causing both `third_party_url` and `third_party_count` to be a systematic undercount. [See more info here](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/288)
+
+
 ### 7.3 Running the Crawler on Windows
 
 There can be issues running the Crawler on Windows. For more information, see [issue #198](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/198).
 
-### 7.4 urlClassification Truncation
-
-Before November 2025, all urlClassification data was being truncated at 5,000 characters, leading to some sites losing data for that field. See [issue #199](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/199) with [statistics](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/199#issuecomment-3478288457).
 
 ## 8. Other Resources
 
