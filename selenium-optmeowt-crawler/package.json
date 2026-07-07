@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "chromedriver": "^150.0.0",
-    "csv-parse": "^7.0.0",
+    "chromedriver": "^150.0.1",
+    "csv-parse": "^7.0.1",
     "geckodriver": "^6.1.0",
     "idb": "^8.0.3",
     "prompt-sync": "^4.2.0",
