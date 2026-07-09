@@ -54,8 +54,8 @@
     "string-replace-loader": "^3.0.3",
     "style-loader": "^4.0.0",
     "wait-on": "^9.0.10",
-    "webpack": "^5.108.3",
-    "webpack-cli": "^7.1.0",
+    "webpack": "^5.108.4",
+    "webpack-cli": "^7.2.1",
     "webpack-dev-server": "^6.0.0",
     "workbox-webpack-plugin": "^7.4.1"
   },
