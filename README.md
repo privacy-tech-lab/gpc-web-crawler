@@ -43,7 +43,7 @@ Unmute or turn up the volume if you do not hear any sound.
 
 ## 3. Data
 
-To track the evolution of GPC compliance on the web over time we are performing regular crawls of a set of 11,708 websites. Our crawl results are publicly available (results are for California, Connecticut, Colorado, New Jersey, and Oregon):
+To track the evolution of GPC compliance on the web over time we are performing regular crawls of a set of 11,708 websites. Our crawl results are publicly available (results are for California, Connecticut, Colorado, and New Jersey):
 
 <br>
 <p align="center">
@@ -246,11 +246,9 @@ Before November 2025, all urlClassification data was being truncated at 5,000 ch
 
 Prior to July 2026, The Crawler loop that counted `third_party_url` and `third_party_count` did not increment the right variable, causing both `third_party_url` and `third_party_count` to be a systematic undercount. [See more info here](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/288)
 
-
 ### 7.3 Running the Crawler on Windows
 
 There can be issues running the Crawler on Windows. For more information, see [issue #198](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/198).
-
 
 ## 8. Other Resources
 
