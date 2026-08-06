@@ -14,6 +14,7 @@ from UsVaV1 import UsVaV1
 from UsCoV1 import UsCoV1
 from UsUtV1 import UsUtV1
 from UsCtV1 import UsCtV1
+from UsNjV1 import UsNjV1
 
 
 class GppModel:
@@ -67,6 +68,9 @@ class GppModel:
             elif (sectionIds[i] == UsCtV1.ID) :
                 section = UsCtV1(encodedSections[i + 1])
                 self.sections[UsCtV1.NAME] = section
+            elif (sectionIds[i] == UsNjV1.ID) :
+                section = UsNjV1(encodedSections[i + 1])
+                self.sections[UsNjV1.NAME] = section 
         self.decoded = True
         self.dirty = False
 
@@ -82,6 +86,3 @@ class GppModel:
             if sectionName in self.sections:
                 obj[sectionName] = self.sections[sectionName].toObj()
         return obj
-                
-            
-    
