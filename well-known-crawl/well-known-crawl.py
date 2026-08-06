@@ -47,9 +47,10 @@ full_ts = time.time()
 
 
 if TEST_CRAWL == "true":
-    save_path = f"./crawl_results/CUSTOMCRAWL-{TIMESTAMP}"
+    save_path = f"./crawl_results/CUSTOMCRAWL-{TIMESTAMP}/Extra"
 else:
-    save_path = f"./crawl_results/pt{CRAWL_ID}"
+    save_path = f"./crawl_results/pt{CRAWL_ID}/Extra"
+os.makedirs(save_path, exist_ok=True)
 data_save_path = save_path + "/well-known-data.csv"
 error_save_path = save_path + "/well-known-errors.json"
 with open(data_save_path, "a") as f:
