@@ -11,6 +11,7 @@ from UsVaV1 import UsVaV1
 from UsCoV1 import UsCoV1
 from UsUtV1 import UsUtV1
 from UsCtV1 import UsCtV1
+from UsNjV1 import UsNjV1
 
 class Sections:
     SECTION_ID_NAME_MAP = {
