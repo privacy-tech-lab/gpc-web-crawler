@@ -22,7 +22,8 @@ class Sections:
         UsVaV1.ID: UsVaV1.NAME,
         UsCoV1.ID: UsCoV1.NAME,
         UsUtV1.ID: UsUtV1.NAME,
-        UsCtV1.ID: UsCtV1.NAME
+        UsCtV1.ID: UsCtV1.NAME,
+        UsNjV1.ID: UsNjV1.NAME
     }
     SECTION_ORDER = [
     TcfEuV2.NAME,
@@ -33,5 +34,6 @@ class Sections:
     UsVaV1.NAME,
     UsCoV1.NAME,
     UsUtV1.NAME,
-    UsCtV1.NAME
+    UsCtV1.NAME,
+    UsNjV1.NAME
     ]
