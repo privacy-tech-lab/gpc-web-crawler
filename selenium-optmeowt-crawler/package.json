@@ -6,7 +6,7 @@
     "idb": "^8.0.3",
     "prompt-sync": "^4.2.0",
     "psl": "^1.15.0",
-    "selenium-webdriver": "^4.46.0"
+    "selenium-webdriver": "^4.47.0"
   },
   "overrides": {
     "adm-zip": "^0.6.0"
