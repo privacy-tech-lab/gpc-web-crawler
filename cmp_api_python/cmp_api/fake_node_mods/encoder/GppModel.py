@@ -14,6 +14,21 @@ from UsVaV1 import UsVaV1
 from UsCoV1 import UsCoV1
 from UsUtV1 import UsUtV1
 from UsCtV1 import UsCtV1
+from UsNjV1 import UsNjV1
+from UsFlV1 import UsFlV1
+from UsMtV1 import UsMtV1
+from UsOrV1 import UsOrV1
+from UsTxV1 import UsTxV1
+from UsDeV1 import UsDeV1
+from UsIaV1 import UsIaV1
+from UsNeV1 import UsNeV1
+from UsNhV1 import UsNhV1
+from UsTnV1 import UsTnV1
+from UsMnV1 import UsMnV1
+from UsMdV1 import UsMdV1
+from UsInV1 import UsInV1
+from UsKyV1 import UsKyV1
+from UsRiV1 import UsRiV1
 
 
 class GppModel:
@@ -67,6 +82,51 @@ class GppModel:
             elif (sectionIds[i] == UsCtV1.ID) :
                 section = UsCtV1(encodedSections[i + 1])
                 self.sections[UsCtV1.NAME] = section
+            elif (sectionIds[i] == UsFlV1.ID) :
+                section = UsFlV1(encodedSections[i + 1])
+                self.sections[UsFlV1.NAME] = section
+            elif (sectionIds[i] == UsMtV1.ID) :
+                section = UsMtV1(encodedSections[i + 1])
+                self.sections[UsMtV1.NAME] = section
+            elif (sectionIds[i] == UsOrV1.ID) :
+                section = UsOrV1(encodedSections[i + 1])
+                self.sections[UsOrV1.NAME] = section
+            elif (sectionIds[i] == UsTxV1.ID) :
+                section = UsTxV1(encodedSections[i + 1])
+                self.sections[UsTxV1.NAME] = section
+            elif (sectionIds[i] == UsDeV1.ID) :
+                section = UsDeV1(encodedSections[i + 1])
+                self.sections[UsDeV1.NAME] = section
+            elif (sectionIds[i] == UsIaV1.ID) :
+                section = UsIaV1(encodedSections[i + 1])
+                self.sections[UsIaV1.NAME] = section
+            elif (sectionIds[i] == UsNeV1.ID) :
+                section = UsNeV1(encodedSections[i + 1])
+                self.sections[UsNeV1.NAME] = section
+            elif (sectionIds[i] == UsNhV1.ID) :
+                section = UsNhV1(encodedSections[i + 1])
+                self.sections[UsNhV1.NAME] = section
+            elif (sectionIds[i] == UsNjV1.ID) :
+                section = UsNjV1(encodedSections[i + 1])
+                self.sections[UsNjV1.NAME] = section
+            elif (sectionIds[i] == UsTnV1.ID) :
+                section = UsTnV1(encodedSections[i + 1])
+                self.sections[UsTnV1.NAME] = section
+            elif (sectionIds[i] == UsMnV1.ID) :
+                section = UsMnV1(encodedSections[i + 1])
+                self.sections[UsMnV1.NAME] = section
+            elif (sectionIds[i] == UsMdV1.ID) :
+                section = UsMdV1(encodedSections[i + 1])
+                self.sections[UsMdV1.NAME] = section
+            elif (sectionIds[i] == UsInV1.ID) :
+                section = UsInV1(encodedSections[i + 1])
+                self.sections[UsInV1.NAME] = section
+            elif (sectionIds[i] == UsKyV1.ID) :
+                section = UsKyV1(encodedSections[i + 1])
+                self.sections[UsKyV1.NAME] = section
+            elif (sectionIds[i] == UsRiV1.ID) :
+                section = UsRiV1(encodedSections[i + 1])
+                self.sections[UsRiV1.NAME] = section
         self.decoded = True
         self.dirty = False
 
@@ -82,6 +142,3 @@ class GppModel:
             if sectionName in self.sections:
                 obj[sectionName] = self.sections[sectionName].toObj()
         return obj
-                
-            
-    
