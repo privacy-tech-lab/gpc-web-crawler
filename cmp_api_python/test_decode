@@ -1,0 +1,92 @@
+from cmp_api import cmpapi_test
+import pprint
+
+# Tests real GPP strings generated with the official @iabgpp/cmpapi JS library
+# Decode each one below with our Python section scripts and diff
+# against the expected values.
+
+TEST_STRINGS = {
+    # --- originally supported (10) ---
+    "tcfeuv2": "DBABMA~CQpgI4AQpgI4AAAAAAENAAFgAAAAAAAAAAAAAAAAAAAA.IAAA.YAAAAAAAAAAA",
+    "tcfcav1": "DBABDA~BQpgpe4Qpgpe4AAAAAENAACAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA",
+    "uspv1": "DBABTA~1-1-",
+    "usnat": "DBABLA~CAAiAAAAAABA.YA",
+    "usca": "DBABBg~BAoAAABA.YA",
+    "usva": "DBABRg~BAoAABA",
+    "usco": "DBABJg~BAoAAEA.YA",
+    "usut": "DBABFg~BAKAAAQA",
+    "usct": "DBABVg~BAoAAAEA.YA",
+    "usnj": "DBABAYA~BAoAAAAAQA.YA",
+    # --- newly added (14) ---
+    "usfl": "DBABAw~BAoAAABA",
+    "usmt": "DBABQw~BAoAAABA.YA",
+    "usor": "DBABIw~BAoAAAABAA.YA",
+    "ustx": "DBABEw~BAoAAAQA.YA",
+    "usde": "DBABUw~BAoAAAABAA.YA",
+    "usia": "DBABCw~BAKAAAQA.YA",
+    "usne": "DBABSw~BAoAAAQA.YA",
+    "usnh": "DBABKw~BAoAAABA.YA",
+    "ustn": "DBABQYA~BAoAAAQA.YA",
+    "usmn": "DBABIYA~BAoAAAQA.YA",
+    "usmd": "DBABEYA~BQCg.YA",
+    "usin": "DBABUYA~BQCg.AAA",
+    "usky": "DBABCYA~BQCg.AAA",
+    "usri": "DBABSYA~BQCg.AAA",
+}
+
+# One combined string carrying all 24 sections at once 
+# exercises Sections.py / GppModel.py's multi-section header routing in one go.
+COMBINED_STRING = (
+    "DBACOcGA"
+    "~CQpgI4AQpgI4AAAAAAENAAFgAAAAAAAAAAAAAAAAAAAA.IAAA.YAAAAAAAAAAA"
+    "~BQpgpe4Qpgpe4AAAAAENAACAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA"
+    "~1-1-"
+    "~CAAiAAAAAABA.YA"
+    "~BAoAAABA.YA"
+    "~BAoAABA"
+    "~BAoAAEA.YA"
+    "~BAKAAAQA"
+    "~BAoAAAEA.YA"
+    "~BAoAAABA"
+    "~BAoAAABA.YA"
+    "~BAoAAAABAA.YA"
+    "~BAoAAAQA.YA"
+    "~BAoAAAABAA.YA"
+    "~BAKAAAQA.YA"
+    "~BAoAAAQA.YA"
+    "~BAoAAABA.YA"
+    "~BAoAAAAAQA.YA"
+    "~BAoAAAQA.YA"
+    "~BAoAAAQA.YA"
+    "~BQCg.YA"
+    "~BQCg.AAA"
+    "~BQCg.AAA"
+    "~BQCg.AAA"
+)
+
+
+def main():
+    c = cmpapi_test.CmpApi()
+
+    print("=== Per-jurisdiction strings ===\n")
+    for name, gpp_string in TEST_STRINGS.items():
+        print(f"--- {name} ---")
+        print(f"string: {gpp_string}")
+        try:
+            result = cmpapi_test.decode(gpp_string, c)
+            pprint.pprint(result)
+        except Exception as e:
+            print(f"DECODE FAILED: {e}")
+        print()
+
+    print("=== Combined string (all 24 sections) ===\n")
+    print(f"string: {COMBINED_STRING}")
+    try:
+        result = cmpapi_test.decode(COMBINED_STRING, c)
+        pprint.pprint(result)
+    except Exception as e:
+        print(f"DECODE FAILED: {e}")
+
+
+if __name__ == "__main__":
+    main()

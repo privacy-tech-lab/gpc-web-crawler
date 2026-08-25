@@ -1,0 +1,17 @@
+#### adapted from JS code from this library: https://www.npmjs.com/package/@iabgpp/cmpapi
+UsNhV1Field = {} 
+UsNhV1Field["VERSION"] = "Version"
+UsNhV1Field["PROCESSING_NOTICE"] = "ProcessingNotice"
+UsNhV1Field["SALE_OPT_OUT_NOTICE"] = "SaleOptOutNotice"
+UsNhV1Field["TARGETED_ADVERTISING_OPT_OUT_NOTICE"] = "TargetedAdvertisingOptOutNotice"
+UsNhV1Field["SALE_OPT_OUT"] = "SaleOptOut"
+UsNhV1Field["TARGETED_ADVERTISING_OPT_OUT"] = "TargetedAdvertisingOptOut"
+UsNhV1Field["SENSITIVE_DATA_PROCESSING"] = "SensitiveDataProcessing"
+UsNhV1Field["KNOWN_CHILD_SENSITIVE_DATA_CONSENTS"] = "KnownChildSensitiveDataConsents"
+UsNhV1Field["ADDITIONAL_DATA_PROCESSING_CONSENT"] = "AdditionalDataProcessingConsent"
+UsNhV1Field["MSPA_COVERED_TRANSACTION"] = "MspaCoveredTransaction"
+UsNhV1Field["MSPA_OPT_OUT_OPTION_MODE"] = "MspaOptOutOptionMode"
+UsNhV1Field["MSPA_SERVICE_PROVIDER_MODE"] = "MspaServiceProviderMode"
+UsNhV1Field["GPC_SEGMENT_TYPE"] = "GpcSegmentType"
+UsNhV1Field["GPC_SEGMENT_INCLUDED"] = "GpcSegmentIncluded"
+UsNhV1Field["GPC"] = "Gpc"
