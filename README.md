@@ -43,7 +43,7 @@ Unmute or turn up the volume if you do not hear any sound.
 
 ## 3. Data
 
-To track the evolution of GPC compliance on the web over time we are performing regular crawls of a set of 11,708 websites. Our crawl results are publicly available for California, Connecticut, Colorado, and New Jersey (note: Our NJ VPN uses an NY IP address, see [Mullvad's New Jersey VPN](#74-mullvads-new-jersey-vpn) for more information):
+To track the evolution of GPC compliance on the web over time we are performing regular crawls of a set of 11,708 websites. Our crawl results are publicly available for California, Connecticut, Colorado, and New Jersey (note: Our NJ VPN uses an NY IP address, see [Section 7.4](#74-mullvads-new-jersey-vpn) for more information):
 
 <br>
 <p align="center">
