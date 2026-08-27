@@ -43,7 +43,7 @@ Unmute or turn up the volume if you do not hear any sound.
 
 ## 3. Data
 
-To track the evolution of GPC compliance on the web over time we are performing regular crawls of a set of 11,708 websites. Our crawl results are publicly available (results are for California, Connecticut, Colorado, and New Jersey):
+To track the evolution of GPC compliance on the web over time we are performing regular crawls of a set of 11,708 websites. Our crawl results are publicly available for California, Connecticut, Colorado, and New Jersey (note: Our NJ VPN uses an NY IP address, see [Mullvad's New Jersey VPN](#74-mullvads-new-jersey-vpn) for more information):
 
 <br>
 <p align="center">
@@ -249,6 +249,13 @@ Prior to July 2026, The Crawler loop that counted `third_party_url` and `third_p
 ### 7.3 Running the Crawler on Windows
 
 There can be issues running the Crawler on Windows. For more information, see [issue #198](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/198).
+
+### 7.4 Mullvad's New Jersey VPN
+
+Our crawler uses Mullvad's New Jersey (Secaucus) VPN servers to collect data intended to represent New Jersey web traffic (e.g., for detecting the usnj GPP string). However, investigation (see issue #334) found that these servers resolve to a New York IP geolocation rather than New Jersey, which may affect the accuracy of any state-specific opt-out analysis based on this data. 
+
+This means that our NJ crawl data may actually reflect how sites treat New York traffic, not New Jersey traffic.
+
 
 ## 8. Other Resources
 
