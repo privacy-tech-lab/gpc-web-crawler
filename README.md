@@ -252,16 +252,13 @@ There can be issues running the Crawler on Windows. For more information, see [i
 
 ### 7.4 Mullvad's New Jersey VPN
 
-Our crawler uses Mullvad's New Jersey (Secaucus) VPN servers to collect data intended to represent New Jersey web traffic (e.g., for detecting the usnj GPP string). However, investigation (see issues [#322](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/322) and [#334](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/334) for more information) found that these servers resolve to a New York IP geolocation rather than New Jersey, which may affect the accuracy of any state-specific opt-out analysis based on this data. 
-
-This means that our NJ crawl data may actually reflect how sites treat New York traffic, not New Jersey traffic.
-
+Our crawler uses Mullvad's New Jersey (Secaucus) VPN servers to collect data intended to represent New Jersey web traffic (e.g., for detecting the usnj GPP string). However, investigation found that these servers resolve to a New York IP geolocation rather than New Jersey (see issues [#322](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/322) and [#334](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/334) as well as [issue #123 in the gpc-web-ui repo](https://github.com/privacy-tech-lab/gpc-web-ui/issues/123) for more information). Thus, sites using IP addresses for determining the territorial scope of opt-out right applicability may apply New York law instead of New Jersey law. However, we decided to continue our crawls with Mullvad's New Jersey (Secaucus) VPN to explore the unreliability of IP address geolocation for determining opt-out right applicability. This exploration is realistic as [Internet traffic from Secaucus even without a VPN resolves to a New York IP address](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/334#issuecomment-5299400921). US Senator Ron Wyden pointed out this issue in his [letter to state attorneys general](https://www.wyden.senate.gov/imo/media/doc/wyden_letter_to_ags_on_gpc.pdf).
 
 ## 8. Other Resources
 
 ### 8.1 Python Library for GPP String Decoding
 
-GPP strings must be decoded. The IAB provides a [JavaScript library](https://www.npmjs.com/package/@iabgpp/cmpapi) and an [interactive html decoder](https://iabgpp.com/#) to do so. To integrate decoding with our colab notebooks for data analysis, we rewrote the library in Python. The library is hosted in the [`cmp_api_python` directory](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/cmp_api_python) of this repository. More info can be found in our [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#gpp-string-decoding) and the [related issue](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/89).
+GPP strings must be decoded. The IAB provides a [JavaScript library](https://www.npmjs.com/package/@iabgpp/cmpapi) and an [interactive html decoder](https://iabgpp.com/#) to do so. To integrate decoding with our colab notebooks for data analysis, we rewrote the library in Python. The library is hosted in the [`cmp_api_python` directory](https://github.com/privacy-tech-lab/gpc-web-crawler/tree/main/cmp_api_python) of this repo. More info can be found in our [Wiki](https://github.com/privacy-tech-lab/gpc-web-crawler/wiki/Instructions-for-Lab-Members-Performing-Crawls#gpp-string-decoding) and the [related issue](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/89).
 
 ### 8.2 .well-known/gpc.json Python Script
 
