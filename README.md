@@ -252,7 +252,7 @@ There can be issues running the Crawler on Windows. For more information, see [i
 
 ### 7.4 Mullvad's New Jersey VPN
 
-Our crawler uses Mullvad's New Jersey (Secaucus) VPN servers to collect data intended to represent New Jersey web traffic (e.g., for detecting the usnj GPP string). However, investigation (see issues #322 and #334 for more information) found that these servers resolve to a New York IP geolocation rather than New Jersey, which may affect the accuracy of any state-specific opt-out analysis based on this data. 
+Our crawler uses Mullvad's New Jersey (Secaucus) VPN servers to collect data intended to represent New Jersey web traffic (e.g., for detecting the usnj GPP string). However, investigation (see issues [#322](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/322) and [#334](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/334) for more information) found that these servers resolve to a New York IP geolocation rather than New Jersey, which may affect the accuracy of any state-specific opt-out analysis based on this data. 
 
 This means that our NJ crawl data may actually reflect how sites treat New York traffic, not New Jersey traffic.
 
