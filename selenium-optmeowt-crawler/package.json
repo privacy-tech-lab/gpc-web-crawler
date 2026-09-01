@@ -1,12 +1,12 @@
 {
   "dependencies": {
-    "chromedriver": "^152.0.1",
+    "chromedriver": "^152.0.2",
     "csv-parse": "^7.0.2",
     "geckodriver": "^6.1.1",
     "idb": "^8.0.3",
     "prompt-sync": "^4.2.0",
     "psl": "^1.15.0",
-    "selenium-webdriver": "^4.47.0"
+    "selenium-webdriver": "^4.48.0"
   },
   "overrides": {
     "adm-zip": "^0.6.0"
