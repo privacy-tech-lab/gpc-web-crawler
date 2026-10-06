@@ -54,7 +54,7 @@
     "string-replace-loader": "^3.0.3",
     "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.6.1",
-    "wait-on": "^9.1.0",
+    "wait-on": "^9.5.1",
     "webpack": "^5.111.1",
     "webpack-cli": "^7.2.3",
     "webpack-dev-server": "^6.0.0",
