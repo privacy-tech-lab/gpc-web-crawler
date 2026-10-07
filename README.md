@@ -43,7 +43,7 @@ Unmute or turn up the volume if you do not hear any sound.
 
 ## 3. Data
 
-To track the evolution of GPC compliance on the web over time we are performing regular crawls of a set of 11,708 websites. Our crawl results are publicly available for California, Connecticut, Colorado, and New Jersey (note: Our NJ VPN uses an NY IP address, see [Section 7.4](#74-mullvads-new-jersey-vpn) for more information):
+To track the evolution of GPC compliance on the web over time we are performing regular crawls on a set of 11,708 websites. Our crawl results are publicly available for California, Connecticut, Colorado, and New Jersey/New York (note: Our NJ VPN uses an NY IP address, see [Section 7.4](#74-mullvads-new-jersey-vpn) for more information):
 
 <br>
 <p align="center">
@@ -252,7 +252,11 @@ There can be issues running the Crawler on Windows. For more information, see [i
 
 ### 7.4 Mullvad's New Jersey VPN
 
-Our crawler uses Mullvad's New Jersey (Secaucus) VPN servers to collect data intended to represent New Jersey web traffic (e.g., for detecting the usnj GPP string). However, investigation found that these servers resolve to a New York IP geolocation rather than New Jersey (see issues [#322](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/322) and [#334](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/334) as well as [issue #123 in the gpc-web-ui repo](https://github.com/privacy-tech-lab/gpc-web-ui/issues/123) for more information). Thus, sites using IP addresses for determining the territorial scope of opt-out right applicability may apply New York law instead of New Jersey law. However, we decided to continue our crawls with Mullvad's New Jersey (Secaucus) VPN to explore the unreliability of IP address geolocation for determining opt-out right applicability. This exploration is realistic as [Internet traffic from Secaucus even without a VPN resolves to a New York IP address](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/334#issuecomment-5299400921). US Senator Ron Wyden pointed out this issue in his [letter to state attorneys general](https://www.wyden.senate.gov/imo/media/doc/wyden_letter_to_ags_on_gpc.pdf).
+Our crawler uses Mullvad's New Jersey (Secaucus) VPN servers to collect data initially intended to represent New Jersey web traffic (e.g., for detecting the usnj GPP string). However, investigation found that these servers resolve to a New York IP geolocation rather than New Jersey (see issues [#334](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/334) and [#345](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/345) for more information). Thus, sites who rely on IP addresses to determine the territorial scope of opt-out right applicability may attempt to comply with New York law instead of New Jersey law. 
+
+Even still, we've decided to continue our crawls with Mullvad's New Jersey (Secaucus) VPN to explore the unreliability of IP address geolocation for determining opt-out right applicability. This exploration is realistic as [Internet traffic from Secaucus resolves to a New York IP address even without a VPN](https://github.com/privacy-tech-lab/gpc-web-crawler/issues/334#issuecomment-5299400921). US Senator Ron Wyden also expliitly recognizes these issues with geolocation in his [letter to state attorneys general](https://www.wyden.senate.gov/imo/media/doc/wyden_letter_to_ags_on_gpc.pdf) from August 3, 2026. 
+
+Nevertheless, to avoid misrepresenting our results, we've relabeled all previous references of "NJ" to "NJ_NY" (or another equivalent variant) and will continue this practice going forward.
 
 ## 8. Other Resources
 
