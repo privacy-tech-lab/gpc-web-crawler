@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "chromedriver": "^154.0.1",
+    "chromedriver": "^155.0.0",
     "csv-parse": "^7.0.3",
-    "geckodriver": "^7.0.0",
+    "geckodriver": "^8.0.0",
     "get-uri": "^8.0.1",
     "idb": "^8.0.3",
     "prompt-sync": "^4.2.0",
