@@ -38,10 +38,10 @@
     "mustache": "^4.2.0",
     "psl": "^1.8.0",
     "tippy.js": "^6.3.1",
-    "uikit": "3.25.26"
+    "uikit": "3.25.27"
   },
   "devDependencies": {
-    "@babel/core": "^8.0.7",
+    "@babel/core": "^8.0.9",
     "@babel/preset-env": "^8.0.7",
     "babel-loader": "^10.1.1",
     "concurrently": "^10.0.6",
@@ -55,9 +55,9 @@
     "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.6.1",
     "wait-on": "^9.5.1",
-    "webpack": "^5.112.0",
+    "webpack": "^5.112.2",
     "webpack-cli": "^7.2.3",
-    "webpack-dev-server": "^6.0.0",
+    "webpack-dev-server": "^6.1.0",
     "workbox-webpack-plugin": "^7.4.1"
   },
   "overrides": {
