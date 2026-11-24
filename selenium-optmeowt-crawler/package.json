@@ -3,11 +3,11 @@
     "chromedriver": "^158.0.0",
     "csv-parse": "^7.0.3",
     "geckodriver": "^8.0.0",
-    "get-uri": "^8.0.1",
+    "get-uri": "^8.0.2",
     "idb": "^8.0.4",
     "prompt-sync": "^4.2.0",
     "psl": "^1.15.0",
-    "selenium-webdriver": "^4.52.0"
+    "selenium-webdriver": "^4.53.0"
   },
   "overrides": {
     "adm-zip": "^0.6.1",
